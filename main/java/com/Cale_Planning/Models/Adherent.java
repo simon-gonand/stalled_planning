@@ -4,6 +4,7 @@ import com.Cale_Planning.MSAccessBase;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class Adherent {
     private String name, surname, building, address, city, email, phone, mobile, comment;
     private Date dateOfBirth;
     private genderType gender;
+    private List<Boat> boats;
     private MSAccessBase database;
 
     public Adherent (int id, MSAccessBase database){
@@ -48,6 +50,12 @@ public class Adherent {
             this.phone = attributes.getString("Telephone");
             this.mobile = attributes.getString("Portable");
             this.comment = attributes.getString("Com");
+
+            boats = new ArrayList<Boat>();
+            ResultSet boatsID = database.SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
+            while (boatsID.next()){
+                boats.add(new Boat(boatsID.getInt("ID"), this.database));
+            }
         } catch (SQLException e){
             System.out.println("SQL Select exception n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -251,6 +259,18 @@ public class Adherent {
             System.out.println("Gender Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
         }
+    }
+
+    public List<Boat> getBoats() {
+        return boats;
+    }
+
+    public void AddBoat (Boat boat){
+        this.boats.add(boat);
+    }
+
+    public void RemoveBoat(Boat boat){
+        this.boats.remove(boat);
     }
 }
 
