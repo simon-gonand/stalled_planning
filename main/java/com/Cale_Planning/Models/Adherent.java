@@ -5,9 +5,10 @@ import com.Cale_Planning.MSAccessBase;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 public class Adherent {
-    private enum genderType{
+    public enum genderType{
         MISTER, MISS, NO_GENDER
     }
     private int id, subscriptionYear, postalCode;
