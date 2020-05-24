@@ -13,6 +13,8 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Dimension2D;
+import java.util.Calendar;
 import java.util.Properties;
 
 public class AdherentView extends JInternalFrame {
@@ -118,20 +120,27 @@ public class AdherentView extends JInternalFrame {
 
         JLabel labelName = new JLabel("Prénom");
         JLabel labelSurname = new JLabel("Nom");
-        this.name = new JTextField();
-        this.surname = new JTextField();
+        this.name = new JTextField(adherent.getName());
+        this.surname = new JTextField(adherent.getSurname());
 
         JLabel birthLabel = new JLabel("Date naissance");
         JLabel subscriptionLabel = new JLabel("Date adhésion");
         this.birth = new JDateComponentFactory().createJDatePicker();
-        this.subscription = new JTextField();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(this.adherent.getDateOfBirth());
+        this.birth.getModel().setDate(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+
+        this.subscription = new JTextField(String.valueOf(this.adherent.getSubscriptionYear()));
+
+        this.name.setBackground(new Color(239,239,239));
+        this.surname.setBackground(new Color(239,239,239));
+        this.subscription.setBackground(new Color(239,239,239));
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 1;
         constraints.weighty = 1;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.anchor = GridBagConstraints.LINE_START;
         constraints.gridwidth = 3;
 
@@ -140,20 +149,26 @@ public class AdherentView extends JInternalFrame {
         ++constraints.gridy;
         panel.add(labelSurname, constraints);
         ++constraints.gridx;
-
+        constraints.ipadx = 125;
         panel.add(surname, constraints);
+        constraints.ipadx = 0;
         ++constraints.gridx;
         panel.add(labelName, constraints);
+        constraints.ipadx = 125;
         ++constraints.gridx;
         panel.add(name, constraints);
         ++constraints.gridy;
         constraints.gridx = 0;
+        constraints.ipadx = 0;
         panel.add(birthLabel, constraints);
+        constraints.ipadx = 100;
         ++constraints.gridx;
         panel.add((JComponent)birth, constraints);
+        constraints.ipadx = 0;
         ++constraints.gridx;
         panel.add(subscriptionLabel, constraints);
         ++constraints.gridx;
+        constraints.ipadx = 125;
         panel.add(subscription, constraints);
     }
 
