@@ -2,27 +2,38 @@ package com.Cale_Planning.Models;
 
 import com.Cale_Planning.MSAccessBase;
 
+import javax.swing.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class Adherent {
     public enum genderType{
-        MISTER, MISS, NO_GENDER
+        MISTER, MISS, NO_GENDER;
+
+        @Override
+        public String toString() {
+            switch (this){
+                case MISTER:
+                    return "Monsieur";
+                case MISS:
+                    return "Madame";
+                case NO_GENDER:
+                    return "Non genré";
+            };
+            return null;
+        }
     }
     private int id, subscriptionYear, postalCode;
     private String name, surname, building, address, city, email, phone, mobile, comment;
     private Date dateOfBirth;
     private genderType gender;
-    private List<Boat> boats;
+    private DefaultListModel<Boat> boats;
     private MSAccessBase database;
 
     public Adherent (int id, MSAccessBase database){
         this.id = id;
         this.database = database;
-        database.connect();
         try {
             ResultSet attributes = database.SQLSelect("SELECT * FROM Adherent WHERE ID = " + this.id);
             attributes.next();
@@ -51,10 +62,52 @@ public class Adherent {
             this.mobile = attributes.getString("Portable");
             this.comment = attributes.getString("Com");
 
-            boats = new ArrayList<Boat>();
+            boats = new DefaultListModel<Boat>();
             ResultSet boatsID = database.SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
             while (boatsID.next()){
-                boats.add(new Boat(boatsID.getInt("ID"), this.database));
+                boats.addElement(new Boat(boatsID.getInt("ID"), this, this.database));
+            }
+        } catch (SQLException e){
+            System.out.println("SQL Select exception n° " + e.getErrorCode() + " What goes wrong ?");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public Adherent (int id, Boat boat, MSAccessBase database){
+        this.id = id;
+        this.database = database;
+        try {
+            ResultSet attributes = database.SQLSelect("SELECT * FROM Adherent WHERE ID = " + this.id);
+            attributes.next();
+            switch (attributes.getString("Genre")){
+                case "Monsieur" :
+                    this.gender = genderType.MISTER;
+                    break;
+                case "Madame" :
+                    this.gender = genderType.MISS;
+                    break;
+                case "Non Genre" :
+                    this.gender = genderType.NO_GENDER;
+                    break;
+                default : break;
+            }
+            this.name = attributes.getString("Prenom");
+            this.surname = attributes.getString("Nom");
+            this.building = attributes.getString("Batiment");
+            this.address = attributes.getString("Rue");
+            this.city = attributes.getString("Ville");
+            this.postalCode = attributes.getInt("CodePostal");
+            this.dateOfBirth = attributes.getDate("DateNaissance");
+            this.subscriptionYear = attributes.getInt("DateAdhesion");
+            this.email = attributes.getString("Email");
+            this.phone = attributes.getString("Telephone");
+            this.mobile = attributes.getString("Portable");
+            this.comment = attributes.getString("Com");
+
+            boats = new DefaultListModel<Boat>();
+            ResultSet boatsID = database.SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
+            while (boatsID.next()){
+                boats.addElement(boat);
             }
         } catch (SQLException e){
             System.out.println("SQL Select exception n° " + e.getErrorCode() + " What goes wrong ?");
@@ -240,19 +293,7 @@ public class Adherent {
 
     public void setGender(genderType gender) {
         this.gender = gender;
-        String genderName = "";
-        switch (gender){
-            case MISTER:
-                genderName = "Monsieur";
-                break;
-            case MISS:
-                genderName = "Madame";
-                break;
-            case NO_GENDER:
-                genderName = "Non Genre";
-                break;
-            default: break;
-        }
+        String genderName = gender.toString();
         try {
             database.SQLUpdate("UPDATE Adherent SET Genre = " + genderName + " WHERE ID = " + this.id);
         } catch (SQLException e){
@@ -261,16 +302,16 @@ public class Adherent {
         }
     }
 
-    public List<Boat> getBoats() {
+    public DefaultListModel<Boat> getBoats() {
         return boats;
     }
 
     public void AddBoat (Boat boat){
-        this.boats.add(boat);
+        this.boats.addElement(boat);
     }
 
     public void RemoveBoat(Boat boat){
-        this.boats.remove(boat);
+        this.boats.removeElement(boat);
     }
 }
 

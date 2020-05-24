@@ -34,24 +34,50 @@ public class Boat {
     public Boat (int id, MSAccessBase database){
         this.id = id;
         this.database = database;
-        database.connect();
         try {
             ResultSet attributes = database.SQLSelect("SELECT * FROM Bateau WHERE ID = " + this.id);
             attributes.next();
             StringToCategoryType(attributes.getString("Categorie"));
             StringToPlaceType(attributes.getString("Place"));
-            this.name = attributes.getString("Name");
+            this.name = attributes.getString("Nom");
             this.registration = attributes.getString("Immatriculation");
             this.length = attributes.getFloat("Longueur");
             this.width = attributes.getFloat("Largeur");
             this.draught = attributes.getFloat("TirantEau");
             this.weight = attributes.getFloat("Poids");
-            this.owner = new Adherent(attributes.getInt("Proprietaire"), database);
+            this.owner = new Adherent(attributes.getInt("Proprietaire"), this, database);
 
         } catch (SQLException e){
             System.out.println("Select boat query error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
         }
+    }
+
+    public Boat (int id, Adherent adherent, MSAccessBase database){
+        this.id = id;
+        this.database = database;
+        try {
+            ResultSet attributes = database.SQLSelect("SELECT * FROM Bateau WHERE ID = " + this.id);
+            attributes.next();
+            StringToCategoryType(attributes.getString("Categorie"));
+            StringToPlaceType(attributes.getString("Place"));
+            this.name = attributes.getString("Nom");
+            this.registration = attributes.getString("Immatriculation");
+            this.length = attributes.getFloat("Longueur");
+            this.width = attributes.getFloat("Largeur");
+            this.draught = attributes.getFloat("TirantEau");
+            this.weight = attributes.getFloat("Poids");
+            this.owner = adherent;
+
+        } catch (SQLException e){
+            System.out.println("Select boat query error n° " + e.getErrorCode() + " What goes wrong ?");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 
     private void StringToCategoryType (String categoryName){
