@@ -19,6 +19,7 @@ public class MSAccessBase {
     /* Constructeur */
     public MSAccessBase(String path) {
         this.path = path;
+        connect();
     }
 
 
@@ -26,7 +27,7 @@ public class MSAccessBase {
      *Connection à la base
      *@return : true si la connexion est réussie, false si échouée
      */
-    public boolean connect() {
+    private boolean connect() {
         try {
             // Chargement du driver ODBC
             Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
