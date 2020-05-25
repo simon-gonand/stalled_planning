@@ -10,16 +10,23 @@ import org.jdatepicker.impl.UtilDateModel;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Dimension2D;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Properties;
+import java.util.zip.GZIPInputStream;
 
 public class AdherentView extends JInternalFrame {
     private Adherent adherent;
-    private JTextField name, surname, subscription, building, street, postalCode, city, phone, mobile, email;
+    private JTextField name, surname, subscription, building, street, postalCode, city, email;
+    private JFormattedTextField phone, mobile;
     private JDatePicker birth;
     private ButtonGroup genders;
     private JTextArea comment;
@@ -136,12 +143,17 @@ public class AdherentView extends JInternalFrame {
         this.surname.setBackground(new Color(239,239,239));
         this.subscription.setBackground(new Color(239,239,239));
 
+        addToPanelWithConstraints(panel, gendersChoice, labelName, labelSurname, birthLabel, subscriptionLabel);
+    }
+
+    private void addToPanelWithConstraints(JPanel panel, JPanel gendersChoice, JLabel labelName, JLabel labelSurname,
+                                           JLabel birthLabel, JLabel subscriptionLabel){
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 1;
         constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.CENTER;
         constraints.gridwidth = 3;
 
         panel.add(gendersChoice, constraints);
@@ -173,7 +185,118 @@ public class AdherentView extends JInternalFrame {
     }
 
     private void fillAddressPanel(JPanel panel){
+        JLabel buildingLabel = new JLabel ("Bâtiment");
+        this.building = new JTextField(this.adherent.getBuilding());
+        this.building.setBackground(new Color(239,239,239));
 
+        JLabel streetLabel = new JLabel("Rue");
+        this.street = new JTextField(this.adherent.getAddress());
+        this.street.setBackground(new Color(239,239,239));
+
+        JLabel cityLabel = new JLabel("Ville");
+        this.city = new JTextField(this.adherent.getCity());
+        this.city.setBackground(new Color(239,239,239));
+
+        JLabel postalCodeLabel = new JLabel("Code Postal");
+        this.postalCode = new JTextField(String.valueOf(this.adherent.getPostalCode()));
+        this.postalCode.setBackground(new Color(239,239,239));
+
+        JLabel phoneLabel = new JLabel("Téléphone");
+        JLabel mobileLabel = new JLabel("Portable");
+        try {
+            MaskFormatter fmt = new MaskFormatter("## ## ## ## ##");
+            this.phone = new JFormattedTextField(fmt);
+            this.phone.setValue(this.adherent.getPhone());
+            this.phone.setColumns(14);
+            this.phone.setBackground(new Color(239,239,239));
+            this.mobile = new JFormattedTextField(fmt);
+            this.mobile.setValue(this.adherent.getMobile());
+            this.phone.setColumns(14);
+            this.mobile.setBackground(new Color(239,239,239));
+        } catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        JLabel emailLabel = new JLabel("Email");
+        this.email = new JTextField(this.adherent.getEmail());
+        this.email.setBackground(new Color(239,239,239));
+
+        JButton emailButton = new JButton(new ImageIcon("src/main/resources/mail.png"));
+        emailButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    Desktop.getDesktop().mail(new URI("mailto:" + email.getText()));
+                } catch (URISyntaxException | IOException ex){
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridwidth = 1;
+
+        panel.add(buildingLabel, constraints);
+        ++constraints.gridx;
+        constraints.gridwidth = 5;
+        constraints.weightx = 0.9;
+        panel.add(this.building, constraints);
+        constraints.gridx = 0;
+        ++constraints.gridy;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0.1;
+        panel.add(streetLabel, constraints);
+        ++constraints.gridx;
+        constraints.gridwidth = 5;
+        constraints.weightx = 0.9;
+        panel.add(this.street, constraints);
+        constraints.gridx = 0;
+        ++constraints.gridy;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0.1;
+        panel.add(postalCodeLabel, constraints);
+        ++constraints.gridx;
+        constraints.weightx = 0.2;
+        panel.add(this.postalCode, constraints);
+        ++constraints.gridx;
+        constraints.weightx = 0.1;
+        panel.add(cityLabel, constraints);
+        ++constraints.gridx;
+        constraints.weightx = 0.4;
+        panel.add(this.city, constraints);
+        ++constraints.gridx;
+        constraints.weightx = 0.1;
+        panel.add(phoneLabel, constraints);
+        ++constraints.gridx;
+        constraints.weightx = 0.3;
+        panel.add(this.phone, constraints);
+        constraints.gridx = 0;
+        ++constraints.gridy;
+        constraints.weightx = 0.1;
+        panel.add(emailLabel, constraints);
+        ++constraints.gridx;
+        constraints.weightx = 0.8;
+        constraints.gridwidth = 2;
+        panel.add(this.email, constraints);
+        constraints.gridx += 2;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.weightx = 0.1;
+        constraints.gridwidth = 1;
+        panel.add(emailButton, constraints);
+        ++constraints.gridx;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 0.1;
+        panel.add(mobileLabel, constraints);
+        ++constraints.gridx;
+        constraints.weightx = 0.6;
+        panel.add(this.mobile, constraints);
     }
 
     private void fillDiversePanel(JPanel panel){
