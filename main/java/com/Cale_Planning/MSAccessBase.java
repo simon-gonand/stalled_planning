@@ -86,14 +86,15 @@ public class MSAccessBase {
      *Envoi d'une requête de mise à jour (insert, update, delete)
      *@param : sql
      */
-    public void SQLUpdate(String sql) throws SQLException {
-        Statement statement = null;
+    public void SQLUpdate(String sql, String... variables) throws SQLException {
         try {
-            statement = connection.createStatement();
-            statement.executeUpdate(sql);
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            for (int i = 0; i < variables.length; ++i){
+                pstmt.setString(i+1, variables[i]);
+            }
+            int nrows = pstmt.executeUpdate();
         }
         catch (SQLException e) {
-            statement.close();
             System.out.println("Update error " + e.getMessage());
         }
     }
