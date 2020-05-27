@@ -1,8 +1,10 @@
 package com.Cale_Planning.View;
 
 import com.Cale_Planning.Models.Adherent;
+import org.jdatepicker.DateModel;
 import org.jdatepicker.JDateComponentFactory;
 import org.jdatepicker.JDatePicker;
+import org.jdatepicker.impl.DateComponentFormatter;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -11,17 +13,15 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Dimension2D;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Properties;
-import java.util.zip.GZIPInputStream;
+import java.util.*;
 
 public class AdherentView extends JInternalFrame {
     private Adherent adherent;
@@ -90,12 +90,12 @@ public class AdherentView extends JInternalFrame {
     private void fillIdentityPanel(JPanel panel){
         panel.setLayout(new GridBagLayout());
 
-        JRadioButton mister = new JRadioButton(Adherent.genderType.MISTER.toString());
-        mister.setActionCommand(Adherent.genderType.MISTER.toString());
-        JRadioButton miss = new JRadioButton(Adherent.genderType.MISS.toString());
-        miss.setActionCommand(Adherent.genderType.MISS.toString());
-        JRadioButton noGender = new JRadioButton(Adherent.genderType.NO_GENDER.toString());
-        noGender.setActionCommand(Adherent.genderType.NO_GENDER.toString());
+        JRadioButton mister = new JRadioButton(Adherent.GenderType.MISTER.toString());
+        mister.setActionCommand(Adherent.GenderType.MISTER.toString());
+        JRadioButton miss = new JRadioButton(Adherent.GenderType.MISS.toString());
+        miss.setActionCommand(Adherent.GenderType.MISS.toString());
+        JRadioButton noGender = new JRadioButton(Adherent.GenderType.NO_GENDER.toString());
+        noGender.setActionCommand(Adherent.GenderType.NO_GENDER.toString());
 
         switch (adherent.getGender()){
             case MISTER:
@@ -132,7 +132,9 @@ public class AdherentView extends JInternalFrame {
 
         JLabel birthLabel = new JLabel("Date naissance");
         JLabel subscriptionLabel = new JLabel("Date adhésion");
-        this.birth = new JDateComponentFactory().createJDatePicker();
+        UtilDateModel model = new UtilDateModel();
+        Properties properties = new Properties();
+        this.birth = new JDatePickerImpl(new JDatePanelImpl(model, properties), new DateComponentFormatter());
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(this.adherent.getDateOfBirth());
         this.birth.getModel().setDate(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
@@ -143,10 +145,10 @@ public class AdherentView extends JInternalFrame {
         this.surname.setBackground(new Color(239,239,239));
         this.subscription.setBackground(new Color(239,239,239));
 
-        addToPanelWithConstraints(panel, gendersChoice, labelName, labelSurname, birthLabel, subscriptionLabel);
+        addToPanelIdentityWithConstraints(panel, gendersChoice, labelName, labelSurname, birthLabel, subscriptionLabel);
     }
 
-    private void addToPanelWithConstraints(JPanel panel, JPanel gendersChoice, JLabel labelName, JLabel labelSurname,
+    private void addToPanelIdentityWithConstraints(JPanel panel, JPanel gendersChoice, JLabel labelName, JLabel labelSurname,
                                            JLabel birthLabel, JLabel subscriptionLabel){
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -233,6 +235,11 @@ public class AdherentView extends JInternalFrame {
             }
         });
 
+        addToPanelAddressWithConstraints(panel, buildingLabel, streetLabel, postalCodeLabel, cityLabel, phoneLabel, emailLabel, mobileLabel, emailButton);
+    }
+
+    private void addToPanelAddressWithConstraints(JPanel panel, JLabel buildingLabel, JLabel streetLabel, JLabel postalCodeLabel, JLabel cityLabel,
+                                                  JLabel phoneLabel, JLabel emailLabel, JLabel mobileLabel, JButton emailButton){
         panel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -344,7 +351,19 @@ public class AdherentView extends JInternalFrame {
         submit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(genders.getSelection().getActionCommand());
+                adherent.setName(name.getText());
+                adherent.setSurname(surname.getText());
+                adherent.setDateOfBirth((Date)birth.getModel().getValue());
+                adherent.setSubscriptionYear(Integer.valueOf(subscription.getText()));
+                adherent.setGender(Adherent.GenderType.parse(genders.getSelection().getActionCommand()));
+                adherent.setBuilding(building.getText());
+                adherent.setAddress(street.getText());
+                adherent.setCity(city.getText());
+                adherent.setPostalCode(Integer.valueOf(postalCode.getText()));
+                adherent.setMobile(mobile.getText());
+                adherent.setPhone(phone.getText());
+                adherent.setEmail(email.getText());
+                adherent.setComment(comment.getText());
             }
         });
 
