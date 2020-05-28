@@ -86,11 +86,16 @@ public class MSAccessBase {
      *Envoi d'une requête de mise à jour (insert, update, delete)
      *@param : sql
      */
-    public void SQLUpdate(String sql, String... variables) throws SQLException {
+    public void SQLUpdate(String sql, Object... variables) throws SQLException {
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
             for (int i = 0; i < variables.length; ++i){
-                pstmt.setString(i+1, variables[i]);
+                if (variables[i] instanceof String)
+                    pstmt.setString(i+1, (String) variables[i]);
+                if (variables[i] instanceof java.util.Date) {
+                    Date date = new Date(((java.util.Date) variables[i]).getTime());
+                    pstmt.setDate(i + 1, date);
+                }
             }
             int nrows = pstmt.executeUpdate();
         }

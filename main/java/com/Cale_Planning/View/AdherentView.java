@@ -1,8 +1,6 @@
 package com.Cale_Planning.View;
 
 import com.Cale_Planning.Models.Adherent;
-import org.jdatepicker.DateModel;
-import org.jdatepicker.JDateComponentFactory;
 import org.jdatepicker.JDatePicker;
 import org.jdatepicker.impl.DateComponentFormatter;
 import org.jdatepicker.impl.JDatePanelImpl;
@@ -132,12 +130,9 @@ public class AdherentView extends JInternalFrame {
 
         JLabel birthLabel = new JLabel("Date naissance");
         JLabel subscriptionLabel = new JLabel("Date adhésion");
-        UtilDateModel model = new UtilDateModel();
+        UtilDateModel model = new UtilDateModel(this.adherent.getDateOfBirth());
         Properties properties = new Properties();
         this.birth = new JDatePickerImpl(new JDatePanelImpl(model, properties), new DateComponentFormatter());
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(this.adherent.getDateOfBirth());
-        this.birth.getModel().setDate(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
 
         this.subscription = new JTextField(String.valueOf(this.adherent.getSubscriptionYear()));
 

@@ -5,7 +5,6 @@ import com.Cale_Planning.MSAccessBase;
 import javax.swing.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.Date;
 
 public class Adherent {
@@ -281,13 +280,9 @@ public class Adherent {
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
-        System.out.println(dateOfBirth.toString());
         this.dateOfBirth = dateOfBirth;
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dateOfBirth);
-        String date = cal.get(Calendar.DAY_OF_MONTH) + "/" + cal.get(Calendar.MONTH) + "/" + cal.get(Calendar.YEAR);
         try {
-            database.SQLUpdate("UPDATE Adherent SET DateNaissance = ? WHERE ID = ?", date, String.valueOf(this.id));
+            database.SQLUpdate("UPDATE Adherent SET DateNaissance = ? WHERE ID = ?", dateOfBirth, String.valueOf(this.id));
         } catch (SQLException e){
             System.out.println("Date of Birth Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
