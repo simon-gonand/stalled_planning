@@ -200,6 +200,8 @@ public class AdherentView extends JInternalFrame {
 
         JLabel phoneLabel = new JLabel("Téléphone");
         JLabel mobileLabel = new JLabel("Portable");
+        JButton deletePhone = new JButton(new ImageIcon("src/main/resources/telephoneDelete.png"));
+        JButton deleteMobile = new JButton(new ImageIcon("src/main/resources/telephoneDelete.png"));
         try {
             MaskFormatter fmt = new MaskFormatter("## ## ## ## ##");
             this.phone = new JFormattedTextField(fmt);
@@ -210,6 +212,20 @@ public class AdherentView extends JInternalFrame {
             this.mobile.setValue(this.adherent.getMobile());
             this.phone.setColumns(14);
             this.mobile.setBackground(new Color(239,239,239));
+
+
+            deletePhone.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    phone.setValue("");
+                }
+            });
+            deleteMobile.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    phone.setValue("");
+                }
+            });
         } catch (ParseException e){
             e.printStackTrace();
         }
@@ -230,11 +246,13 @@ public class AdherentView extends JInternalFrame {
             }
         });
 
-        addToPanelAddressWithConstraints(panel, buildingLabel, streetLabel, postalCodeLabel, cityLabel, phoneLabel, emailLabel, mobileLabel, emailButton);
+        addToPanelAddressWithConstraints(panel, buildingLabel, streetLabel, postalCodeLabel, cityLabel, phoneLabel,
+                deletePhone, emailLabel, mobileLabel, deleteMobile, emailButton);
     }
 
     private void addToPanelAddressWithConstraints(JPanel panel, JLabel buildingLabel, JLabel streetLabel, JLabel postalCodeLabel, JLabel cityLabel,
-                                                  JLabel phoneLabel, JLabel emailLabel, JLabel mobileLabel, JButton emailButton){
+                                                  JLabel phoneLabel, JButton deletePhone, JLabel emailLabel, JLabel mobileLabel, JButton deleteMobile,
+                                                  JButton emailButton){
         panel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -265,40 +283,48 @@ public class AdherentView extends JInternalFrame {
         constraints.weightx = 0.1;
         panel.add(postalCodeLabel, constraints);
         ++constraints.gridx;
-        constraints.weightx = 0.2;
+        constraints.weightx = 0.01;
         panel.add(this.postalCode, constraints);
         ++constraints.gridx;
-        constraints.weightx = 0.1;
+        constraints.weightx = 0.01;
+        constraints.anchor = GridBagConstraints.LINE_END;
         panel.add(cityLabel, constraints);
         ++constraints.gridx;
-        constraints.weightx = 0.4;
+        constraints.weightx = 1.5;
+        constraints.anchor = GridBagConstraints.CENTER;
         panel.add(this.city, constraints);
         ++constraints.gridx;
         constraints.weightx = 0.1;
         panel.add(phoneLabel, constraints);
         ++constraints.gridx;
-        constraints.weightx = 0.3;
+        constraints.weightx = 1.2;
         panel.add(this.phone, constraints);
+        ++constraints.gridx;
+        constraints.weightx = 0.05;
+        panel.add(deletePhone, constraints);
         constraints.gridx = 0;
         ++constraints.gridy;
         constraints.weightx = 0.1;
         panel.add(emailLabel, constraints);
         ++constraints.gridx;
-        constraints.weightx = 0.8;
+        constraints.weightx = 1.2;
         constraints.gridwidth = 2;
         panel.add(this.email, constraints);
         constraints.gridx += 2;
         constraints.fill = GridBagConstraints.NONE;
-        constraints.weightx = 0.1;
+        constraints.weightx = 0.05;
         constraints.gridwidth = 1;
         panel.add(emailButton, constraints);
         ++constraints.gridx;
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.weightx = 0.1;
+        constraints.weightx = 0.05;
         panel.add(mobileLabel, constraints);
         ++constraints.gridx;
-        constraints.weightx = 0.6;
+        constraints.weightx = 1.2;
         panel.add(this.mobile, constraints);
+        ++constraints.gridx;
+        constraints.weightx = 0.05;
+        panel.add(deleteMobile, constraints);
     }
 
     private void fillDiversePanel(JPanel panel){
