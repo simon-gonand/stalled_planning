@@ -212,7 +212,7 @@ public class Adherent {
     public void setCity(String city) {
         this.city = city;
         try {
-            database.SQLUpdate("UPDATE Adherent SET Ville = ? WHERE ID = ", city, String.valueOf(this.id));
+            database.SQLUpdate("UPDATE Adherent SET Ville = ? WHERE ID = ?", city, String.valueOf(this.id));
         } catch (SQLException e){
             System.out.println("City Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
