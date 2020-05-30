@@ -32,6 +32,7 @@ public class AdherentView extends JInternalFrame {
 
     public AdherentView(Adherent adherent){
         super();
+
         this.adherent = adherent;
         setTitle("Fiche Adhérent");
         this.getContentPane().setBackground(Color.white);
@@ -369,6 +370,7 @@ public class AdherentView extends JInternalFrame {
         JButton submit = new JButton(new ImageIcon("src/main/resources/tick.png"));
         JButton cancel = new JButton(new ImageIcon("src/main/resources/cancel.png"));
 
+
         submit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -385,6 +387,19 @@ public class AdherentView extends JInternalFrame {
                 adherent.setPhone(phone.getText());
                 adherent.setEmail(email.getText());
                 adherent.setComment(comment.getText());
+            }
+        });
+
+        final JInternalFrame thisFrame = this;
+        cancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                for (JInternalFrame frame : desktopPane.getAllFrames()){
+                    if (frame == thisFrame)
+                        desktopPane.remove(frame);
+                }
+                SwingUtilities.updateComponentTreeUI(desktopPane);
             }
         });
 
