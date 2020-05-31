@@ -1,13 +1,13 @@
 package com.Cale_Planning;
 
 import com.Cale_Planning.Models.Adherent;
+import com.Cale_Planning.Models.Boat;
 import com.Cale_Planning.View.AdherentView;
+import com.Cale_Planning.View.BoatView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args){
@@ -30,8 +30,19 @@ public class Main {
         mainPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         mainWindow.setContentPane(mainPane);
         MSAccessBase database = new MSAccessBase("src/main/resources/Database.accdb");
+
         AdherentView view = new AdherentView(new Adherent(100000, database));
-        view.setBounds(screenSize.width/3, screenSize.height /4, 550, 425);
+        view.setBounds(screenSize.width/3, screenSize.height /4, 650, 525);
+
+        BoatView viewBoat = new BoatView(new Boat(200000, database));
+        viewBoat.setBounds(view.getX() + 20, view.getY() + 20, 650, 525);
+
         mainPane.add(view);
+        mainPane.add(viewBoat);
+        try {
+            viewBoat.setSelected(true);
+        } catch (PropertyVetoException e) {
+            e.printStackTrace();
+        }
     }
 }
