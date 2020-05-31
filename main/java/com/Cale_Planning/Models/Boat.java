@@ -1,6 +1,7 @@
 package com.Cale_Planning.Models;
 
 import com.Cale_Planning.MSAccessBase;
+import com.Cale_Planning.Main;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -106,9 +107,9 @@ public class Boat {
     private placeType place;
     private MSAccessBase database;
 
-    public Boat (int id, MSAccessBase database){
+    public Boat (int id){
         this.id = id;
-        this.database = database;
+        this.database = Main.getDatabase();
         try {
             ResultSet attributes = database.SQLSelect("SELECT * FROM Bateau WHERE ID = " + this.id);
             attributes.next();
@@ -128,9 +129,9 @@ public class Boat {
         }
     }
 
-    public Boat (int id, Adherent adherent, MSAccessBase database){
+    public Boat (int id, Adherent adherent){
         this.id = id;
-        this.database = database;
+        this.database = Main.getDatabase();
         try {
             ResultSet attributes = database.SQLSelect("SELECT * FROM Bateau WHERE ID = " + this.id);
             attributes.next();

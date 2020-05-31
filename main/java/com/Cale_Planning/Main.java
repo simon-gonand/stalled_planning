@@ -10,6 +10,9 @@ import java.awt.*;
 import java.beans.PropertyVetoException;
 
 public class Main {
+    private static MSAccessBase database = new MSAccessBase("src/main/resources/Database.accdb");
+    public static MSAccessBase getDatabase(){ return database; }
+
     public static void main(String[] args){
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         JFrame mainWindow = new JFrame("Planning Cale");
@@ -29,12 +32,12 @@ public class Main {
         };
         mainPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         mainWindow.setContentPane(mainPane);
-        MSAccessBase database = new MSAccessBase("src/main/resources/Database.accdb");
 
-        AdherentView view = new AdherentView(new Adherent(100000, database));
+
+        AdherentView view = new AdherentView(new Adherent(100000));
         view.setBounds(screenSize.width/3, screenSize.height /4, 650, 525);
 
-        BoatView viewBoat = new BoatView(new Boat(200000, database));
+        BoatView viewBoat = new BoatView(new Boat(200000));
         viewBoat.setBounds(view.getX() + 20, view.getY() + 20, 650, 525);
 
         mainPane.add(view);

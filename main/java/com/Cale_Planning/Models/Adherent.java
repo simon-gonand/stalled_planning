@@ -1,6 +1,7 @@
 package com.Cale_Planning.Models;
 
 import com.Cale_Planning.MSAccessBase;
+import com.Cale_Planning.Main;
 
 import javax.swing.*;
 import java.sql.ResultSet;
@@ -44,9 +45,9 @@ public class Adherent {
     private DefaultListModel<Boat> boats;
     private MSAccessBase database;
 
-    public Adherent (int id, MSAccessBase database){
+    public Adherent (int id){
         this.id = id;
-        this.database = database;
+        this.database = Main.getDatabase();
         try {
             ResultSet attributes = database.SQLSelect("SELECT * FROM Adherent WHERE ID = " + this.id);
             attributes.next();
@@ -67,7 +68,7 @@ public class Adherent {
             boats = new DefaultListModel<Boat>();
             ResultSet boatsID = database.SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
             while (boatsID.next()){
-                boats.addElement(new Boat(boatsID.getInt("ID"), this, this.database));
+                boats.addElement(new Boat(boatsID.getInt("ID"), this));
             }
         } catch (SQLException e){
             System.out.println("SQL Select exception n° " + e.getErrorCode() + " What goes wrong ?");
@@ -75,9 +76,9 @@ public class Adherent {
         }
     }
 
-    public Adherent (int id, Boat boat, MSAccessBase database){
+    public Adherent (int id, Boat boat){
         this.id = id;
-        this.database = database;
+        this.database = Main.getDatabase();
         try {
             ResultSet attributes = database.SQLSelect("SELECT * FROM Adherent WHERE ID = " + this.id);
             attributes.next();
