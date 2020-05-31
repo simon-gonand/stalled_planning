@@ -117,6 +117,11 @@ public class Adherent {
         }
     }
 
+    @Override
+    public String toString() {
+        return this.surname + " " + this.name;
+    }
+
     public int getId() {
         return id;
     }
