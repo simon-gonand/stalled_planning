@@ -12,7 +12,47 @@ public class Boat {
         PNEUMATIQUE,
         POINTU,
         SIR,
-        VEDETTE
+        VEDETTE;
+
+
+        @Override
+        public String toString() {
+            switch (this){
+                case MENORQUIN:
+                    return "Menorquin";
+                case PECHE:
+                    return "Peche Promenade";
+                case POINTU:
+                    return "Pointu";
+                case PNEUMATIQUE:
+                    return "Pneumatique";
+                case SIR:
+                    return "SIR";
+                case VEDETTE:
+                    return "Vedette";
+                default: break;
+            }
+            return null;
+        }
+
+        public static categoryType parse(String string){
+            switch (string){
+                case "Menorquin":
+                    return categoryType.MENORQUIN;
+                case "Peche Promenade":
+                    return categoryType.PECHE;
+                case "Pneumatique":
+                    return categoryType.PNEUMATIQUE;
+                case "Pointu":
+                    return categoryType.POINTU;
+                case "SIR":
+                    return categoryType.SIR;
+                case "Vedette":
+                    return categoryType.VEDETTE;
+                default: break;
+            }
+            return null;
+        }
     }
 
     public enum placeType{
@@ -20,7 +60,42 @@ public class Boat {
         ANNUEL,
         CLUB,
         TRADITION,
-        TERRE
+        TERRE;
+
+        @Override
+        public String toString() {
+            switch (this){
+                case PASSAGER:
+                    return "Passager";
+                case ANNUEL:
+                    return "Annuel";
+                case CLUB:
+                    return "Club";
+                case TRADITION:
+                    return "Tradition";
+                case TERRE:
+                    return "Terre";
+                default: break;
+            }
+            return null;
+        }
+
+        public static placeType parse (String string){
+            switch (string){
+                case "Passager":
+                    return placeType.PASSAGER;
+                case "Annuel":
+                    return placeType.ANNUEL;
+                case "Club":
+                    return placeType.CLUB;
+                case "Tradition":
+                    return placeType.TRADITION;
+                case "Terre":
+                    return placeType.TERRE;
+                default: break;
+            }
+            return null;
+        }
     }
 
     private int id;
@@ -37,8 +112,8 @@ public class Boat {
         try {
             ResultSet attributes = database.SQLSelect("SELECT * FROM Bateau WHERE ID = " + this.id);
             attributes.next();
-            StringToCategoryType(attributes.getString("Categorie"));
-            StringToPlaceType(attributes.getString("Place"));
+            this.category = categoryType.parse(attributes.getString("Categorie"));
+            this.place = placeType.parse(attributes.getString("Place"));
             this.name = attributes.getString("Nom");
             this.registration = attributes.getString("Immatriculation");
             this.length = attributes.getFloat("Longueur");
@@ -59,8 +134,8 @@ public class Boat {
         try {
             ResultSet attributes = database.SQLSelect("SELECT * FROM Bateau WHERE ID = " + this.id);
             attributes.next();
-            StringToCategoryType(attributes.getString("Categorie"));
-            StringToPlaceType(attributes.getString("Place"));
+            this.category = categoryType.parse(attributes.getString("Categorie"));
+            this.place = placeType.parse(attributes.getString("Place"));
             this.name = attributes.getString("Nom");
             this.registration = attributes.getString("Immatriculation");
             this.length = attributes.getFloat("Longueur");
@@ -78,87 +153,6 @@ public class Boat {
     @Override
     public String toString() {
         return this.name;
-    }
-
-    private void StringToCategoryType (String categoryName){
-        switch (categoryName){
-            case "Menorquin":
-                this.category = categoryType.MENORQUIN;
-                break;
-            case "Peche Promenade":
-                this.category = categoryType.PECHE;
-                break;
-            case "Pneumatique":
-                this.category = categoryType.PNEUMATIQUE;
-                break;
-            case "Pointu":
-                this.category = categoryType.POINTU;
-                break;
-            case "SIR":
-                this.category = categoryType.SIR;
-                break;
-            case "Vedette":
-                this.category = categoryType.VEDETTE;
-                break;
-            default: break;
-        }
-    }
-
-    private String CategoryTypeToString (categoryType category){
-        switch (category){
-            case MENORQUIN:
-                return "Menorquin";
-            case PECHE:
-                return "Peche Promenade";
-            case POINTU:
-                return "Pointu";
-            case PNEUMATIQUE:
-                return "Pneumatique";
-            case SIR:
-                return "SIR";
-            case VEDETTE:
-                return "Vedette";
-            default: break;
-        }
-        return null;
-    }
-
-    private void StringToPlaceType (String placeName){
-        switch (placeName){
-            case "Passager":
-                this.place = placeType.PASSAGER;
-                break;
-            case "Annuel":
-                this.place = placeType.ANNUEL;
-                break;
-            case "Club":
-                this.place = placeType.CLUB;
-                break;
-            case "Tradition":
-                this.place = placeType.TRADITION;
-                break;
-            case "Terre":
-                this.place = placeType.TERRE;
-                break;
-            default: break;
-        }
-    }
-
-    private String PlaceTypeToString (placeType place){
-        switch (place){
-            case PASSAGER:
-                return "Passager";
-            case ANNUEL:
-                return "Annuel";
-            case CLUB:
-                return "Club";
-            case TRADITION:
-                return "Tradition";
-            case TERRE:
-                return "Terre";
-            default: break;
-        }
-        return null;
     }
 
     public int getId() {
@@ -270,7 +264,7 @@ public class Boat {
     public void setCategory(categoryType category) {
         this.category = category;
         try {
-            database.SQLUpdate("UPDATE Bateau SET Category = " + CategoryTypeToString(category) + " WHERE ID = " + this.id);
+            database.SQLUpdate("UPDATE Bateau SET Category = " + category.toString() + " WHERE ID = " + this.id);
         } catch (SQLException e){
             System.out.println("Category Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -284,7 +278,7 @@ public class Boat {
     public void setPlace(placeType place) {
         this.place = place;
         try {
-            database.SQLUpdate("UPDATE Bateau SET Place = " + PlaceTypeToString(place) + " WHERE ID = " + this.id);
+            database.SQLUpdate("UPDATE Bateau SET Place = " + place.toString() + " WHERE ID = " + this.id);
         } catch (SQLException e){
             System.out.println("Place Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
