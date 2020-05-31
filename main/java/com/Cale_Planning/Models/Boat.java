@@ -121,7 +121,7 @@ public class Boat {
             this.width = attributes.getFloat("Largeur");
             this.draught = attributes.getFloat("TirantEau");
             this.weight = attributes.getFloat("Poids");
-            this.owner = new Adherent(attributes.getInt("Proprietaire"), this, database);
+            this.owner = new Adherent(attributes.getInt("Proprietaire"), this);
 
         } catch (SQLException e){
             System.out.println("Select boat query error n° " + e.getErrorCode() + " What goes wrong ?");
