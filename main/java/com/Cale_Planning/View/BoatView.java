@@ -6,7 +6,6 @@ import com.Cale_Planning.Models.Boat;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.zip.GZIPInputStream;
 
 public class BoatView extends JInternalFrame {
     private Boat boat;
@@ -30,6 +29,10 @@ public class BoatView extends JInternalFrame {
         JPanel ownerCategoryPanel = new JPanel();
         JPanel placePanel = new JPanel();
 
+        boatPropertiesPanel.setBackground(Color.white);
+        ownerCategoryPanel.setBackground(Color.white);
+        placePanel.setBackground(Color.white);
+
         fillBoatPropertiesPanel(boatPropertiesPanel);
         fillOwnerCategoryPanel(ownerCategoryPanel);
         fillPlacePanel(placePanel);
@@ -45,10 +48,15 @@ public class BoatView extends JInternalFrame {
         JPanel firstRow = new JPanel(new GridBagLayout());
         JPanel secondRow = new JPanel(new GridLayout(1,8));
 
+        firstRow.setBackground(Color.white);
+        secondRow.setBackground(Color.white);
+
         JLabel nameLabel = new JLabel("Nom");
         this.name = new JTextField(boat.getName());
+        this.name.setBackground(new Color(239,239,239));
         JLabel registrationLabel = new JLabel("Immatriculation");
         this.registration = new JTextField(boat.getRegistration());
+        this.registration.setBackground(new Color(239,239,239));
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -71,12 +79,16 @@ public class BoatView extends JInternalFrame {
 
         JLabel lengthLabel = new JLabel ("Longueur (m)");
         this.length = new JTextField(String.valueOf(boat.getLength()));
+        this.length.setBackground(new Color(239,239,239));
         JLabel widthLabel = new JLabel ("Largeur (m)");
         this.width = new JTextField(String.valueOf(boat.getWidth()));
+        this.width.setBackground(new Color(239,239,239));
         JLabel draughtLabel = new JLabel ("Tirant d'eau (m)");
         this.draught = new JTextField(String.valueOf(boat.getDraught()));
+        this.draught.setBackground(new Color(239,239,239));
         JLabel weightLabel = new JLabel ("Poids (kg)");
         this.weight = new JTextField(String.valueOf(boat.getWeight()));
+        this.weight.setBackground(new Color(239,239,239));
 
         secondRow.add(lengthLabel);
         secondRow.add(length);
