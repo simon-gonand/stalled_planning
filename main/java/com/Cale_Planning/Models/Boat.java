@@ -167,7 +167,7 @@ public class Boat {
     public void setName(String name) {
         this.name = name;
         try {
-            database.SQLUpdate("UPDATE Bateau SET Name = " + name + " WHERE ID = " + this.id);
+            database.SQLUpdate("UPDATE Bateau SET Nom = ? WHERE ID = ?", name, String.valueOf(this.id));
         } catch (SQLException e){
             System.out.println("Boat Name Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -181,7 +181,7 @@ public class Boat {
     public void setRegistration(String registration) {
         this.registration = registration;
         try {
-            database.SQLUpdate("UPDATE Bateau SET Immatriculation = " + registration + " WHERE ID = " + this.id);
+            database.SQLUpdate("UPDATE Bateau SET Immatriculation = ? WHERE ID = ?", registration, String.valueOf(this.id));
         } catch (SQLException e){
             System.out.println("Registration Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -195,7 +195,7 @@ public class Boat {
     public void setLength(float length) {
         this.length = length;
         try {
-            database.SQLUpdate("UPDATE Bateau SET Longueur = " + length + " WHERE ID = " + this.id);
+            database.SQLUpdate("UPDATE Bateau SET Longueur = ? WHERE ID = ?", length, String.valueOf(this.id));
         } catch (SQLException e){
             System.out.println("Length Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -209,7 +209,7 @@ public class Boat {
     public void setWidth(float width) {
         this.width = width;
         try {
-            database.SQLUpdate("UPDATE Bateau SET Largeur = " + width + " WHERE ID = " + this.id);
+            database.SQLUpdate("UPDATE Bateau SET Largeur = ? WHERE ID = ?", width, String.valueOf(this.id));
         } catch (SQLException e){
             System.out.println("Width Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -223,7 +223,7 @@ public class Boat {
     public void setDraught(float draught) {
         this.draught = draught;
         try {
-            database.SQLUpdate("UPDATE Bateau SET TirantEau = " + draught + " WHERE ID = " + this.id);
+            database.SQLUpdate("UPDATE Bateau SET TirantEau = ? WHERE ID = ?", draught, String.valueOf(this.id));
         } catch (SQLException e){
             System.out.println("Draught Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -237,7 +237,7 @@ public class Boat {
     public void setWeight(float weight) {
         this.weight = weight;
         try {
-            database.SQLUpdate("UPDATE Bateau SET Poids = " + weight + " WHERE ID = " + this.id);
+            database.SQLUpdate("UPDATE Bateau SET Poids = ? WHERE ID = ?", weight, String.valueOf(this.id));
         } catch (SQLException e){
             System.out.println("Weight Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -251,7 +251,7 @@ public class Boat {
     public void setOwner(Adherent owner) {
         this.owner = owner;
         try {
-            database.SQLUpdate("UPDATE Bateau SET Proprietaire = " + owner.getId() + " WHERE ID = " + this.id);
+            database.SQLUpdate("UPDATE Bateau SET Proprietaire = ? WHERE ID = ?", owner.getId(),String.valueOf(this.id));
         } catch (SQLException e){
             System.out.println("Owner Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -265,7 +265,7 @@ public class Boat {
     public void setCategory(categoryType category) {
         this.category = category;
         try {
-            database.SQLUpdate("UPDATE Bateau SET Category = " + category.toString() + " WHERE ID = " + this.id);
+            database.SQLUpdate("UPDATE Bateau SET Categorie = ? WHERE ID = ?", category.toString(), String.valueOf(this.id));
         } catch (SQLException e){
             System.out.println("Category Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -279,7 +279,7 @@ public class Boat {
     public void setPlace(placeType place) {
         this.place = place;
         try {
-            database.SQLUpdate("UPDATE Bateau SET Place = " + place.toString() + " WHERE ID = " + this.id);
+            database.SQLUpdate("UPDATE Bateau SET Place = ? WHERE ID = ?", place.toString(), String.valueOf(this.id));
         } catch (SQLException e){
             System.out.println("Place Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
