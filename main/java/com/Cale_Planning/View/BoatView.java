@@ -6,6 +6,8 @@ import com.Cale_Planning.Models.Boat;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class BoatView extends JInternalFrame {
     private Boat boat;
@@ -21,25 +23,29 @@ public class BoatView extends JInternalFrame {
 
         setTitle("Fiche Bateau " + boat.getName());
         this.getContentPane().setBackground(Color.white);
-        setLayout(new GridLayout(3,1));
+        setLayout(new GridLayout(4,1));
 
         setVisible(true);
 
         JPanel boatPropertiesPanel = new JPanel();
         JPanel ownerCategoryPanel = new JPanel();
         JPanel placePanel = new JPanel();
+        JPanel buttonPanel = new JPanel();
 
         boatPropertiesPanel.setBackground(Color.white);
         ownerCategoryPanel.setBackground(Color.white);
         placePanel.setBackground(Color.white);
+        buttonPanel.setBackground(Color.white);
 
         fillBoatPropertiesPanel(boatPropertiesPanel);
         fillOwnerCategoryPanel(ownerCategoryPanel);
         fillPlacePanel(placePanel);
+        fillButtonPanel(buttonPanel);
 
         this.add(boatPropertiesPanel);
         this.add(ownerCategoryPanel);
         this.add(placePanel);
+        this.add(buttonPanel);
     }
 
     private void fillBoatPropertiesPanel (JPanel panel){
@@ -110,8 +116,12 @@ public class BoatView extends JInternalFrame {
         this.category = new JComboBox<Boat.categoryType>(Boat.categoryType.values());
         this.category.setSelectedItem(boat.getCategory());
         JLabel ownerLabel = new JLabel("Propriétaire");
-        this.owner = new JComboBox<Adherent>(AdherentController.getAllAdherent());
-        this.owner.setSelectedItem(boat.getOwner());
+        Adherent[] allAdherents = AdherentController.getAllAdherent();
+        this.owner = new JComboBox<Adherent>(allAdherents);
+        for (Adherent adherent : allAdherents){
+            if (adherent.getId() == boat.getOwner().getId())
+                owner.setSelectedItem(adherent);
+        }
 
         panel.add(categoryLabel);
         panel.add(ownerLabel);
@@ -183,5 +193,53 @@ public class BoatView extends JInternalFrame {
         panel.add(placeLabel, constraints);
         ++constraints.gridy;
         panel.add(placePanel, constraints);
+    }
+
+    private void fillButtonPanel(JPanel panel){
+        panel.setLayout(new GridBagLayout()); // Set a layout
+
+        JButton submit = new JButton(new ImageIcon("src/main/resources/tick.png"));
+        JButton cancel = new JButton(new ImageIcon("src/main/resources/cancel.png"));
+
+        submit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                boat.setName(name.getText());
+                boat.setRegistration(registration.getText());
+                boat.setLength(Float.valueOf(length.getText()));
+                boat.setWidth(Float.valueOf(width.getText()));
+                boat.setDraught(Float.valueOf(draught.getText()));
+                boat.setWeight(Float.valueOf(weight.getText()));
+                boat.setPlace(Boat.placeType.parse(place.getSelection().getActionCommand()));
+                boat.setCategory((Boat.categoryType) category.getSelectedItem());
+                boat.setOwner((Adherent) owner.getSelectedItem());
+            }
+        });
+
+        final JInternalFrame thisFrame = this;
+        cancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                for (JInternalFrame frame : desktopPane.getAllFrames()){
+                    if (frame == thisFrame)
+                        desktopPane.remove(frame);
+                }
+                SwingUtilities.updateComponentTreeUI(desktopPane);
+            }
+        });
+
+        // Set constraints to display the buttons
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.weightx = 1;
+
+        panel.add(submit, constraints);
+        ++constraints.gridx;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        panel.add(cancel, constraints);
     }
 }

@@ -92,6 +92,10 @@ public class MSAccessBase {
             for (int i = 0; i < variables.length; ++i){
                 if (variables[i] instanceof String)
                     pstmt.setString(i+1, (String) variables[i]);
+                if (variables[i] instanceof Float)
+                    pstmt.setFloat(i+1, (Float) variables[i]);
+                if (variables[i] instanceof Integer)
+                    pstmt.setInt(i+1, (Integer) variables[i]);
                 if (variables[i] instanceof java.util.Date) {
                     Date date = new Date(((java.util.Date) variables[i]).getTime());
                     pstmt.setDate(i + 1, date);
@@ -100,7 +104,7 @@ public class MSAccessBase {
             int nrows = pstmt.executeUpdate();
         }
         catch (SQLException e) {
-            System.out.println("Update error " + e.getMessage());
+            System.out.println("Update error " + e.getMessage() + " " + sql);
         }
     }
 }
