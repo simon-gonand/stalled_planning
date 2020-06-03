@@ -1,6 +1,7 @@
 package com.Cale_Planning.View;
 
 import com.Cale_Planning.Models.Adherent;
+import com.Cale_Planning.Models.Boat;
 import org.jdatepicker.JDatePicker;
 import org.jdatepicker.impl.DateComponentFormatter;
 import org.jdatepicker.impl.JDatePanelImpl;
@@ -15,6 +16,9 @@ import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -345,7 +349,27 @@ public class AdherentView extends JInternalFrame {
         comment.setLineWrap(true);
         comment.setWrapStyleWord(true);
 
+        final JInternalFrame thisFrame = this;
         this.boats = new JList(adherent.getBoats()); // Display all the boats of the Adherent
+        this.boats.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (e.getClickCount() == 2){
+                    System.out.println("mouse clicked");
+                    BoatView boatView = new BoatView((Boat) boats.getModel().getElementAt(boats.locationToIndex(e.getPoint())));
+                    boatView.setBounds(thisFrame.getX() + 20, thisFrame.getY() + 20, 700, 250);
+                    JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                    desktopPane.add(boatView);
+                    try {
+                        boatView.setSelected(true);
+                    } catch (PropertyVetoException ex) {
+                        ex.printStackTrace();
+                    }
+                    SwingUtilities.updateComponentTreeUI(desktopPane);
+                }
+            }
+        });
 
         comment.setBackground(new Color(239,239,239));
         boats.setBackground(new Color(239,239,239));
