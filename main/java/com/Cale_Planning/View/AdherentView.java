@@ -46,7 +46,7 @@ public class AdherentView extends JInternalFrame {
         int i = mainPane.getAllFrames().length -1;
         while (i >= 0) {
             JInternalFrame frame = mainPane.getAllFrames()[i];
-            if (frame instanceof AdherentView || frame instanceof BoatView) {
+            if (frame instanceof AdherentView || frame instanceof BoatView || frame instanceof AllAdherentsView) {
                 this.setBounds(frame.getX() + 20, frame.getY() + 20, 650, 525);
                 break;
             }

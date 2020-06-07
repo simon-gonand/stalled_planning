@@ -35,7 +35,7 @@ public class MainMenuView extends JInternalFrame {
             public void actionPerformed(ActionEvent e) {
                 JDesktopPane mainPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
                 try {
-                    new AdherentView(new Adherent(100000), mainPane);
+                    new AllAdherentsView(mainPane);
                 } catch (PropertyVetoException ex) {
                     ex.printStackTrace();
                 }
