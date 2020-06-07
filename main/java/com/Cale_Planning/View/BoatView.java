@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 
 public class BoatView extends JInternalFrame {
     private Boat boat;
@@ -17,13 +18,27 @@ public class BoatView extends JInternalFrame {
     private ButtonGroup place;
 
 
-    public BoatView(Boat boat){
+    public BoatView(Boat boat, JDesktopPane mainPane) throws PropertyVetoException {
         super();
         this.boat = boat;
 
         setTitle("Fiche Bateau " + boat.getName());
         this.getContentPane().setBackground(Color.white);
         setLayout(new GridLayout(4,1));
+
+        int i = mainPane.getAllFrames().length -1;
+        while (i >= 0) {
+            JInternalFrame frame = mainPane.getAllFrames()[i];
+            if (frame instanceof AdherentView || frame instanceof BoatView) {
+                this.setBounds(frame.getX() + 20, frame.getY() + 20, 700, 250);
+                break;
+            }
+            --i;
+        }
+        if (i < 0) {
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            this.setBounds(screenSize.width / 3, screenSize.height / 4, 700, 250);
+        }
 
         setResizable(true);
         setVisible(true);
@@ -47,6 +62,9 @@ public class BoatView extends JInternalFrame {
         this.add(ownerCategoryPanel);
         this.add(placePanel);
         this.add(buttonPanel);
+
+        mainPane.add(this);
+        setSelected(true);
     }
 
     private void fillBoatPropertiesPanel (JPanel panel){

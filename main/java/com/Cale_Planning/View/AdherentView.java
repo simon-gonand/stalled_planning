@@ -34,7 +34,7 @@ public class AdherentView extends JInternalFrame {
     private JTextArea comment;
     private JList boats;
 
-    public AdherentView(Adherent adherent){
+    public AdherentView(Adherent adherent, JDesktopPane mainPane) throws PropertyVetoException {
         super();
 
         this.adherent = adherent;
@@ -42,8 +42,25 @@ public class AdherentView extends JInternalFrame {
         this.getContentPane().setBackground(Color.white);
         setLayout(new GridBagLayout());
         setView();
+
+        int i = mainPane.getAllFrames().length -1;
+        while (i >= 0) {
+            JInternalFrame frame = mainPane.getAllFrames()[i];
+            if (frame instanceof AdherentView || frame instanceof BoatView) {
+                this.setBounds(frame.getX() + 20, frame.getY() + 20, 650, 525);
+                break;
+            }
+            --i;
+        }
+        if (i < 0) {
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            this.setBounds(screenSize.width / 3, screenSize.height / 4, 650, 525);
+        }
+
         setResizable(true);
         setVisible(true);
+        mainPane.add(this);
+        setSelected(true);
     }
 
     private void setView(){
@@ -357,12 +374,10 @@ public class AdherentView extends JInternalFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (e.getClickCount() == 2){
-                    BoatView boatView = new BoatView((Boat) boats.getModel().getElementAt(boats.locationToIndex(e.getPoint())));
-                    boatView.setBounds(thisFrame.getX() + 20, thisFrame.getY() + 20, 700, 250);
                     JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
-                    desktopPane.add(boatView);
+                    BoatView boatView = null;
                     try {
-                        boatView.setSelected(true);
+                        boatView = new BoatView((Boat) boats.getModel().getElementAt(boats.locationToIndex(e.getPoint())), desktopPane);
                     } catch (PropertyVetoException ex) {
                         ex.printStackTrace();
                     }
