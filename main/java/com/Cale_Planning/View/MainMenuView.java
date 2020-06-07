@@ -47,7 +47,7 @@ public class MainMenuView extends JInternalFrame {
             public void actionPerformed(ActionEvent e) {
                 JDesktopPane mainPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
                 try {
-                    new BoatView(new Boat(200000), mainPane);
+                    new AllBoatsView(mainPane);
                 } catch (PropertyVetoException ex) {
                     ex.printStackTrace();
                 }

@@ -1,6 +1,7 @@
 package com.Cale_Planning.View;
 
 import com.Cale_Planning.Controller.AdherentController;
+import com.Cale_Planning.Controller.BoatController;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
 
@@ -10,20 +11,20 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
 
-public class AllAdherentsView extends JInternalFrame {
-    public AllAdherentsView(JDesktopPane mainPane) throws PropertyVetoException {
+public class AllBoatsView extends JInternalFrame {
+    public AllBoatsView(JDesktopPane mainPane) throws PropertyVetoException {
         super();
 
-        setTitle("Les Adhérents");
+        setTitle("Les Bateaux");
         this.getContentPane().setBackground(Color.white);
         this.setLayout(new GridLayout(1,1));
 
-        fillAdherentsView(mainPane);
+        fillBoatsView(mainPane);
 
         int i = mainPane.getAllFrames().length -1;
         while (i >= 0) {
             JInternalFrame frame = mainPane.getAllFrames()[i];
-            if (frame instanceof AdherentView || frame instanceof BoatView || frame instanceof AllBoatsView) {
+            if (frame instanceof AdherentView || frame instanceof BoatView || frame instanceof AllAdherentsView) {
                 this.setBounds(frame.getX() + 20, frame.getY() + 20, 650, 525);
                 break;
             }
@@ -39,16 +40,16 @@ public class AllAdherentsView extends JInternalFrame {
         setSelected(true);
     }
 
-    private void fillAdherentsView(JDesktopPane mainPane){
-        Adherent[] allAdherents = AdherentController.getAllAdherent();
-        JList<Adherent> adherentJList = new JList<>(allAdherents);
-        adherentJList.addMouseListener(new MouseAdapter() {
+    private void fillBoatsView(JDesktopPane mainPane) {
+        Boat[] allBoats = BoatController.getAllBoat();
+        JList<Boat> boatJList = new JList<>(allBoats);
+        boatJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (e.getClickCount() == 2){
                     try {
-                        new AdherentView(adherentJList.getModel().getElementAt(adherentJList.locationToIndex(e.getPoint())), mainPane);
+                        new BoatView(boatJList.getModel().getElementAt(boatJList.locationToIndex(e.getPoint())), mainPane);
                     } catch (PropertyVetoException ex) {
                         ex.printStackTrace();
                     }
@@ -57,6 +58,6 @@ public class AllAdherentsView extends JInternalFrame {
             }
         });
 
-        this.add(adherentJList);
+        this.add(boatJList);
     }
 }
