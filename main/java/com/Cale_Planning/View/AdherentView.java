@@ -42,6 +42,7 @@ public class AdherentView extends JInternalFrame {
         this.getContentPane().setBackground(Color.white);
         setLayout(new GridBagLayout());
         setView();
+        setResizable(true);
         setVisible(true);
     }
 
@@ -356,7 +357,6 @@ public class AdherentView extends JInternalFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (e.getClickCount() == 2){
-                    System.out.println("mouse clicked");
                     BoatView boatView = new BoatView((Boat) boats.getModel().getElementAt(boats.locationToIndex(e.getPoint())));
                     boatView.setBounds(thisFrame.getX() + 20, thisFrame.getY() + 20, 700, 250);
                     JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
@@ -438,5 +438,14 @@ public class AdherentView extends JInternalFrame {
         ++constraints.gridx;
         constraints.anchor = GridBagConstraints.LINE_END;
         panel.add(cancel, constraints);
+    }
+
+    public void updateBoatList (DefaultListModel<Boat> boatList){
+        this.boats.setModel(boatList);
+        SwingUtilities.updateComponentTreeUI(this);
+    }
+
+    public Adherent getAdherent() {
+        return adherent;
     }
 }

@@ -25,6 +25,7 @@ public class BoatView extends JInternalFrame {
         this.getContentPane().setBackground(Color.white);
         setLayout(new GridLayout(4,1));
 
+        setResizable(true);
         setVisible(true);
 
         JPanel boatPropertiesPanel = new JPanel();
@@ -201,10 +202,10 @@ public class BoatView extends JInternalFrame {
         JButton submit = new JButton(new ImageIcon("src/main/resources/tick.png"));
         JButton cancel = new JButton(new ImageIcon("src/main/resources/cancel.png"));
 
+        final JInternalFrame thisFrame = this;
         submit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 boat.setName(name.getText());
                 boat.setRegistration(registration.getText());
                 boat.setLength(Float.valueOf(length.getText()));
@@ -213,11 +214,25 @@ public class BoatView extends JInternalFrame {
                 boat.setWeight(Float.valueOf(weight.getText()));
                 boat.setPlace(Boat.placeType.parse(place.getSelection().getActionCommand()));
                 boat.setCategory((Boat.categoryType) category.getSelectedItem());
-                boat.setOwner((Adherent) owner.getSelectedItem());
+
+                Adherent oldOwner = boat.getOwner();
+                if (oldOwner.getId() != ((Adherent) owner.getSelectedItem()).getId()) {
+                    boat.setOwner((Adherent) owner.getSelectedItem());
+                    oldOwner.removeBoat(boat);
+                    JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                    for (JInternalFrame frame : desktopPane.getAllFrames()) {
+                        if (frame instanceof AdherentView) {
+                            AdherentView adherentView = (AdherentView) frame;
+                            if (adherentView.getAdherent().getId() == ((Adherent) owner.getSelectedItem()).getId())
+                                adherentView.updateBoatList(((Adherent) owner.getSelectedItem()).getBoats());
+                            else if (adherentView.getAdherent().getId() == oldOwner.getId())
+                                adherentView.updateBoatList(oldOwner.getBoats());
+                        }
+                    }
+                }
             }
         });
 
-        final JInternalFrame thisFrame = this;
         cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
