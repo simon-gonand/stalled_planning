@@ -28,6 +28,7 @@ public class MainMenuView extends JInternalFrame {
     private void fillMainMenu(){
         JButton adherentsViewButton = new JButton("Les adhérents", new ImageIcon("src/main/resources/user.png"));
         JButton boatViewButton = new JButton ("Les bateaux", new ImageIcon("src/main/resources/boat.png"));
+        JButton stalledViewButton = new JButton ("Planning Cale", new ImageIcon("src/main/resources/calendar.png"));
 
         JInternalFrame thisFrame = this;
         adherentsViewButton.addActionListener(new ActionListener() {
@@ -54,6 +55,18 @@ public class MainMenuView extends JInternalFrame {
             }
         });
 
+        stalledViewButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDesktopPane mainPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                try {
+                    new StalledView(mainPane);
+                } catch (PropertyVetoException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -64,7 +77,9 @@ public class MainMenuView extends JInternalFrame {
         constraints.ipady = 60;
 
         this.add(adherentsViewButton, constraints);
-        constraints.gridy = 1;
+        ++constraints.gridy;
         this.add(boatViewButton, constraints);
+        ++constraints.gridy;
+        this.add(stalledViewButton, constraints);
     }
 }

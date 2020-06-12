@@ -8,7 +8,6 @@ import com.Cale_Planning.View.MainMenuView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.beans.PropertyVetoException;
 
 public class Main {
     private static MSAccessBase database = new MSAccessBase("src/main/resources/Database.accdb");
