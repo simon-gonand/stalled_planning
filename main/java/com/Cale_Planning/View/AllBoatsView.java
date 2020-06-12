@@ -1,8 +1,6 @@
 package com.Cale_Planning.View;
 
-import com.Cale_Planning.Controller.AdherentController;
 import com.Cale_Planning.Controller.BoatController;
-import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
 
 import javax.swing.*;
