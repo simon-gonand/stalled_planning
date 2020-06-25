@@ -3,25 +3,21 @@ package com.Cale_Planning.View;
 import com.Cale_Planning.Controller.AdherentController;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
-import org.jdatepicker.impl.DateComponentFormatter;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
-import javax.swing.text.DateFormatter;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.beans.PropertyVetoException;
 import java.text.*;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Properties;
+import java.util.*;
 
 public class StalledView extends JInternalFrame {
+    private static JButton selectedColor;
+
     public StalledView (JDesktopPane mainPane) throws PropertyVetoException {
         super();
 
@@ -108,7 +104,11 @@ public class StalledView extends JInternalFrame {
                     constraints.ipady = 20;
                     constraints.weightx = 0.2;
                     adherentAndBoatChoice.add(newReservationButton, constraints);
-                    fillBookingFormPanel(bookingFormPanel, boat);
+                    try {
+                        fillBookingFormPanel(bookingFormPanel, boat);
+                    } catch (ParseException ex) {
+                        ex.printStackTrace();
+                    }
                     ++constraints.gridx;
                     constraints.weightx = 0.8;
                     constraints.ipady = 0;
@@ -132,7 +132,7 @@ public class StalledView extends JInternalFrame {
         panel.add(adherentAndBoatChoice, constraints);
     }
 
-    private void fillBookingFormPanel(JPanel panel, Boat boat){
+    private void fillBookingFormPanel(JPanel panel, Boat boat) throws ParseException {
         panel.setLayout(new GridBagLayout());
         JLabel adherentName = new JLabel(boat.getOwner().getSurname() + " " + boat.getOwner().getName());
         adherentName.setFont(new Font(adherentName.getFont().getName(), Font.BOLD, 30));
@@ -195,12 +195,110 @@ public class StalledView extends JInternalFrame {
         panel.add(booking, constraints);
     }
 
-    private void fillBookingPanel (JPanel panel){
-        JPanel stalledChoicePanel = new JPanel(new GridLayout(10,1));
-        ButtonGroup stalledChoice = new ButtonGroup();
-        fillStalledChoicePanel(stalledChoicePanel, stalledChoice);
+    private void fillBookingPanel (JPanel panel) throws ParseException {
+        JPanel stalledChoicePanel = new JPanel(new GridLayout(6,1));
+        ButtonGroup stalledChoice = fillStalledChoicePanel(stalledChoicePanel);
 
         JPanel dateChoice = new JPanel(new GridBagLayout());
+        Map<String, JDatePickerImpl> datePickers = fillDateChoicePanel(dateChoice);
+
+        JPanel colorChoice = new JPanel(new GridLayout(3,3));
+        colorChoice.setBorder(BorderFactory.createTitledBorder("Couleurs"));
+        fillColorChoicePanel(colorChoice);
+
+        JPanel amountDeposit = new JPanel (new GridLayout(2,1));
+        JPanel amount = new JPanel (new GridLayout(2,1));
+        JLabel amountLabel = new JLabel("Montant");
+        MaskFormatter mask = new MaskFormatter("#####");
+        JTextField amountText = new JFormattedTextField(mask);
+
+        JPanel deposit = new JPanel(new GridLayout(2,1));
+        JLabel depositLabel = new JLabel("Caution");
+        JTextField depositText = new JFormattedTextField(mask);
+
+        amount.add(amountLabel);
+        amount.add(amountText);
+        deposit.add(depositLabel);
+        deposit.add(depositText);
+
+        amountDeposit.add(amount);
+        amountDeposit.add(deposit);
+
+        JPanel buttons = new JPanel (new GridLayout(2,1));
+        JButton submitButton = new JButton("Submit");
+        JButton cancelButton = new JButton("Cancel");
+        buttons.add(submitButton);
+        buttons.add(cancelButton);
+
+        JPanel stalledAndButton = new JPanel(new GridBagLayout());
+        GridBagConstraints stalledAndButtonConstraints = new GridBagConstraints();
+        stalledAndButtonConstraints.gridx = 0;
+        stalledAndButtonConstraints.gridy = 0;
+        stalledAndButtonConstraints.weighty = 1;
+        stalledAndButtonConstraints.fill = GridBagConstraints.HORIZONTAL;
+        stalledAndButtonConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        stalledAndButton.add(stalledChoicePanel, stalledAndButtonConstraints);
+        ++stalledAndButtonConstraints.gridy;
+        stalledAndButtonConstraints.weighty = 1;
+        stalledAndButton.add(buttons, stalledAndButtonConstraints);
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        panel.add(stalledAndButton, constraints);
+        ++constraints.gridx;
+        constraints.weighty = 0.2;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 2;
+        panel.add(dateChoice, constraints);
+        ++constraints.gridy;
+        constraints.gridwidth = 1;
+        constraints.weighty = 0.8;
+        constraints.fill = GridBagConstraints.BOTH;
+        panel.add(colorChoice, constraints);
+        ++constraints.gridx;
+        constraints.gridheight = 1;
+        panel.add(amountDeposit, constraints);
+    }
+
+    private ButtonGroup fillStalledChoicePanel(JPanel stalledChoicePanel){
+        JRadioButton stalled1 = new JRadioButton("Cale 1");
+        stalled1.setActionCommand("Stalled1");
+        JRadioButton stalled2 = new JRadioButton("Cale 2");
+        stalled2.setActionCommand("Stalled2");
+        JRadioButton stalled3 = new JRadioButton("Cale 3");
+        stalled3.setActionCommand("Stalled3");
+        JRadioButton stalled4 = new JRadioButton("Cale 4");
+        stalled4.setActionCommand("Stalled4");
+        JRadioButton stalled5 = new JRadioButton("Cale 5");
+        stalled5.setActionCommand("Stalled5");
+        JRadioButton stalled6 = new JRadioButton("Cale 6");
+        stalled6.setActionCommand("Stalled6");
+
+        ButtonGroup stalledChoice = new ButtonGroup();
+        stalledChoice.add(stalled1);
+        stalledChoice.add(stalled2);
+        stalledChoice.add(stalled3);
+        stalledChoice.add(stalled4);
+        stalledChoice.add(stalled5);
+        stalledChoice.add(stalled6);
+
+        stalledChoicePanel.add(stalled1);
+        stalledChoicePanel.add(stalled2);
+        stalledChoicePanel.add(stalled3);
+        stalledChoicePanel.add(stalled4);
+        stalledChoicePanel.add(stalled5);
+        stalledChoicePanel.add(stalled6);
+        return stalledChoice;
+    }
+
+    private Map<String, JDatePickerImpl> fillDateChoicePanel (JPanel dateChoice){
         UtilDateModel modelFrom = new UtilDateModel();
         UtilDateModel modelTo = new UtilDateModel();
         Properties properties = new Properties();
@@ -225,7 +323,11 @@ public class StalledView extends JInternalFrame {
         };
         JDatePickerImpl from = new JDatePickerImpl(new JDatePanelImpl(modelFrom, properties), format);
         JLabel toLabel = new JLabel("au");
+        toLabel.setHorizontalAlignment(JLabel.CENTER);
         JDatePickerImpl to = new JDatePickerImpl(new JDatePanelImpl(modelTo, properties), format);
+        HashMap<String, JDatePickerImpl> datePickers = new HashMap<>();
+        datePickers.put("from", from);
+        datePickers.put("to", to);
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -243,82 +345,64 @@ public class StalledView extends JInternalFrame {
         constraints.weightx = 1;
         dateChoice.add(to, constraints);
 
-        JPanel colorChoice = new JPanel(new GridLayout(3,3));
-        colorChoice.setBorder(BorderFactory.createTitledBorder("Couleurs"));
-        JPanel amount = new JPanel (new GridLayout(1,2));
-        JPanel deposit = new JPanel (new GridLayout(1,2));
-        JPanel buttons = new JPanel (new GridBagLayout());
-
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 2;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        panel.add(stalledChoicePanel, constraints);
-        ++constraints.gridx;
-        constraints.weighty = 0.5;
-        constraints.gridheight = 1;
-        constraints.gridwidth = 2;
-        panel.add(dateChoice, constraints);
-        ++constraints.gridy;
-        constraints.gridwidth = 1;
-        constraints.weighty = 1;
-        panel.add(colorChoice, constraints);
-        ++constraints.gridx;
-        panel.add(amount, constraints);
-        constraints.gridx = 0;
-        ++constraints.gridy;
-        panel.add(deposit, constraints);
-        ++constraints.gridy;
-        panel.add(buttons, constraints);
+        return datePickers;
     }
 
-    private void fillStalledChoicePanel(JPanel stalledChoicePanel, ButtonGroup stalledChoice){
-        JRadioButton stalled1 = new JRadioButton("Cale 1");
-        stalled1.setActionCommand("Stalled1");
-        JRadioButton stalled2 = new JRadioButton("Cale 2");
-        stalled2.setActionCommand("Stalled2");
-        JRadioButton stalled3 = new JRadioButton("Cale 3");
-        stalled3.setActionCommand("Stalled3");
-        JRadioButton stalled4 = new JRadioButton("Cale 4");
-        stalled4.setActionCommand("Stalled4");
-        JRadioButton stalled5 = new JRadioButton("Cale 5");
-        stalled5.setActionCommand("Stalled5");
-        JRadioButton stalled6 = new JRadioButton("Cale 6");
-        stalled6.setActionCommand("Stalled6");
-        JRadioButton stalled7 = new JRadioButton("Cale 7");
-        stalled7.setActionCommand("Stalled7");
-        JRadioButton stalled8 = new JRadioButton("Cale 8");
-        stalled8.setActionCommand("Stalled8");
-        JRadioButton stalled9 = new JRadioButton("Cale 9");
-        stalled9.setActionCommand("Stalled9");
-        JRadioButton stalled10 = new JRadioButton("Cale 10");
-        stalled10.setActionCommand("Stalled10");
+    private void fillColorChoicePanel (JPanel colorChoice){
+        JButton red = new JButton();
+        JButton orange = new JButton();
+        JButton yellow = new JButton();
+        JButton green = new JButton();
+        JButton cyan = new JButton();
+        JButton blue = new JButton();
+        JButton pink = new JButton();
+        JButton purple = new JButton();
+        JButton gray = new JButton();
 
-        stalledChoice.add(stalled1);
-        stalledChoice.add(stalled2);
-        stalledChoice.add(stalled3);
-        stalledChoice.add(stalled4);
-        stalledChoice.add(stalled5);
-        stalledChoice.add(stalled6);
-        stalledChoice.add(stalled7);
-        stalledChoice.add(stalled8);
-        stalledChoice.add(stalled9);
-        stalledChoice.add(stalled10);
+        red.setBackground(Color.RED);
+        orange.setBackground(Color.orange);
+        yellow.setBackground(Color.yellow);
+        green.setBackground(Color.green);
+        cyan.setBackground(Color.cyan);
+        blue.setBackground(Color.blue);
+        pink.setBackground(Color.pink);
+        purple.setBackground(Color.MAGENTA);
+        gray.setBackground(Color.gray);
 
-        stalledChoicePanel.add(stalled1);
-        stalledChoicePanel.add(stalled2);
-        stalledChoicePanel.add(stalled3);
-        stalledChoicePanel.add(stalled4);
-        stalledChoicePanel.add(stalled5);
-        stalledChoicePanel.add(stalled6);
-        stalledChoicePanel.add(stalled7);
-        stalledChoicePanel.add(stalled8);
-        stalledChoicePanel.add(stalled9);
-        stalledChoicePanel.add(stalled10);
+        selectedColor = null;
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton actionedButton = (JButton) e.getSource();
+                if (selectedColor != null) {
+                    selectedColor.setBackground(selectedColor.getBackground().brighter());
+                    selectedColor.setBorder(BorderFactory.createEmptyBorder());
+                }
+                selectedColor = actionedButton;
+                actionedButton.setBackground(actionedButton.getBackground().darker());
+                actionedButton.setBorder(BorderFactory.createLineBorder(Color.black, 2));
+            }
+        };
+
+        red.addActionListener(listener);
+        orange.addActionListener(listener);
+        yellow.addActionListener(listener);
+        green.addActionListener(listener);
+        cyan.addActionListener(listener);
+        blue.addActionListener(listener);
+        pink.addActionListener(listener);
+        purple.addActionListener(listener);
+        gray.addActionListener(listener);
+
+        colorChoice.add(red);
+        colorChoice.add(orange);
+        colorChoice.add(yellow);
+        colorChoice.add(green);
+        colorChoice.add(cyan);
+        colorChoice.add(blue);
+        colorChoice.add(pink);
+        colorChoice.add(purple);
+        colorChoice.add(gray);
     }
 
     private void fillDownPanel(JPanel downPanel){
