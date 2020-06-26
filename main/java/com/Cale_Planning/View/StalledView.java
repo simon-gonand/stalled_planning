@@ -9,6 +9,7 @@ import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyVetoException;
@@ -209,8 +210,8 @@ public class StalledView extends JInternalFrame {
         JPanel amountDeposit = new JPanel (new GridLayout(2,1));
         JPanel amount = new JPanel (new GridLayout(2,1));
         JLabel amountLabel = new JLabel("Montant");
-        MaskFormatter mask = new MaskFormatter("#####");
-        JTextField amountText = new JFormattedTextField(mask);
+        NumberFormatter mask = new NumberFormatter();
+        JFormattedTextField amountText = new JFormattedTextField(mask);
 
         JPanel deposit = new JPanel(new GridLayout(2,1));
         JLabel depositLabel = new JLabel("Caution");
@@ -227,6 +228,21 @@ public class StalledView extends JInternalFrame {
         JPanel buttons = new JPanel (new GridLayout(2,1));
         JButton submitButton = new JButton("Submit");
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                depositText.setText("");
+                amountText.setText("");
+                if (selectedColor != null) {
+                    selectedColor.setBackground(selectedColor.getBackground().brighter());
+                    selectedColor.setBorder(BorderFactory.createEmptyBorder());
+                    selectedColor = null;
+                }
+                datePickers.get("to").getModel().setValue(null);
+                datePickers.get("from").getModel().setValue(null);
+                stalledChoice.clearSelection();
+            }
+        });
         buttons.add(submitButton);
         buttons.add(cancelButton);
 
