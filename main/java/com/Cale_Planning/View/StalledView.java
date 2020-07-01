@@ -3,12 +3,12 @@ package com.Cale_Planning.View;
 import com.Cale_Planning.Controller.AdherentController;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
+import com.Cale_Planning.MonthPanel;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
-import javax.swing.text.MaskFormatter;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
@@ -422,6 +422,13 @@ public class StalledView extends JInternalFrame {
     }
 
     private void fillDownPanel(JPanel downPanel){
-
+        downPanel.setLayout(new GridBagLayout());
+        MonthPanel calendar = new MonthPanel(5,20);
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridy = 0;
+        constraints.gridx = 0;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.CENTER;
+        downPanel.add(calendar, constraints);
     }
 }
