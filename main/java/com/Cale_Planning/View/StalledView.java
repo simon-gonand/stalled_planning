@@ -510,26 +510,6 @@ public class StalledView extends JInternalFrame {
         calendar.endInit();
 
         downPanel.add(calendar, BorderLayout.CENTER);
-
-        Appointment app = new Appointment();
-        app.setHeaderText("Legras Yvon");
-        app.setStartTime(new DateTime(2020, 8, 15));
-        app.setEndTime(new DateTime(2020, 8, 17));
-        app.getContacts().add(cale1);
-        calendar.getSchedule().getItems().add(app);
-
-        Appointment app2 = new Appointment();
-        app2.setHeaderText("Petrus Louis");
-        app2.setStartTime(new DateTime(2020, 8, 19));
-        app2.setEndTime(new DateTime(2020, 8, 21));
-        app2.getContacts().add(cale3);
-        Style style = app2.getStyle();
-        style.setLineColor(Colors.Goldenrod);
-        style.setFillColor(new Color(250, 200, 100));
-        style.setBrush(new GradientBrush(Colors.White, Colors.PaleGoldenrod, 90));
-        style.setHeaderTextColor(Colors.DarkGoldenrod);
-
-        calendar.getSchedule().getItems().add(app2);
     }
 
     private void createAppointment (DateModel startDate, DateModel endDate, int cale){
