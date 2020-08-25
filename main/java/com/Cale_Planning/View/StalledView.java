@@ -3,7 +3,13 @@ package com.Cale_Planning.View;
 import com.Cale_Planning.Controller.AdherentController;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
-import com.Cale_Planning.MonthPanel;
+import com.mindfusion.common.DateTime;
+import com.mindfusion.common.Duration;
+import com.mindfusion.drawing.Colors;
+import com.mindfusion.drawing.GradientBrush;
+import com.mindfusion.scheduling.*;
+import com.mindfusion.scheduling.model.*;
+import org.jdatepicker.DateModel;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -15,9 +21,13 @@ import java.awt.event.*;
 import java.beans.PropertyVetoException;
 import java.text.*;
 import java.util.*;
+import java.util.Calendar;
 
 public class StalledView extends JInternalFrame {
     private static JButton selectedColor;
+    private Adherent selectedAdherent;
+    private Contact cale1, cale2, cale3, cale4, cale5, cale6;
+    private com.mindfusion.scheduling.Calendar calendar = new com.mindfusion.scheduling.Calendar();
 
     public StalledView (JDesktopPane mainPane) throws PropertyVetoException {
         super();
@@ -71,8 +81,8 @@ public class StalledView extends JInternalFrame {
         adherentJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Adherent adherent = (Adherent) adherentJList.getModel().getElementAt(adherentJList.locationToIndex(e.getPoint()));
-                boatJList.setModel(adherent.getBoats());
+                selectedAdherent = (Adherent) adherentJList.getModel().getElementAt(adherentJList.locationToIndex(e.getPoint()));
+                boatJList.setModel(selectedAdherent.getBoats());
                 SwingUtilities.updateComponentTreeUI(thisFrame);
             }
         });
@@ -227,6 +237,35 @@ public class StalledView extends JInternalFrame {
 
         JPanel buttons = new JPanel (new GridLayout(2,1));
         JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                calendar.setDate(new DateTime(2020, DateTime.now().getMonth() + 2, 1));
+//                calendar.setEndDate(calendar.getDate().addDays(31));
+                switch (stalledChoice.getSelection().getActionCommand()){
+                    case "Stalled1":
+                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 0);
+                        break;
+                    case "Stalled2":
+                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 1);
+                        break;
+                    case "Stalled3":
+                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 2);
+                        break;
+                    case "Stalled4":
+                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 3);
+                        break;
+                    case "Stalled5":
+                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 4);
+                        break;
+                    case "Stalled6":
+                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 5);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             @Override
@@ -422,13 +461,92 @@ public class StalledView extends JInternalFrame {
     }
 
     private void fillDownPanel(JPanel downPanel){
-        downPanel.setLayout(new GridBagLayout());
-        MonthPanel calendar = new MonthPanel(5,20);
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridy = 0;
-        constraints.gridx = 0;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.anchor = GridBagConstraints.CENTER;
-        downPanel.add(calendar, constraints);
+        downPanel.setLayout(new BorderLayout());
+
+        calendar.beginInit();
+        calendar.setTheme(ThemeType.Silver);
+        calendar.setDate(DateTime.op_Subtraction(DateTime.now(), Duration.fromDays(DateTime.today().getDay() - 1)));
+        calendar.setCurrentView(CalendarView.ResourceView);
+
+        calendar.getResourceViewSettings().setAllowResizeRowHeaders(false);
+        calendar.getResourceViewSettings().setRowHeaderSize(75);
+        calendar.getResourceViewSettings().setViewStyle(ResourceViewStyle.Lanes);
+        calendar.getResourceViewSettings().setVisibleRows(6);
+        calendar.getResourceViewSettings().setSnapUnit(TimeUnit.Day);
+
+        calendar.setGroupType(GroupType.GroupByContacts);
+        calendar.setAllowInplaceCreate(true);
+
+        cale1 = new Contact();
+        cale1.setFirstName("Cale");
+        cale1.setLastName("1");
+        calendar.getContacts().add(cale1);
+
+        cale2 = new Contact();
+        cale2.setFirstName("Cale");
+        cale2.setLastName("2");
+        calendar.getContacts().add(cale2);
+
+        cale3 = new Contact();
+        cale3.setFirstName("Cale");
+        cale3.setLastName("3");
+        calendar.getContacts().add(cale3);
+
+        cale4 = new Contact();
+        cale4.setFirstName("Cale");
+        cale4.setLastName("4");
+        calendar.getContacts().add(cale4);
+
+        cale5 = new Contact();
+        cale5.setFirstName("Cale");
+        cale5.setLastName("5");
+        calendar.getContacts().add(cale5);
+
+        cale6 = new Contact();
+        cale6.setFirstName("Cale");
+        cale6.setLastName("6");
+        calendar.getContacts().add(cale6);
+
+        calendar.endInit();
+
+        downPanel.add(calendar, BorderLayout.CENTER);
+
+        Appointment app = new Appointment();
+        app.setHeaderText("Legras Yvon");
+        app.setStartTime(new DateTime(2020, 8, 15));
+        app.setEndTime(new DateTime(2020, 8, 17));
+        app.getContacts().add(cale1);
+        calendar.getSchedule().getItems().add(app);
+
+        Appointment app2 = new Appointment();
+        app2.setHeaderText("Petrus Louis");
+        app2.setStartTime(new DateTime(2020, 8, 19));
+        app2.setEndTime(new DateTime(2020, 8, 21));
+        app2.getContacts().add(cale3);
+        Style style = app2.getStyle();
+        style.setLineColor(Colors.Goldenrod);
+        style.setFillColor(new Color(250, 200, 100));
+        style.setBrush(new GradientBrush(Colors.White, Colors.PaleGoldenrod, 90));
+        style.setHeaderTextColor(Colors.DarkGoldenrod);
+
+        calendar.getSchedule().getItems().add(app2);
     }
+
+    private void createAppointment (DateModel startDate, DateModel endDate, int cale){
+        Appointment appointment = new Appointment();
+        appointment.setHeaderText(selectedAdherent.getSurname() + " " + selectedAdherent.getName());
+        appointment.setStartTime(new DateTime(startDate.getYear(), startDate.getMonth()+1, startDate.getDay()));
+        appointment.setEndTime(new DateTime(endDate.getYear(), endDate.getMonth()+1, endDate.getDay()));
+        appointment.getContacts().add(calendar.getContacts().get(cale));
+        Style style = appointment.getStyle();
+        style.setLineColor(selectedColor.getBackground());
+        style.setFillColor(selectedColor.getBackground());
+        style.setBrush(new GradientBrush(Colors.White, Colors.PaleGoldenrod, 90));
+        style.setHeaderTextColor(selectedColor.getBackground());
+
+        calendar.getSchedule().getItems().add(appointment);
+        calendar.repaint();
+        SwingUtilities.updateComponentTreeUI(this);
+    }
+
 }
