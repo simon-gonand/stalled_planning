@@ -65,6 +65,7 @@ public class StalledView extends JInternalFrame {
         JPanel historicPanel = new JPanel();
 
         fillBookingPlanningPanel(bookingPlanningPanel);
+        fillHistoricPanel(historicPanel);
 
         upPanel.add(bookingPlanningPanel);
         upPanel.add(historicPanel);
@@ -240,8 +241,6 @@ public class StalledView extends JInternalFrame {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                calendar.setDate(new DateTime(2020, DateTime.now().getMonth() + 2, 1));
-//                calendar.setEndDate(calendar.getDate().addDays(31));
                 switch (stalledChoice.getSelection().getActionCommand()){
                     case "Stalled1":
                         createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 0);
@@ -458,6 +457,38 @@ public class StalledView extends JInternalFrame {
         colorChoice.add(pink);
         colorChoice.add(purple);
         colorChoice.add(gray);
+    }
+
+    private void fillHistoricPanel(JPanel historicPanel){
+        historicPanel.setLayout(new BorderLayout());
+        JPanel monthChoicePanel = new JPanel(new BorderLayout());
+        JLabel monthChoiceTitle = new JLabel("Choix du mois");
+        monthChoiceTitle.setFont(new Font(monthChoiceTitle.getFont().getName(), Font.BOLD, 15));
+        monthChoiceTitle.setHorizontalAlignment(JLabel.CENTER);
+        monthChoicePanel.add(monthChoiceTitle, BorderLayout.CENTER);
+
+        JButton previousMonth = new JButton();
+        JButton nextMonth = new JButton();
+        previousMonth.setIcon(new ImageIcon("src/main/resources/leftArrow.png"));
+        nextMonth.setIcon(new ImageIcon("src/main/resources/rightArrow.png"));
+        previousMonth.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                calendar.setDate(new DateTime(calendar.getDate().getYear(), calendar.getDate().getMonth() - 1, 1));
+                calendar.setEndDate(calendar.getDate().addDays(31));
+            }
+        });
+        nextMonth.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                calendar.setDate(new DateTime(calendar.getDate().getYear(), calendar.getDate().getMonth() + 1, 1));
+                calendar.setEndDate(calendar.getDate().addDays(31));
+            }
+        });
+
+        monthChoicePanel.add(previousMonth, BorderLayout.WEST);
+        monthChoicePanel.add(nextMonth, BorderLayout.EAST);
+        historicPanel.add(monthChoicePanel, BorderLayout.SOUTH);
     }
 
     private void fillDownPanel(JPanel downPanel){
