@@ -1,5 +1,7 @@
 package com.Cale_Planning;
 
+import com.mindfusion.common.DateTime;
+
 import java.sql.*;
 
 public class MSAccessBase {
@@ -92,13 +94,17 @@ public class MSAccessBase {
             for (int i = 0; i < variables.length; ++i){
                 if (variables[i] instanceof String)
                     pstmt.setString(i+1, (String) variables[i]);
-                if (variables[i] instanceof Float)
+                else if (variables[i] instanceof Float)
                     pstmt.setFloat(i+1, (Float) variables[i]);
-                if (variables[i] instanceof Integer)
+                else if (variables[i] instanceof Integer)
                     pstmt.setInt(i+1, (Integer) variables[i]);
-                if (variables[i] instanceof java.util.Date) {
+                else if (variables[i] instanceof java.util.Date) {
                     Date date = new Date(((java.util.Date) variables[i]).getTime());
                     pstmt.setDate(i + 1, date);
+                }
+                else if (variables[i] instanceof DateTime){
+                    DateTime dateTime = (DateTime) variables[i];
+                    pstmt.setDate(i + 1, new Date(dateTime.toJavaCalendar().getTimeInMillis()));
                 }
             }
             int nrows = pstmt.executeUpdate();

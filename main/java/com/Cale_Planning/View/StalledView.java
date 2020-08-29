@@ -1,6 +1,8 @@
 package com.Cale_Planning.View;
 
 import com.Cale_Planning.Controller.AdherentController;
+import com.Cale_Planning.MSAccessBase;
+import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
 import com.mindfusion.common.DateTime;
@@ -19,6 +21,8 @@ import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyVetoException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.*;
 import java.util.*;
 import java.util.Calendar;
@@ -28,9 +32,12 @@ public class StalledView extends JInternalFrame {
     private Adherent selectedAdherent;
     private Contact cale1, cale2, cale3, cale4, cale5, cale6;
     private com.mindfusion.scheduling.Calendar calendar = new com.mindfusion.scheduling.Calendar();
+    private MSAccessBase database;
 
     public StalledView (JDesktopPane mainPane) throws PropertyVetoException {
         super();
+
+        this.database = Main.getDatabase();
 
         setTitle("Planning Cale");
         this.getContentPane().setBackground(Color.white);
@@ -241,27 +248,42 @@ public class StalledView extends JInternalFrame {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+               DateModel modelStartDate = datePickers.get("from").getModel();
+               DateModel modelEndDate = datePickers.get("to").getModel();
+               DateTime startDate = new DateTime(modelStartDate.getYear(), modelStartDate.getMonth() + 1, modelStartDate.getDay());
+               DateTime endDate = new DateTime(modelEndDate.getYear(), modelEndDate.getMonth() + 1, modelEndDate.getDay());
+
+               Color color = selectedColor.getBackground().brighter();
+               int cale = 0;
                 switch (stalledChoice.getSelection().getActionCommand()){
                     case "Stalled1":
-                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 0);
+                        cale = 1;
                         break;
                     case "Stalled2":
-                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 1);
+                        cale = 2;
                         break;
                     case "Stalled3":
-                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 2);
+                        cale = 3;
                         break;
                     case "Stalled4":
-                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 3);
+                        cale = 4;
                         break;
                     case "Stalled5":
-                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 4);
+                        cale = 5;
                         break;
                     case "Stalled6":
-                        createAppointment(datePickers.get("from").getModel(), datePickers.get("to").getModel(), 5);
+                        cale = 6;
                         break;
                     default:
                         break;
+                }
+                createAppointment(startDate, endDate, cale, selectedAdherent, color);
+                try {
+                    database.SQLUpdate("INSERT INTO Reservation (Adherent, DateDebut, DateFin, Cale, Couleur)" +
+                            " VALUES(?,?,?,?,?)", selectedAdherent.getId(), startDate, endDate, cale, colorToName(color));
+                } catch (SQLException ex) {
+                    System.out.println("Reservation insertion error n° " + ex.getErrorCode() + "What goes wrong ?");
+                    System.out.println(ex.getMessage());
                 }
             }
         });
@@ -319,6 +341,34 @@ public class StalledView extends JInternalFrame {
         ++constraints.gridx;
         constraints.gridheight = 1;
         panel.add(amountDeposit, constraints);
+    }
+
+    private String colorToName (Color color){
+        if (color.getBlue() == 254 || color.getBlue() == 127 || color.getBlue() == 174)
+            color = new Color(color.getRed(), color.getGreen(), color.getBlue() + 1, color.getAlpha());
+        if (color.getGreen() == 254 || color.getGreen() == 127 || color.getGreen() == 174)
+            color = new Color(color.getRed(), color.getGreen() + 1, color.getBlue(), color.getAlpha());
+        if (color.getRed() == 254 || color.getRed() == 127)
+            color = new Color(color.getRed() + 1, color.getGreen(), color.getBlue(), color.getAlpha());
+        if (color.equals(Color.blue))
+            return "Blue";
+        if (color.equals(Color.cyan))
+            return "Cyan";
+        if (color.equals(Color.RED))
+            return "Red";
+        if (color.equals(Color.orange))
+            return "Orange";
+        if (color.equals(Color.yellow))
+            return "Yellow";
+        if (color.equals(Color.green))
+            return "Green";
+        if (color.equals(Color.pink))
+            return "Pink";
+        if (color.equals(Color.MAGENTA))
+            return "Magenta";
+        if (color.equals(Color.gray))
+            return "Gray";
+        return "No color found";
     }
 
     private ButtonGroup fillStalledChoicePanel(JPanel stalledChoicePanel){
@@ -541,19 +591,37 @@ public class StalledView extends JInternalFrame {
         calendar.endInit();
 
         downPanel.add(calendar, BorderLayout.CENTER);
+
+        fillCalendar();
     }
 
-    private void createAppointment (DateModel startDate, DateModel endDate, int cale){
+    private void fillCalendar(){
+        try {
+            ResultSet attributes = database.SQLSelect("SELECT * FROM Reservation");
+            while (attributes.next()){
+                createAppointment(new DateTime(attributes.getDate("DateDebut")),
+                        new DateTime(attributes.getDate("DateFin")),
+                        attributes.getInt("Cale"),
+                        new Adherent(attributes.getInt("Adherent")),
+                        Colors.fromName(attributes.getString("Couleur")));
+            }
+        } catch (SQLException e){
+            System.out.println("SQL Select exception n° " + e.getErrorCode() + " What goes wrong ?");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void createAppointment (DateTime startDate, DateTime endDate, int cale, Adherent adherent, Color color){
         Appointment appointment = new Appointment();
-        appointment.setHeaderText(selectedAdherent.getSurname() + " " + selectedAdherent.getName());
-        appointment.setStartTime(new DateTime(startDate.getYear(), startDate.getMonth()+1, startDate.getDay()));
-        appointment.setEndTime(new DateTime(endDate.getYear(), endDate.getMonth()+1, endDate.getDay()));
-        appointment.getContacts().add(calendar.getContacts().get(cale));
+        appointment.setHeaderText(adherent.getSurname() + " " + adherent.getName());
+        appointment.setStartTime(startDate);
+        appointment.setEndTime(endDate);
+        appointment.getContacts().add(calendar.getContacts().get(cale - 1));
         Style style = appointment.getStyle();
-        style.setLineColor(selectedColor.getBackground());
-        style.setFillColor(selectedColor.getBackground());
-        style.setBrush(new GradientBrush(Colors.White, Colors.PaleGoldenrod, 90));
-        style.setHeaderTextColor(selectedColor.getBackground());
+        style.setLineColor(color);
+        style.setFillColor(color);
+        style.setBrush(new GradientBrush(Colors.White, color, 90));
+        style.setHeaderTextColor(color);
 
         calendar.getSchedule().getItems().add(appointment);
         calendar.repaint();
