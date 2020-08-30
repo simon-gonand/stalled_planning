@@ -2,11 +2,11 @@ package com.Cale_Planning.Controller;
 
 import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
+import com.Cale_Planning.Models.Reservation;
 import com.mindfusion.common.DateTime;
 import com.mindfusion.drawing.Colors;
 import com.mindfusion.drawing.GradientBrush;
 import com.mindfusion.scheduling.Calendar;
-import com.mindfusion.scheduling.model.Appointment;
 import com.mindfusion.scheduling.model.Style;
 
 import java.awt.*;
@@ -14,8 +14,9 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 public class StalledController {
-    public static void createAppointment (Calendar calendar, DateTime startDate, DateTime endDate, int cale, Adherent adherent, Color color){
-        Appointment appointment = new Appointment();
+    public static void createAppointment (Calendar calendar, DateTime startDate, DateTime endDate, int cale, Adherent adherent,
+                                          Color color, float amount, float deposit){
+        Reservation appointment = new Reservation(amount, deposit);
         appointment.setHeaderText(adherent.getSurname() + " " + adherent.getName());
         appointment.setStartTime(startDate);
         appointment.setEndTime(endDate);
@@ -30,10 +31,10 @@ public class StalledController {
         calendar.repaint();
     }
 
-    public static void addAppointmentToDatabase(Adherent adherent, DateTime startDate, DateTime endDate, int cale, Color color){
+    public static void addAppointmentToDatabase(Adherent adherent, DateTime startDate, DateTime endDate, int cale, Color color, float amount, float deposit){
         try {
-            Main.getDatabase().SQLUpdate("INSERT INTO Reservation (Adherent, DateDebut, DateFin, Cale, Couleur)" +
-                    " VALUES(?,?,?,?,?)", adherent.getId(), startDate, endDate, cale, colorToName(color));
+            Main.getDatabase().SQLUpdate("INSERT INTO Reservation (Adherent, DateDebut, DateFin, Cale, Couleur, Montant, Caution)" +
+                    " VALUES(?,?,?,?,?,?,?)", adherent.getId(), startDate, endDate, cale, colorToName(color), amount, deposit);
         } catch (SQLException ex) {
             System.out.println("Reservation insertion error n° " + ex.getErrorCode() + "What goes wrong ?");
             System.out.println(ex.getMessage());
