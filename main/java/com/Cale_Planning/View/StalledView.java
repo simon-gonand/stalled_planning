@@ -6,6 +6,7 @@ import com.Cale_Planning.MSAccessBase;
 import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
+import com.Cale_Planning.Models.Reservation;
 import com.mindfusion.common.DateTime;
 import com.mindfusion.common.Duration;
 import com.mindfusion.drawing.Colors;
@@ -30,8 +31,10 @@ import java.util.Calendar;
 public class StalledView extends JInternalFrame {
     private static JButton selectedColor;
     private Adherent selectedAdherent;
+    private Boat selectedBoat;
     private JFormattedTextField amountText;
     private Contact cale1, cale2, cale3, cale4, cale5, cale6;
+    private JDesktopPane mainPane;
     private com.mindfusion.scheduling.Calendar calendar = new com.mindfusion.scheduling.Calendar();
     private MSAccessBase database;
 
@@ -49,7 +52,8 @@ public class StalledView extends JInternalFrame {
 
         setView();
 
-        mainPane.add(this);
+        this.mainPane = mainPane;
+        this.mainPane.add(this);
         this.setSelected(true);
         this.setVisible(true);
         this.setResizable(true);
@@ -102,7 +106,7 @@ public class StalledView extends JInternalFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (e.getClickCount() == 2){
-                    Boat boat = (Boat) boatJList.getModel().getElementAt(boatJList.locationToIndex(e.getPoint()));
+                    selectedBoat = (Boat) boatJList.getModel().getElementAt(boatJList.locationToIndex(e.getPoint()));
                     adherentAndBoatChoice.remove(adherentJList);
                     adherentAndBoatChoice.remove(boatJList);
                     JButton newReservationButton = new JButton("Nouvelle Réservation");
@@ -125,7 +129,7 @@ public class StalledView extends JInternalFrame {
                     constraints.weightx = 0.2;
                     adherentAndBoatChoice.add(newReservationButton, constraints);
                     try {
-                        fillBookingFormPanel(bookingFormPanel, boat);
+                        fillBookingFormPanel(bookingFormPanel);
                     } catch (ParseException ex) {
                         ex.printStackTrace();
                     }
@@ -152,13 +156,13 @@ public class StalledView extends JInternalFrame {
         panel.add(adherentAndBoatChoice, constraints);
     }
 
-    private void fillBookingFormPanel(JPanel panel, Boat boat) throws ParseException {
+    private void fillBookingFormPanel(JPanel panel) throws ParseException {
         panel.setLayout(new GridBagLayout());
-        JLabel adherentName = new JLabel(boat.getOwner().getSurname() + " " + boat.getOwner().getName());
+        JLabel adherentName = new JLabel(selectedBoat.getOwner().getSurname() + " " + selectedBoat.getOwner().getName());
         adherentName.setFont(new Font(adherentName.getFont().getName(), Font.BOLD, 30));
 
         JPanel boatInfo = new JPanel(new GridLayout(2,1));
-        JLabel boatName = new JLabel(boat.getName());
+        JLabel boatName = new JLabel(selectedBoat.getName());
         boatName.setFont(new Font(boatName.getFont().getName(), Font.BOLD, 20));
         boatInfo.add(boatName);
         JPanel info = new JPanel(new GridLayout(2, 5, 10,3));
@@ -172,15 +176,15 @@ public class StalledView extends JInternalFrame {
         weightLabel.setHorizontalAlignment(JLabel.CENTER);
         JLabel categoryLabel = new JLabel("Type");
         categoryLabel.setHorizontalAlignment(JLabel.CENTER);
-        JLabel length = new JLabel(String.valueOf(boat.getLength()));
+        JLabel length = new JLabel(String.valueOf(selectedBoat.getLength()));
         length.setHorizontalAlignment(JLabel.CENTER);
-        JLabel width = new JLabel(String.valueOf(boat.getWidth()));
+        JLabel width = new JLabel(String.valueOf(selectedBoat.getWidth()));
         width.setHorizontalAlignment(JLabel.CENTER);
-        JLabel draught = new JLabel(String.valueOf(boat.getDraught()));
+        JLabel draught = new JLabel(String.valueOf(selectedBoat.getDraught()));
         draught.setHorizontalAlignment(JLabel.CENTER);
-        JLabel weight = new JLabel(String.valueOf(boat.getWeight()));
+        JLabel weight = new JLabel(String.valueOf(selectedBoat.getWeight()));
         weight.setHorizontalAlignment(JLabel.CENTER);
-        JLabel category = new JLabel(boat.getCategory().toString());
+        JLabel category = new JLabel(selectedBoat.getCategory().toString());
         category.setHorizontalAlignment(JLabel.CENTER);
 
         info.add(lengthLabel);
@@ -279,8 +283,10 @@ public class StalledView extends JInternalFrame {
                     default:
                         break;
                 }
-                StalledController.createAppointment(calendar, startDate, endDate, cale, selectedAdherent, color);
-                StalledController.addAppointmentToDatabase(selectedAdherent, startDate, endDate, cale, color);
+                StalledController.createAppointment(calendar, startDate, endDate, cale, selectedAdherent, color,
+                        Float.valueOf(amountText.getValue().toString()), Float.valueOf(depositText.getValue().toString()), selectedBoat);
+                StalledController.addAppointmentToDatabase(selectedAdherent, startDate, endDate, cale, color,
+                        Float.valueOf(amountText.getValue().toString()), Float.valueOf(depositText.getValue().toString()), selectedBoat);
             }
         });
         JButton cancelButton = new JButton("Cancel");
@@ -566,6 +572,7 @@ public class StalledView extends JInternalFrame {
 
         calendar.setGroupType(GroupType.GroupByContacts);
         calendar.setAllowInplaceCreate(true);
+        calendar.setAllowInplaceEdit(false);
 
         cale1 = new Contact();
         cale1.setFirstName("Cale");
@@ -599,6 +606,75 @@ public class StalledView extends JInternalFrame {
 
         calendar.endInit();
 
+        calendar.addCalendarListener(new CalendarAdapter()
+        {
+            @Override
+            public void itemClick(ItemMouseEvent e)
+            {
+                // display the form if item is double-clicked
+                if (e.getClicks() != 2)
+                    return;
+
+                calendar.resetDrag();
+
+                JInternalFrame frame = new JInternalFrame(e.getItem().getHeaderText());
+                Reservation reservation = (Reservation) e.getItem();
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                frame.setBounds(screenSize.width / 3, screenSize.height / 4, 500, 325);
+
+                frame.setLayout(new BorderLayout());
+                JLabel title = new JLabel(reservation.getBoat().getName());
+                title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40));
+                title.setHorizontalAlignment(JLabel.CENTER);
+                frame.add(title, BorderLayout.NORTH);
+
+                JPanel amountAndDeposit = new JPanel(new GridLayout(2,2));
+                JLabel amountTitle = new JLabel("Montant");
+                amountTitle.setFont(new Font(amountTitle.getFont().getName(), Font.BOLD, 25));
+                amountTitle.setHorizontalAlignment(JLabel.CENTER);
+                JLabel depositTitle = new JLabel("Caution");
+                depositTitle.setFont(new Font(depositTitle.getFont().getName(), Font.BOLD, 25));
+                depositTitle.setHorizontalAlignment(JLabel.CENTER);
+
+                JLabel amountLabel = new JLabel(String.valueOf(reservation.getAmount()));
+                amountLabel.setFont(new Font(amountLabel.getFont().getName(), Font.PLAIN, 20));
+                amountLabel.setHorizontalAlignment(JLabel.CENTER);
+                JLabel depositLabel = new JLabel(String.valueOf(reservation.getDeposit()));
+                depositLabel.setFont(new Font(depositLabel.getFont().getName(), Font.PLAIN, 20));
+                depositLabel.setHorizontalAlignment(JLabel.CENTER);
+
+                amountAndDeposit.add(amountTitle);
+                amountAndDeposit.add(depositTitle);
+                amountAndDeposit.add(amountLabel);
+                amountAndDeposit.add(depositLabel);
+
+                frame.add(amountAndDeposit, BorderLayout.CENTER);
+
+                JButton cancel = new JButton(new ImageIcon("src/main/resources/cancel.png"));
+                cancel.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, frame);
+                        for (JInternalFrame fr : desktopPane.getAllFrames()){
+                            if (frame == fr)
+                                desktopPane.remove(fr);
+                        }
+                        SwingUtilities.updateComponentTreeUI(desktopPane);
+                    }
+                });
+
+                frame.add(cancel, BorderLayout.SOUTH);
+
+                frame.setVisible(true);
+                mainPane.add(frame);
+                try {
+                    frame.setSelected(true);
+                } catch (PropertyVetoException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
         downPanel.add(calendar, BorderLayout.CENTER);
 
         fillCalendar();
@@ -612,7 +688,10 @@ public class StalledView extends JInternalFrame {
                         new DateTime(attributes.getDate("DateFin")),
                         attributes.getInt("Cale"),
                         new Adherent(attributes.getInt("Adherent")),
-                        Colors.fromName(attributes.getString("Couleur")));
+                        Colors.fromName(attributes.getString("Couleur")),
+                        attributes.getInt("Montant"),
+                        attributes.getInt("Caution"),
+                        new Boat(attributes.getInt("Bateau")));
                 SwingUtilities.updateComponentTreeUI(this);
             }
         } catch (SQLException e){
