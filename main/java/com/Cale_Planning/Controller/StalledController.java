@@ -11,7 +11,6 @@ import com.mindfusion.scheduling.model.Style;
 
 import java.awt.*;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class StalledController {
@@ -74,17 +73,33 @@ public class StalledController {
         int weekToRemove = 0;
         float nbDays = TimeUnit.DAYS.convert(endDate.toJavaCalendar().getTimeInMillis() - startDate.toJavaCalendar().getTimeInMillis(),
                 TimeUnit.MILLISECONDS);
-        if (nbDays >= 7){
+        if (startDate.getMonth() == 2 || endDate.getMonth() == 2 || (startDate.getMonth() < 2 && endDate.getMonth() > 2))
+            nbDays += 2;
+        if (nbDays >= 7 && nbDays < 30){
             int nbWeeks = Math.round(nbDays) / 7;
             int rest = Math.round(nbDays % 7);
-            if (nbWeeks >= 4){
-                weekToRemove = Math.round(nbWeeks) / 4;
-                nbWeeks -= weekToRemove;
-            }
             if (rest <= 1)
                 amount = nbWeeks * 40;
             else
                 amount = nbWeeks * 40 + 35;
+
+            //amount -= (weekToRemove - 1) * 5;
+        }
+        else if (nbDays >= 30){
+            int nbMonth = Math.round(nbDays) / 30;
+            int rest = Math.round(nbDays % 30);
+            if (rest <= 1)
+                amount = nbMonth * 120;
+            else if (nbDays - nbMonth * 30 < 7)
+                amount = nbMonth * 120 + 35;
+            else if (nbDays - nbMonth * 30 >= 7){
+                int stayingWeek = Math.round(nbDays - nbMonth * 30) / 7;
+                int restWeek = Math.round(nbDays - nbMonth * 30) % 7;
+                if (restWeek <= 1)
+                    amount = nbMonth * 120 + stayingWeek * 40;
+                else
+                    amount = nbMonth * 120 + stayingWeek * 40 + 35;
+            }
         }
         return amount;
     }
