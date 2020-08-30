@@ -2,6 +2,7 @@ package com.Cale_Planning.Controller;
 
 import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
+import com.Cale_Planning.Models.Boat;
 import com.Cale_Planning.Models.Reservation;
 import com.mindfusion.common.DateTime;
 import com.mindfusion.drawing.Colors;
@@ -15,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 public class StalledController {
     public static void createAppointment (Calendar calendar, DateTime startDate, DateTime endDate, int cale, Adherent adherent,
-                                          Color color, float amount, float deposit){
-        Reservation appointment = new Reservation(amount, deposit);
+                                          Color color, float amount, float deposit, Boat boat){
+        Reservation appointment = new Reservation(amount, deposit, boat);
         appointment.setHeaderText(adherent.getSurname() + " " + adherent.getName());
         appointment.setStartTime(startDate);
         appointment.setEndTime(endDate);
@@ -31,10 +32,11 @@ public class StalledController {
         calendar.repaint();
     }
 
-    public static void addAppointmentToDatabase(Adherent adherent, DateTime startDate, DateTime endDate, int cale, Color color, float amount, float deposit){
+    public static void addAppointmentToDatabase(Adherent adherent, DateTime startDate, DateTime endDate, int cale,
+                                                Color color, float amount, float deposit, Boat boat){
         try {
-            Main.getDatabase().SQLUpdate("INSERT INTO Reservation (Adherent, DateDebut, DateFin, Cale, Couleur, Montant, Caution)" +
-                    " VALUES(?,?,?,?,?,?,?)", adherent.getId(), startDate, endDate, cale, colorToName(color), amount, deposit);
+            Main.getDatabase().SQLUpdate("INSERT INTO Reservation (Adherent, DateDebut, DateFin, Cale, Couleur, Montant, Caution, Bateau)" +
+                    " VALUES(?,?,?,?,?,?,?,?)", adherent.getId(), startDate, endDate, cale, colorToName(color), amount, deposit, boat.getId());
         } catch (SQLException ex) {
             System.out.println("Reservation insertion error n° " + ex.getErrorCode() + "What goes wrong ?");
             System.out.println(ex.getMessage());
