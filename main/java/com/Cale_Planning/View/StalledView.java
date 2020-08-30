@@ -30,6 +30,7 @@ import java.util.Calendar;
 public class StalledView extends JInternalFrame {
     private static JButton selectedColor;
     private Adherent selectedAdherent;
+    private JFormattedTextField amountText;
     private Contact cale1, cale2, cale3, cale4, cale5, cale6;
     private com.mindfusion.scheduling.Calendar calendar = new com.mindfusion.scheduling.Calendar();
     private MSAccessBase database;
@@ -229,11 +230,12 @@ public class StalledView extends JInternalFrame {
         JPanel amount = new JPanel (new GridLayout(2,1));
         JLabel amountLabel = new JLabel("Montant");
         NumberFormatter mask = new NumberFormatter();
-        JFormattedTextField amountText = new JFormattedTextField(mask);
+        amountText = new JFormattedTextField(mask);
 
         JPanel deposit = new JPanel(new GridLayout(2,1));
         JLabel depositLabel = new JLabel("Caution");
-        JTextField depositText = new JFormattedTextField(mask);
+        JFormattedTextField depositText = new JFormattedTextField(mask);
+        depositText.setValue(150.00);
 
         amount.add(amountLabel);
         amount.add(amountText);
@@ -395,6 +397,7 @@ public class StalledView extends JInternalFrame {
         JLabel toLabel = new JLabel("au");
         toLabel.setHorizontalAlignment(JLabel.CENTER);
         JDatePickerImpl to = new JDatePickerImpl(new JDatePanelImpl(modelTo, properties), format);
+        addListenerToDatePickers(from, to);
         HashMap<String, JDatePickerImpl> datePickers = new HashMap<>();
         datePickers.put("from", from);
         datePickers.put("to", to);
@@ -416,6 +419,46 @@ public class StalledView extends JInternalFrame {
         dateChoice.add(to, constraints);
 
         return datePickers;
+    }
+
+    private void addListenerToDatePickers(JDatePickerImpl from, JDatePickerImpl to){
+        from.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!to.getModel().isSelected()) {
+                    to.getModel().setDate(from.getModel().getYear(), from.getModel().getMonth(), from.getModel().getDay());
+                    to.getModel().setSelected(true);
+                }
+                DateTime fromTime = new DateTime (from.getModel().getYear(), from.getModel().getMonth()+1, from.getModel().getDay());
+                DateTime toTime =  new DateTime(to.getModel().getYear(), to.getModel().getMonth()+1, to.getModel().getDay());
+
+                if (fromTime.compareTo(toTime) == 1) {
+                    to.getModel().setDate(from.getModel().getYear(), from.getModel().getMonth(), from.getModel().getDay());
+                    toTime =  new DateTime(to.getModel().getYear(), to.getModel().getMonth()+1, to.getModel().getDay());
+                }
+                amountText.setValue(StalledController.calculateAmount(
+                        fromTime, toTime));
+            }
+        });
+
+        to.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!from.getModel().isSelected()) {
+                    from.getModel().setDate(to.getModel().getYear(), to.getModel().getMonth(), to.getModel().getDay());
+                    from.getModel().setSelected(true);
+                }
+                DateTime fromTime = new DateTime (from.getModel().getYear(), from.getModel().getMonth()+1, from.getModel().getDay());
+                DateTime toTime =  new DateTime(to.getModel().getYear(), to.getModel().getMonth()+1, to.getModel().getDay());
+
+                if (fromTime.compareTo(toTime) == 1) {
+                    to.getModel().setDate(from.getModel().getYear(), from.getModel().getMonth(), from.getModel().getDay());
+                    toTime =  new DateTime(to.getModel().getYear(), to.getModel().getMonth()+1, to.getModel().getDay());
+                }
+                amountText.setValue(StalledController.calculateAmount(
+                        fromTime, toTime));
+            }
+        });
     }
 
     private void fillColorChoicePanel (JPanel colorChoice){
