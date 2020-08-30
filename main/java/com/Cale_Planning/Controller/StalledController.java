@@ -11,6 +11,8 @@ import com.mindfusion.scheduling.model.Style;
 
 import java.awt.*;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class StalledController {
     public static void createAppointment (Calendar calendar, DateTime startDate, DateTime endDate, int cale, Adherent adherent, Color color){
@@ -65,5 +67,25 @@ public class StalledController {
         if (color.equals(Color.gray))
             return "Gray";
         return "No color found";
+    }
+
+    public static int calculateAmount (DateTime startDate, DateTime endDate){
+        int amount = 35;
+        int weekToRemove = 0;
+        float nbDays = TimeUnit.DAYS.convert(endDate.toJavaCalendar().getTimeInMillis() - startDate.toJavaCalendar().getTimeInMillis(),
+                TimeUnit.MILLISECONDS);
+        if (nbDays >= 7){
+            int nbWeeks = Math.round(nbDays) / 7;
+            int rest = Math.round(nbDays % 7);
+            if (nbWeeks >= 4){
+                weekToRemove = Math.round(nbWeeks) / 4;
+                nbWeeks -= weekToRemove;
+            }
+            if (rest <= 1)
+                amount = nbWeeks * 40;
+            else
+                amount = nbWeeks * 40 + 35;
+        }
+        return amount;
     }
 }
