@@ -10,6 +10,7 @@ import com.Cale_Planning.Models.Reservation;
 import com.mindfusion.common.DateTime;
 import com.mindfusion.common.Duration;
 import com.mindfusion.drawing.Colors;
+import com.mindfusion.drawing.TextAlignment;
 import com.mindfusion.scheduling.*;
 import com.mindfusion.scheduling.model.*;
 import org.jdatepicker.DateModel;
@@ -557,7 +558,7 @@ public class StalledView extends JInternalFrame {
     }
 
     private void fillDownPanel(JPanel downPanel){
-        downPanel.setLayout(new BorderLayout());
+        downPanel.setLayout(new GridBagLayout());
 
         calendar.beginInit();
         calendar.setTheme(ThemeType.Silver);
@@ -569,10 +570,24 @@ public class StalledView extends JInternalFrame {
         calendar.getResourceViewSettings().setViewStyle(ResourceViewStyle.Lanes);
         calendar.getResourceViewSettings().setVisibleRows(6);
         calendar.getResourceViewSettings().setSnapUnit(TimeUnit.Day);
+        calendar.getResourceViewSettings().setMinResourceLength(200);
+        calendar.getResourceViewSettings().setLaneSize(50);
+        calendar.getResourceViewSettings().getStyle().setHeaderFont(new Font("Verdana", Font.BOLD, 13));
+        calendar.getResourceViewSettings().getStyle().setHeaderTextAlignment(EnumSet.of(TextAlignment.MiddleCenter));
+        calendar.getResourceViewSettings().setExpandableRows(false);
+
+        calendar.getResourceViewSettings().getBottomTimelineSettings().setSize(30);
+        calendar.getResourceViewSettings().getBottomTimelineSettings().getStyle().setHeaderFont(new Font("Verdana", Font.BOLD, 13));
+
+        calendar.getItemSettings().getStyle().setHeaderFont(new Font(Font.DIALOG, Font.PLAIN, 15));
 
         calendar.setGroupType(GroupType.GroupByContacts);
         calendar.setAllowInplaceCreate(true);
         calendar.setAllowInplaceEdit(false);
+        calendar.setAllowDrag(false);
+        calendar.setEnableDragCreate(false);
+        calendar.setAllowMoveUnselectedItems(false);
+        calendar.setDragItemsOnDisabledAreas(false);
 
         cale1 = new Contact();
         cale1.setFirstName("Cale");
@@ -674,8 +689,15 @@ public class StalledView extends JInternalFrame {
                 }
             }
         });
-
-        downPanel.add(calendar, BorderLayout.CENTER);
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weighty = 1;
+        constraints.weightx = 1;
+        constraints.ipady = 10;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.fill = GridBagConstraints.BOTH;
+        downPanel.add(calendar, constraints);
 
         fillCalendar();
     }
