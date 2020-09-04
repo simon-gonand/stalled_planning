@@ -86,22 +86,38 @@ public class StalledView extends JInternalFrame {
 
     private void fillBookingPlanningPanel(JPanel panel){
         panel.setLayout(new GridBagLayout());
-        JPanel adherentAndBoatChoice = new JPanel(new GridLayout(2,1));
+        JPanel adherentAndBoatChoice = new JPanel(new GridBagLayout());
+        adherentAndBoatChoice.setBackground(Color.white);
 
         Adherent[] allAdherents = AdherentController.getAllAdherent();
         JList<Adherent> adherentJList = new JList<>(allAdherents);
+        adherentJList.setFont(new Font(adherentJList.getFont().getName(), Font.BOLD, 15));
         JList<Boat> boatJList = new JList<>();
+        boatJList.setFont(new Font(adherentJList.getFont().getName(), Font.BOLD, 15));
+
+        JLabel adherentLabel = new JLabel("Créer une réservation, veuillez sélectionner un adhérent");
+        adherentLabel.setFont(new Font(adherentLabel.getFont().getName(), Font.BOLD, 16));
+        adherentLabel.setBackground(Color.white);
+        adherentLabel.setOpaque(true);
+        JLabel boatLabel = new JLabel("Veuillez sélectionner un bateau");
+        boatLabel.setFont(new Font(boatLabel.getFont().getName(), Font.BOLD, 16));
+        boatLabel.setBackground(Color.white);
+        boatLabel.setOpaque(true);
+        boatLabel.setVisible(false);
+
         final JInternalFrame thisFrame = this;
         adherentJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 selectedAdherent = (Adherent) adherentJList.getModel().getElementAt(adherentJList.locationToIndex(e.getPoint()));
+                boatLabel.setVisible(true);
                 boatJList.setModel(selectedAdherent.getBoats());
                 SwingUtilities.updateComponentTreeUI(thisFrame);
             }
         });
 
         JPanel bookingFormPanel = new JPanel();
+        bookingFormPanel.setBackground(Color.white);
         boatJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -110,8 +126,9 @@ public class StalledView extends JInternalFrame {
                     selectedBoat = (Boat) boatJList.getModel().getElementAt(boatJList.locationToIndex(e.getPoint()));
                     adherentAndBoatChoice.remove(adherentJList);
                     adherentAndBoatChoice.remove(boatJList);
+                    adherentAndBoatChoice.remove(adherentLabel);
+                    adherentAndBoatChoice.remove(boatLabel);
                     JButton newReservationButton = new JButton("Nouvelle Réservation");
-                    adherentAndBoatChoice.setLayout(new GridBagLayout());
                     newReservationButton.setBounds(adherentAndBoatChoice.getWidth(),0, adherentAndBoatChoice.getWidth(), 20);
                     newReservationButton.addActionListener(new ActionListener() {
                         @Override
@@ -144,10 +161,27 @@ public class StalledView extends JInternalFrame {
             }
         });
 
-        adherentAndBoatChoice.add(adherentJList);
-        adherentAndBoatChoice.add(boatJList);
+
 
         GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.PAGE_START;
+        constraints.weightx = 1;
+        constraints.weighty = 0.1;
+        adherentAndBoatChoice.add(adherentLabel, constraints);
+        ++constraints.gridy;
+        constraints.weighty = 1;
+        adherentAndBoatChoice.add(adherentJList, constraints);
+        ++constraints.gridy;
+        constraints.weighty = 0.1;
+        adherentAndBoatChoice.add(boatLabel, constraints);
+        ++constraints.gridy;
+        constraints.weighty = 1;
+        adherentAndBoatChoice.add(boatJList, constraints);
+
+        constraints = new GridBagConstraints();
         constraints.gridy = 0;
         constraints.gridx = 0;
         constraints.weighty = 1;
@@ -161,12 +195,15 @@ public class StalledView extends JInternalFrame {
         panel.setLayout(new GridBagLayout());
         JLabel adherentName = new JLabel(selectedBoat.getOwner().getSurname() + " " + selectedBoat.getOwner().getName());
         adherentName.setFont(new Font(adherentName.getFont().getName(), Font.BOLD, 30));
+        adherentName.setBackground(Color.white);
 
         JPanel boatInfo = new JPanel(new GridLayout(2,1));
+        boatInfo.setBackground(Color.white);
         JLabel boatName = new JLabel(selectedBoat.getName());
         boatName.setFont(new Font(boatName.getFont().getName(), Font.BOLD, 20));
         boatInfo.add(boatName);
         JPanel info = new JPanel(new GridLayout(2, 5, 10,3));
+        info.setBackground(Color.white);
         JLabel lengthLabel = new JLabel("Longueur");
         lengthLabel.setHorizontalAlignment(JLabel.CENTER);
         JLabel widthLabel = new JLabel("Largeur");
@@ -202,6 +239,7 @@ public class StalledView extends JInternalFrame {
         boatInfo.add(info);
 
         JPanel booking = new JPanel(new GridBagLayout());
+        booking.setBackground(Color.white);
         booking.setBorder(BorderFactory.createTitledBorder("Réservation"));
         fillBookingPanel(booking);
 
@@ -223,21 +261,27 @@ public class StalledView extends JInternalFrame {
     private void fillBookingPanel (JPanel panel) throws ParseException {
         JPanel stalledChoicePanel = new JPanel(new GridLayout(6,1));
         ButtonGroup stalledChoice = fillStalledChoicePanel(stalledChoicePanel);
+        stalledChoicePanel.setBackground(Color.white);
 
         JPanel dateChoice = new JPanel(new GridBagLayout());
+        dateChoice.setBackground(Color.white);
         Map<String, JDatePickerImpl> datePickers = fillDateChoicePanel(dateChoice);
 
         JPanel colorChoice = new JPanel(new GridLayout(3,3));
+        colorChoice.setBackground(Color.white);
         colorChoice.setBorder(BorderFactory.createTitledBorder("Couleurs"));
         fillColorChoicePanel(colorChoice);
 
         JPanel amountDeposit = new JPanel (new GridLayout(2,1));
+        amountDeposit.setBackground(Color.white);
         JPanel amount = new JPanel (new GridLayout(2,1));
+        amount.setBackground(Color.white);
         JLabel amountLabel = new JLabel("Montant");
         NumberFormatter mask = new NumberFormatter();
         amountText = new JFormattedTextField(mask);
 
         JPanel deposit = new JPanel(new GridLayout(2,1));
+        deposit.setBackground(Color.white);
         JLabel depositLabel = new JLabel("Caution");
         JFormattedTextField depositText = new JFormattedTextField(mask);
         depositText.setValue(150.00);
@@ -251,6 +295,7 @@ public class StalledView extends JInternalFrame {
         amountDeposit.add(deposit);
 
         JPanel buttons = new JPanel (new GridLayout(2,1));
+        buttons.setBackground(Color.white);
         JButton submitButton = new JButton("Submit");
         submitButton.addActionListener(new ActionListener() {
             @Override
@@ -310,6 +355,7 @@ public class StalledView extends JInternalFrame {
         buttons.add(cancelButton);
 
         JPanel stalledAndButton = new JPanel(new GridBagLayout());
+        stalledAndButton.setBackground(Color.white);
         GridBagConstraints stalledAndButtonConstraints = new GridBagConstraints();
         stalledAndButtonConstraints.gridx = 0;
         stalledAndButtonConstraints.gridy = 0;
@@ -349,16 +395,22 @@ public class StalledView extends JInternalFrame {
     private ButtonGroup fillStalledChoicePanel(JPanel stalledChoicePanel){
         JRadioButton stalled1 = new JRadioButton("Cale 1");
         stalled1.setActionCommand("Stalled1");
+        stalled1.setBackground(Color.white);
         JRadioButton stalled2 = new JRadioButton("Cale 2");
         stalled2.setActionCommand("Stalled2");
+        stalled2.setBackground(Color.white);
         JRadioButton stalled3 = new JRadioButton("Cale 3");
         stalled3.setActionCommand("Stalled3");
+        stalled3.setBackground(Color.white);
         JRadioButton stalled4 = new JRadioButton("Cale 4");
         stalled4.setActionCommand("Stalled4");
+        stalled4.setBackground(Color.white);
         JRadioButton stalled5 = new JRadioButton("Cale 5");
         stalled5.setActionCommand("Stalled5");
+        stalled5.setBackground(Color.white);
         JRadioButton stalled6 = new JRadioButton("Cale 6");
         stalled6.setActionCommand("Stalled6");
+        stalled6.setBackground(Color.white);
 
         ButtonGroup stalledChoice = new ButtonGroup();
         stalledChoice.add(stalled1);
@@ -401,9 +453,11 @@ public class StalledView extends JInternalFrame {
             }
         };
         JDatePickerImpl from = new JDatePickerImpl(new JDatePanelImpl(modelFrom, properties), format);
+        from.setBackground(Color.white);
         JLabel toLabel = new JLabel("au");
         toLabel.setHorizontalAlignment(JLabel.CENTER);
         JDatePickerImpl to = new JDatePickerImpl(new JDatePanelImpl(modelTo, properties), format);
+        to.setBackground(Color.white);
         addListenerToDatePickers(from, to);
         HashMap<String, JDatePickerImpl> datePickers = new HashMap<>();
         datePickers.put("from", from);
