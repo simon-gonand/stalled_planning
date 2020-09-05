@@ -587,6 +587,27 @@ public class StalledView extends JInternalFrame {
         monthChoiceTitle.setHorizontalAlignment(JLabel.CENTER);
         monthChoicePanel.add(monthChoiceTitle, BorderLayout.CENTER);
 
+        JPanel closePanel = new JPanel(null);
+        final JInternalFrame thisFrame = this;
+        JButton close = new JButton(new ImageIcon("src/main/resources/cancel.png"));
+        close.setBounds(thisFrame.getWidth() / 2 - 35,0, 30,30);
+        close.setOpaque(true);
+        close.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                for (JInternalFrame frame : desktopPane.getAllFrames()){
+                    if (frame == thisFrame)
+                        desktopPane.remove(frame);
+                }
+                SwingUtilities.updateComponentTreeUI(desktopPane);
+            }
+        });
+
+        closePanel.add(close);
+        historicPanel.add(closePanel);
+
+
         JButton previousMonth = new JButton();
         JButton nextMonth = new JButton();
         previousMonth.setIcon(new ImageIcon("src/main/resources/leftArrow.png"));
