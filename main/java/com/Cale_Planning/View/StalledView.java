@@ -19,6 +19,8 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
@@ -699,10 +701,9 @@ public class StalledView extends JInternalFrame {
         calendar.addCalendarListener(new CalendarAdapter()
         {
             @Override
-            public void itemClick(ItemMouseEvent e)
-            {
+            public void itemClick(ItemMouseEvent e) {
                 // display the form if item is double-clicked
-                if (e.getClicks() != 2)
+                if (e.getClicks() == 2)
                     return;
 
                 calendar.resetDrag();
@@ -718,7 +719,7 @@ public class StalledView extends JInternalFrame {
                 title.setHorizontalAlignment(JLabel.CENTER);
                 frame.add(title, BorderLayout.NORTH);
 
-                JPanel amountAndDeposit = new JPanel(new GridLayout(2,2));
+                JPanel amountAndDeposit = new JPanel(new GridLayout(2, 2));
                 JLabel amountTitle = new JLabel("Montant");
                 amountTitle.setFont(new Font(amountTitle.getFont().getName(), Font.BOLD, 25));
                 amountTitle.setHorizontalAlignment(JLabel.CENTER);
@@ -745,7 +746,7 @@ public class StalledView extends JInternalFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, frame);
-                        for (JInternalFrame fr : desktopPane.getAllFrames()){
+                        for (JInternalFrame fr : desktopPane.getAllFrames()) {
                             if (frame == fr)
                                 desktopPane.remove(fr);
                         }

@@ -63,6 +63,34 @@ public class AdherentView extends JInternalFrame {
         setSelected(true);
     }
 
+    public AdherentView(JDesktopPane mainPane) throws PropertyVetoException {
+        super();
+
+        setTitle("Fiche Adhérent");
+        this.getContentPane().setBackground(Color.white);
+        setLayout(new GridBagLayout());
+        setView();
+
+        int i = mainPane.getAllFrames().length -1;
+        while (i >= 0) {
+            JInternalFrame frame = mainPane.getAllFrames()[i];
+            if (frame instanceof AdherentView || frame instanceof BoatView || frame instanceof AllAdherentsView || frame instanceof AllBoatsView) {
+                this.setBounds(frame.getX() + 20, frame.getY() + 20, 650, 525);
+                break;
+            }
+            --i;
+        }
+        if (i < 0) {
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            this.setBounds(screenSize.width / 3, screenSize.height / 4, 650, 525);
+        }
+
+        setResizable(true);
+        setVisible(true);
+        mainPane.add(this);
+        setSelected(true);
+    }
+
     private void setView(){
         // Create all three panels
         JPanel identity = new JPanel(); // Identity of the Adherent (name, surname , gende...)
@@ -117,18 +145,20 @@ public class AdherentView extends JInternalFrame {
         miss.setActionCommand(Adherent.GenderType.MISS.toString());
         JRadioButton noGender = new JRadioButton(Adherent.GenderType.NO_GENDER.toString());
         noGender.setActionCommand(Adherent.GenderType.NO_GENDER.toString());
-
-        switch (adherent.getGender()){
-            case MISTER:
-                mister.setSelected(true);
-                break;
-            case MISS:
-                miss.setSelected(true);
-                break;
-            case NO_GENDER:
-                noGender.setSelected(true);
-                break;
-            default: break;
+        if (adherent != null) {
+            switch (adherent.getGender()) {
+                case MISTER:
+                    mister.setSelected(true);
+                    break;
+                case MISS:
+                    miss.setSelected(true);
+                    break;
+                case NO_GENDER:
+                    noGender.setSelected(true);
+                    break;
+                default:
+                    break;
+            }
         }
 
         mister.setBackground(Color.white);
@@ -148,16 +178,28 @@ public class AdherentView extends JInternalFrame {
 
         JLabel labelName = new JLabel("Prénom");
         JLabel labelSurname = new JLabel("Nom");
-        this.name = new JTextField(adherent.getName());
-        this.surname = new JTextField(adherent.getSurname());
-
         JLabel birthLabel = new JLabel("Date naissance");
         JLabel subscriptionLabel = new JLabel("Date adhésion");
-        UtilDateModel model = new UtilDateModel(this.adherent.getDateOfBirth());
-        Properties properties = new Properties();
-        this.birth = new JDatePickerImpl(new JDatePanelImpl(model, properties), new DateComponentFormatter());
+        if (adherent != null) {
+            this.name = new JTextField(adherent.getName());
+            this.surname = new JTextField(adherent.getSurname());
 
-        this.subscription = new JTextField(String.valueOf(this.adherent.getSubscriptionYear()));
+            UtilDateModel model = new UtilDateModel(this.adherent.getDateOfBirth());
+            Properties properties = new Properties();
+            this.birth = new JDatePickerImpl(new JDatePanelImpl(model, properties), new DateComponentFormatter());
+
+            this.subscription = new JTextField(String.valueOf(this.adherent.getSubscriptionYear()));
+        }
+        else{
+            this.name = new JTextField();
+            this.surname = new JTextField();
+
+            UtilDateModel model = new UtilDateModel();
+            Properties properties = new Properties();
+            this.birth = new JDatePickerImpl(new JDatePanelImpl(model, properties), new DateComponentFormatter());
+
+            this.subscription = new JTextField();
+        }
 
         this.name.setBackground(new Color(239,239,239));
         this.surname.setBackground(new Color(239,239,239));
@@ -206,63 +248,76 @@ public class AdherentView extends JInternalFrame {
 
     private void fillAddressPanel(JPanel panel){
         JLabel buildingLabel = new JLabel ("Bâtiment");
-        this.building = new JTextField(this.adherent.getBuilding());
-        this.building.setBackground(new Color(239,239,239));
-
         JLabel streetLabel = new JLabel("Rue");
-        this.street = new JTextField(this.adherent.getAddress());
-        this.street.setBackground(new Color(239,239,239));
-
         JLabel cityLabel = new JLabel("Ville");
-        this.city = new JTextField(this.adherent.getCity());
-        this.city.setBackground(new Color(239,239,239));
-
         JLabel postalCodeLabel = new JLabel("Code Postal");
-        this.postalCode = new JTextField(String.valueOf(this.adherent.getPostalCode()));
-        this.postalCode.setBackground(new Color(239,239,239));
-
         JLabel phoneLabel = new JLabel("Téléphone");
         JLabel mobileLabel = new JLabel("Portable");
         JButton deletePhone = new JButton(new ImageIcon("src/main/resources/telephoneDelete.png"));
         JButton deleteMobile = new JButton(new ImageIcon("src/main/resources/telephoneDelete.png"));
-        try {
-            MaskFormatter fmt = new MaskFormatter("## ## ## ## ##");
-            this.phone = new JFormattedTextField(fmt);
+        JLabel emailLabel = new JLabel("Email");
+
+        if (adherent != null) {
+            this.building = new JTextField(this.adherent.getBuilding());
+
+            this.street = new JTextField(this.adherent.getAddress());
+
+            this.city = new JTextField(this.adherent.getCity());
+
+            this.postalCode = new JTextField(String.valueOf(this.adherent.getPostalCode()));
+
             this.phone.setValue(this.adherent.getPhone());
-            this.phone.setColumns(14);
-            this.phone.setBackground(new Color(239,239,239));
-            this.mobile = new JFormattedTextField(fmt);
             this.mobile.setValue(this.adherent.getMobile());
-            this.phone.setColumns(14);
-            this.mobile.setBackground(new Color(239,239,239));
 
-
-            deletePhone.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    phone.setValue("");
-                }
-            });
-            deleteMobile.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    phone.setValue("");
-                }
-            });
-        } catch (ParseException e){
-            e.printStackTrace();
+            this.email = new JTextField(this.adherent.getEmail());
+        }
+        else {
+            this.building = new JTextField();
+            this.street = new JTextField();
+            this.city = new JTextField();
+            this.postalCode = new JTextField();
+            this.email = new JTextField();
         }
 
-        JLabel emailLabel = new JLabel("Email");
-        this.email = new JTextField(this.adherent.getEmail());
+        this.building.setBackground(new Color(239, 239, 239));
+        this.street.setBackground(new Color(239, 239, 239));
+        this.city.setBackground(new Color(239, 239, 239));
+        this.postalCode.setBackground(new Color(239, 239, 239));
         this.email.setBackground(new Color(239,239,239));
+
+        MaskFormatter fmt = null;
+        try {
+            fmt = new MaskFormatter("## ## ## ## ##");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        this.phone = new JFormattedTextField(fmt);
+        this.phone.setColumns(14);
+        this.phone.setBackground(new Color(239, 239, 239));
+        this.mobile = new JFormattedTextField(fmt);
+        this.mobile.setColumns(14);
+        this.mobile.setBackground(new Color(239, 239, 239));
+
+        deletePhone.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                phone.setValue("");
+            }
+        });
+        deleteMobile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mobile.setValue("");
+            }
+        });
 
         JButton emailButton = new JButton(new ImageIcon("src/main/resources/mail.png"));
         emailButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try{
-                    Desktop.getDesktop().mail(new URI("mailto:" + email.getText()));
+                    if (!email.getText().equals(null))
+                        Desktop.getDesktop().mail(new URI("mailto:" + email.getText()));
                 } catch (URISyntaxException | IOException ex){
                     ex.printStackTrace();
                 }
@@ -362,13 +417,19 @@ public class AdherentView extends JInternalFrame {
         commentPanel.setBackground(Color.white);
         boatsPanel.setBackground(Color.white);
 
-        this.comment = new JTextArea(adherent.getComment()); // Area where the user can tap everything he wants
+        if (adherent != null) {
+            this.comment = new JTextArea(adherent.getComment()); // Area where the user can tap everything he wants
+            this.boats = new JList(adherent.getBoats()); // Display all the boats of the Adherent
+        }
+        else{
+            this.comment = new JTextArea();
+            this.boats = new JList();
+        }
         // Stop text area stretching
         comment.setLineWrap(true);
         comment.setWrapStyleWord(true);
 
         final JInternalFrame thisFrame = this;
-        this.boats = new JList(adherent.getBoats()); // Display all the boats of the Adherent
         this.boats.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
