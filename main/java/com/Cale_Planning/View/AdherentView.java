@@ -489,6 +489,8 @@ public class AdherentView extends JInternalFrame {
                     adherent.setPhone(phone.getText());
                     adherent.setEmail(email.getText());
                     adherent.setComment(comment.getText());
+                    JOptionPane.showMessageDialog(thisFrame, "Les informations de l'adhérent " + name.getText() + " " + surname.getText() +
+                            " a bien été modifié", "Adhérent modifié", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else {
                     new Adherent(Integer.valueOf(subscription.getText()), Integer.valueOf(postalCode.getText()), name.getText(), surname.getText(), building.getText(),
