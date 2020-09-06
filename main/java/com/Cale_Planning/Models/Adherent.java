@@ -118,6 +118,37 @@ public class Adherent {
         }
     }
 
+    public Adherent(int subscriptionYear, int postalCode, String name, String surname, String building, String address,
+                    String city, String email, String phone, String mobile, String comment, Date dateOfBirth, GenderType gender) {
+        this.database = Main.getDatabase();
+        this.subscriptionYear = subscriptionYear;
+        this.postalCode = postalCode;
+        this.name = name;
+        this.surname = surname;
+        this.building = building;
+        this.address = address;
+        this.city = city;
+        this.email = email;
+        if (phone.equals("              "))
+            phone = "";
+        this.phone = phone;
+        if (mobile.equals("              "))
+            mobile = "";
+        this.mobile = mobile;
+        this.comment = comment;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        try{
+            this.database.SQLUpdate("INSERT INTO Adherent (Genre, Nom, Prenom, DateNaissance, DateAdhesion, Batiment, Rue, " +
+                    "CodePostal, Ville, Email, Telephone, Portable, Com) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    this.gender.toString(), this.name, this.surname, this.dateOfBirth, this.subscriptionYear, this.building,
+                    this.address, this.postalCode, this.city, this.email, this.phone, this.mobile, this.comment);
+        } catch (SQLException e ){
+            System.out.println("Adherent insertion error n° " + e.getErrorCode() + " What goes wrong ?");
+            System.out.println(e.getMessage());
+        }
+    }
+
     @Override
     public String toString() {
         return this.surname + " " + this.name;
@@ -244,6 +275,8 @@ public class Adherent {
     }
 
     public void setPhone(String phone) {
+        if (phone.equals("              "))
+            phone = "";
         this.phone = phone;
         try {
             database.SQLUpdate("UPDATE Adherent SET Telephone = ? WHERE ID = ?", phone, String.valueOf(this.id));
@@ -258,6 +291,8 @@ public class Adherent {
     }
 
     public void setMobile(String mobile) {
+        if (mobile.equals("              "))
+            mobile = "";
         this.mobile = mobile;
         try {
             database.SQLUpdate("UPDATE Adherent SET Portable = ? WHERE ID = ?", mobile, String.valueOf(this.id));

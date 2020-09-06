@@ -257,6 +257,15 @@ public class AdherentView extends JInternalFrame {
         JButton deleteMobile = new JButton(new ImageIcon("src/main/resources/telephoneDelete.png"));
         JLabel emailLabel = new JLabel("Email");
 
+        MaskFormatter fmt = null;
+        try {
+            fmt = new MaskFormatter("## ## ## ## ##");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        this.phone = new JFormattedTextField(fmt);
+        this.mobile = new JFormattedTextField(fmt);
+
         if (adherent != null) {
             this.building = new JTextField(this.adherent.getBuilding());
 
@@ -285,16 +294,8 @@ public class AdherentView extends JInternalFrame {
         this.postalCode.setBackground(new Color(239, 239, 239));
         this.email.setBackground(new Color(239,239,239));
 
-        MaskFormatter fmt = null;
-        try {
-            fmt = new MaskFormatter("## ## ## ## ##");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        this.phone = new JFormattedTextField(fmt);
         this.phone.setColumns(14);
         this.phone.setBackground(new Color(239, 239, 239));
-        this.mobile = new JFormattedTextField(fmt);
         this.mobile.setColumns(14);
         this.mobile.setBackground(new Color(239, 239, 239));
 
@@ -474,19 +475,26 @@ public class AdherentView extends JInternalFrame {
         submit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                adherent.setName(name.getText());
-                adherent.setSurname(surname.getText());
-                adherent.setDateOfBirth((Date)birth.getModel().getValue());
-                adherent.setSubscriptionYear(Integer.valueOf(subscription.getText()));
-                adherent.setGender(Adherent.GenderType.parse(genders.getSelection().getActionCommand()));
-                adherent.setBuilding(building.getText());
-                adherent.setAddress(street.getText());
-                adherent.setCity(city.getText());
-                adherent.setPostalCode(Integer.valueOf(postalCode.getText()));
-                adherent.setMobile(mobile.getText());
-                adherent.setPhone(phone.getText());
-                adherent.setEmail(email.getText());
-                adherent.setComment(comment.getText());
+                if (adherent != null) {
+                    adherent.setName(name.getText());
+                    adherent.setSurname(surname.getText());
+                    adherent.setDateOfBirth((Date) birth.getModel().getValue());
+                    adherent.setSubscriptionYear(Integer.valueOf(subscription.getText()));
+                    adherent.setGender(Adherent.GenderType.parse(genders.getSelection().getActionCommand()));
+                    adherent.setBuilding(building.getText());
+                    adherent.setAddress(street.getText());
+                    adherent.setCity(city.getText());
+                    adherent.setPostalCode(Integer.valueOf(postalCode.getText()));
+                    adherent.setMobile(mobile.getText());
+                    adherent.setPhone(phone.getText());
+                    adherent.setEmail(email.getText());
+                    adherent.setComment(comment.getText());
+                }
+                else {
+                    new Adherent(Integer.valueOf(subscription.getText()), Integer.valueOf(postalCode.getText()), name.getText(), surname.getText(), building.getText(),
+                            street.getText(), city.getText(), email.getText(), phone.getText(), mobile.getText(), comment.getText(),
+                            (Date) birth.getModel().getValue(), Adherent.GenderType.parse(genders.getSelection().getActionCommand()));
+                }
             }
         });
 
