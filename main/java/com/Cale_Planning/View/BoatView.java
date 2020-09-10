@@ -135,7 +135,7 @@ public class BoatView extends JInternalFrame {
         this.category = new JComboBox<Boat.categoryType>(Boat.categoryType.values());
         this.category.setSelectedItem(boat.getCategory());
         JLabel ownerLabel = new JLabel("Propriétaire");
-        Adherent[] allAdherents = AdherentController.getAllAdherent();
+        Adherent[] allAdherents = AdherentController.getAllAdherentArray();
         this.owner = new JComboBox<Adherent>(allAdherents);
         for (Adherent adherent : allAdherents){
             if (adherent.getId() == boat.getOwner().getId())

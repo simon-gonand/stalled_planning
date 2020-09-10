@@ -4,6 +4,7 @@ import com.Cale_Planning.Controller.AdherentController;
 import com.Cale_Planning.Models.Adherent;
 
 import javax.swing.*;
+import javax.swing.event.ListDataListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +14,7 @@ import java.beans.PropertyVetoException;
 
 public class AllAdherentsView extends JInternalFrame {
     private JDesktopPane mainPane;
+    private JList<Adherent> adherentJList;
     public AllAdherentsView(JDesktopPane mainPane) throws PropertyVetoException {
         super();
 
@@ -24,7 +26,7 @@ public class AllAdherentsView extends JInternalFrame {
 
         fillAdherentsView();
 
-        JPanel buttonsPanel = new JPanel(new BorderLayout());
+        JPanel buttonsPanel = new JPanel(new GridBagLayout());
         addButtons(buttonsPanel);
         this.add(buttonsPanel, BorderLayout.PAGE_END);
 
@@ -48,8 +50,8 @@ public class AllAdherentsView extends JInternalFrame {
     }
 
     private void fillAdherentsView(){
-        Adherent[] allAdherents = AdherentController.getAllAdherent();
-        JList<Adherent> adherentJList = new JList<>(allAdherents);
+        DefaultListModel<Adherent> allAdherents = AdherentController.getAllAdherent();
+        adherentJList = new JList<>(allAdherents);
         adherentJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -83,20 +85,57 @@ public class AllAdherentsView extends JInternalFrame {
                 SwingUtilities.updateComponentTreeUI(desktopPane);
             }
         });
-        buttonsPanel.add(close, BorderLayout.EAST);
 
-        JButton addAdherent = new JButton(new ImageIcon("src/main/resources/addAdherent.png"));
+        JButton addAdherent = new JButton(new ImageIcon("src/main/resources/add.png"));
         addAdherent.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    new AdherentView(mainPane);
+                    new AdherentView(mainPane, adherentJList);
                 } catch (PropertyVetoException ex) {
                     ex.printStackTrace();
                 }
-                SwingUtilities.updateComponentTreeUI(mainPane);
+                SwingUtilities.updateComponentTreeUI(thisFrame);
             }
         });
-        buttonsPanel.add(addAdherent, BorderLayout.WEST);
+
+        JButton deleteAdherent = new JButton(new ImageIcon("src/main/resources/delete.png"));
+        deleteAdherent.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Adherent adherent = adherentJList.getSelectedValue();
+                if (adherent == null){
+                    JOptionPane.showMessageDialog(thisFrame, "Veuillez sélectionner un adhérent à supprimer", "Adhérent non sélecitonné",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                int answer = JOptionPane.showConfirmDialog(thisFrame, "Voulez-vous vraiment supprimer l'adhérent sélectionné ?",
+                        "Confirmation", JOptionPane.YES_NO_OPTION);
+                if (answer == 0){
+                    AdherentController.deleteAdherent(adherent);
+                    DefaultListModel defaultListModel = (DefaultListModel) adherentJList.getModel();
+                    defaultListModel.removeElement(adherent);
+                    adherentJList.setModel(defaultListModel);
+                    SwingUtilities.updateComponentTreeUI(thisFrame);
+                } else
+                    return;
+            }
+        });
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.VERTICAL;
+        constraints.anchor = GridBagConstraints.LINE_START;
+
+        buttonsPanel.add(addAdherent, constraints);
+        ++constraints.gridx;
+        constraints.anchor = GridBagConstraints.CENTER;
+        buttonsPanel.add(deleteAdherent, constraints);
+        ++constraints.gridx;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        buttonsPanel.add(close, constraints);
     }
 }

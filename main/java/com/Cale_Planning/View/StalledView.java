@@ -91,7 +91,7 @@ public class StalledView extends JInternalFrame {
         JPanel adherentAndBoatChoice = new JPanel(new GridBagLayout());
         adherentAndBoatChoice.setBackground(Color.white);
 
-        Adherent[] allAdherents = AdherentController.getAllAdherent();
+        DefaultListModel<Adherent> allAdherents = AdherentController.getAllAdherent();
         JList<Adherent> adherentJList = new JList<>(allAdherents);
         adherentJList.setFont(new Font(adherentJList.getFont().getName(), Font.BOLD, 15));
         JList<Boat> boatJList = new JList<>();

@@ -27,6 +27,7 @@ import java.util.*;
 
 public class AdherentView extends JInternalFrame {
     private Adherent adherent;
+    private JList adherentList;
     private JTextField name, surname, subscription, building, street, postalCode, city, email;
     private JFormattedTextField phone, mobile;
     private JDatePicker birth;
@@ -63,9 +64,10 @@ public class AdherentView extends JInternalFrame {
         setSelected(true);
     }
 
-    public AdherentView(JDesktopPane mainPane) throws PropertyVetoException {
+    public AdherentView(JDesktopPane mainPane, JList adherentList) throws PropertyVetoException {
         super();
 
+        this.adherentList = adherentList;
         setTitle("Fiche Adhérent");
         this.getContentPane().setBackground(Color.white);
         setLayout(new GridBagLayout());
@@ -493,11 +495,16 @@ public class AdherentView extends JInternalFrame {
                             " a bien été modifié", "Adhérent modifié", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else {
-                    new Adherent(Integer.valueOf(subscription.getText()), Integer.valueOf(postalCode.getText()), name.getText(), surname.getText(), building.getText(),
+                    Adherent adherent = new Adherent(Integer.valueOf(subscription.getText()), Integer.valueOf(postalCode.getText()), name.getText(), surname.getText(), building.getText(),
                             street.getText(), city.getText(), email.getText(), phone.getText(), mobile.getText(), comment.getText(),
                             (Date) birth.getModel().getValue(), Adherent.GenderType.parse(genders.getSelection().getActionCommand()));
                     JOptionPane.showMessageDialog(thisFrame, "L'adhérent " + name.getText() + " " + surname.getText() +
                             " a bien été ajouté", "Adhérent ajouté", JOptionPane.INFORMATION_MESSAGE);
+                    DefaultListModel defaultListModel = (DefaultListModel) adherentList.getModel();
+                    defaultListModel.add(defaultListModel.size(), adherent);
+                    adherentList.setModel(defaultListModel);
+                    JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                    SwingUtilities.updateComponentTreeUI(desktopPane);
                 }
             }
         });
