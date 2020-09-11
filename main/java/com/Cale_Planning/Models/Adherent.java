@@ -1,5 +1,6 @@
 package com.Cale_Planning.Models;
 
+import com.Cale_Planning.Controller.AdherentController;
 import com.Cale_Planning.MSAccessBase;
 import com.Cale_Planning.Main;
 
@@ -43,13 +44,11 @@ public class Adherent {
     private Date dateOfBirth;
     private GenderType gender;
     private DefaultListModel<Boat> boats;
-    private MSAccessBase database;
 
     public Adherent (int id){
         this.id = id;
-        this.database = Main.getDatabase();
         try {
-            ResultSet attributes = database.SQLSelect("SELECT * FROM Adherent WHERE ID = " + this.id);
+            ResultSet attributes = Main.getDatabase().SQLSelect("SELECT * FROM Adherent WHERE ID = " + this.id);
             attributes.next();
             this.gender = GenderType.parse(attributes.getString("Genre"));
             this.name = attributes.getString("Prenom");
@@ -66,7 +65,7 @@ public class Adherent {
             this.comment = attributes.getString("Com");
 
             boats = new DefaultListModel<Boat>();
-            ResultSet boatsID = database.SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
+            ResultSet boatsID = Main.getDatabase().SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
             while (boatsID.next()){
                 boats.addElement(new Boat(boatsID.getInt("ID"), this));
             }
@@ -78,9 +77,8 @@ public class Adherent {
 
     public Adherent (int id, Boat boat){
         this.id = id;
-        this.database = Main.getDatabase();
         try {
-            ResultSet attributes = database.SQLSelect("SELECT * FROM Adherent WHERE ID = " + this.id);
+            ResultSet attributes = Main.getDatabase().SQLSelect("SELECT * FROM Adherent WHERE ID = " + this.id);
             attributes.next();
             switch (attributes.getString("Genre")){
                 case "Monsieur" :
@@ -108,7 +106,7 @@ public class Adherent {
             this.comment = attributes.getString("Com");
 
             boats = new DefaultListModel<Boat>();
-            ResultSet boatsID = database.SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
+            ResultSet boatsID = Main.getDatabase().SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
             while (boatsID.next()){
                 boats.addElement(boat);
             }
@@ -120,7 +118,6 @@ public class Adherent {
 
     public Adherent(int subscriptionYear, int postalCode, String name, String surname, String building, String address,
                     String city, String email, String phone, String mobile, String comment, Date dateOfBirth, GenderType gender) {
-        this.database = Main.getDatabase();
         this.subscriptionYear = subscriptionYear;
         this.postalCode = postalCode;
         this.name = name;
@@ -138,15 +135,7 @@ public class Adherent {
         this.comment = comment;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
-        try{
-            this.database.SQLUpdate("INSERT INTO Adherent (Genre, Nom, Prenom, DateNaissance, DateAdhesion, Batiment, Rue, " +
-                    "CodePostal, Ville, Email, Telephone, Portable, Com) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                    this.gender.toString(), this.name, this.surname, this.dateOfBirth, this.subscriptionYear, this.building,
-                    this.address, this.postalCode, this.city, this.email, this.phone, this.mobile, this.comment);
-        } catch (SQLException e ){
-            System.out.println("Adherent insertion error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.addAdherent(this);
     }
 
     @Override
@@ -164,12 +153,7 @@ public class Adherent {
 
     public void setSubscriptionYear(int subscriptionYear) {
         this.subscriptionYear = subscriptionYear;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET DateAdhesion = ? WHERE ID = ?", String.valueOf(subscriptionYear), String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Subscription Year Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setSubscriptionYear(this);
     }
 
     public int getPostalCode() {
@@ -178,12 +162,7 @@ public class Adherent {
 
     public void setPostalCode(int postalCode) {
         this.postalCode = postalCode;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET CodePostal = ? WHERE ID = ?", String.valueOf(postalCode), String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Postal Code Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setPostalCode(this);
     }
 
     public String getName() {
@@ -192,12 +171,7 @@ public class Adherent {
 
     public void setName(String name) {
         this.name = name;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET Prenom = ? WHERE ID = ?", name, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Name Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setName(this);
     }
 
     public String getSurname() {
@@ -206,12 +180,7 @@ public class Adherent {
 
     public void setSurname(String surname) {
         this.surname = surname;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET Nom = ? WHERE ID = ?", surname, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Surname Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setSurname(this);
     }
 
     public String getBuilding() {
@@ -220,12 +189,7 @@ public class Adherent {
 
     public void setBuilding(String building) {
         this.building = building;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET Batiment = ? WHERE ID = ?", building, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Building Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setBuilding(this);
     }
 
     public String getAddress() {
@@ -234,12 +198,7 @@ public class Adherent {
 
     public void setAddress(String address) {
         this.address = address;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET Rue = ? WHERE ID = ?", address, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Address Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setAddress(this);
     }
 
     public String getCity() {
@@ -248,12 +207,7 @@ public class Adherent {
 
     public void setCity(String city) {
         this.city = city;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET Ville = ? WHERE ID = ?", city, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("City Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setCity(this);
     }
 
     public String getEmail() {
@@ -262,12 +216,7 @@ public class Adherent {
 
     public void setEmail(String email) {
         this.email = email;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET Email = ? WHERE ID = ?", email, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Email Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setEmail(this);
     }
 
     public String getPhone() {
@@ -278,12 +227,7 @@ public class Adherent {
         if (phone.equals("              "))
             phone = "";
         this.phone = phone;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET Telephone = ? WHERE ID = ?", phone, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Phone Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setPhone(this);
     }
 
     public String getMobile() {
@@ -294,12 +238,7 @@ public class Adherent {
         if (mobile.equals("              "))
             mobile = "";
         this.mobile = mobile;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET Portable = ? WHERE ID = ?", mobile, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Mobile Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setMobile(this);
     }
 
     public String getComment() {
@@ -308,12 +247,7 @@ public class Adherent {
 
     public void setComment(String comment) {
         this.comment = comment;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET Com = ? WHERE ID = ?", comment, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Comment Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setComment(this);
     }
 
     public Date getDateOfBirth() {
@@ -322,12 +256,7 @@ public class Adherent {
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
-        try {
-            database.SQLUpdate("UPDATE Adherent SET DateNaissance = ? WHERE ID = ?", dateOfBirth, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Date of Birth Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setDateOfBirth(this);
     }
 
     public GenderType getGender() {
@@ -336,13 +265,7 @@ public class Adherent {
 
     public void setGender(GenderType gender) {
         this.gender = gender;
-
-        try {
-            database.SQLUpdate("UPDATE Adherent SET Genre = ? WHERE ID = ?", gender.toString(), String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Gender Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        AdherentController.setGender(this);
     }
 
     public DefaultListModel<Boat> getBoats() {

@@ -1,5 +1,6 @@
 package com.Cale_Planning.Models;
 
+import com.Cale_Planning.Controller.BoatController;
 import com.Cale_Planning.MSAccessBase;
 import com.Cale_Planning.Main;
 
@@ -105,13 +106,11 @@ public class Boat {
     private Adherent owner;
     private categoryType category;
     private placeType place;
-    private MSAccessBase database;
 
     public Boat (int id){
         this.id = id;
-        this.database = Main.getDatabase();
         try {
-            ResultSet attributes = database.SQLSelect("SELECT * FROM Bateau WHERE ID = " + this.id);
+            ResultSet attributes = Main.getDatabase().SQLSelect("SELECT * FROM Bateau WHERE ID = " + this.id);
             attributes.next();
             this.category = categoryType.parse(attributes.getString("Categorie"));
             this.place = placeType.parse(attributes.getString("Place"));
@@ -131,9 +130,8 @@ public class Boat {
 
     public Boat (int id, Adherent adherent){
         this.id = id;
-        this.database = Main.getDatabase();
         try {
-            ResultSet attributes = database.SQLSelect("SELECT * FROM Bateau WHERE ID = " + this.id);
+            ResultSet attributes = Main.getDatabase().SQLSelect("SELECT * FROM Bateau WHERE ID = " + this.id);
             attributes.next();
             this.category = categoryType.parse(attributes.getString("Categorie"));
             this.place = placeType.parse(attributes.getString("Place"));
@@ -151,6 +149,20 @@ public class Boat {
         }
     }
 
+    public Boat(int id, String name, String registration, float length, float width, float draught, float weight, Adherent owner,
+                categoryType category, placeType place) {
+        this.id = id;
+        this.name = name;
+        this.registration = registration;
+        this.length = length;
+        this.width = width;
+        this.draught = draught;
+        this.weight = weight;
+        this.owner = owner;
+        this.category = category;
+        this.place = place;
+    }
+
     @Override
     public String toString() {
         return this.name;
@@ -166,12 +178,7 @@ public class Boat {
 
     public void setName(String name) {
         this.name = name;
-        try {
-            database.SQLUpdate("UPDATE Bateau SET Nom = ? WHERE ID = ?", name, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Boat Name Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        BoatController.setName(this);
     }
 
     public String getRegistration() {
@@ -180,12 +187,7 @@ public class Boat {
 
     public void setRegistration(String registration) {
         this.registration = registration;
-        try {
-            database.SQLUpdate("UPDATE Bateau SET Immatriculation = ? WHERE ID = ?", registration, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Registration Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        BoatController.setRegistration(this);
     }
 
     public float getLength() {
@@ -194,12 +196,7 @@ public class Boat {
 
     public void setLength(float length) {
         this.length = length;
-        try {
-            database.SQLUpdate("UPDATE Bateau SET Longueur = ? WHERE ID = ?", length, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Length Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        BoatController.setLength(this);
     }
 
     public float getWidth() {
@@ -208,12 +205,7 @@ public class Boat {
 
     public void setWidth(float width) {
         this.width = width;
-        try {
-            database.SQLUpdate("UPDATE Bateau SET Largeur = ? WHERE ID = ?", width, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Width Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        BoatController.setWidth(this);
     }
 
     public float getDraught() {
@@ -222,12 +214,7 @@ public class Boat {
 
     public void setDraught(float draught) {
         this.draught = draught;
-        try {
-            database.SQLUpdate("UPDATE Bateau SET TirantEau = ? WHERE ID = ?", draught, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Draught Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        BoatController.setDraught(this);
     }
 
     public float getWeight() {
@@ -236,12 +223,7 @@ public class Boat {
 
     public void setWeight(float weight) {
         this.weight = weight;
-        try {
-            database.SQLUpdate("UPDATE Bateau SET Poids = ? WHERE ID = ?", weight, String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Weight Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        BoatController.setWeight(this);
     }
 
     public Adherent getOwner() {
@@ -250,12 +232,7 @@ public class Boat {
 
     public void setOwner(Adherent owner) {
         this.owner = owner;
-        try {
-            database.SQLUpdate("UPDATE Bateau SET Proprietaire = ? WHERE ID = ?", owner.getId(),String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Owner Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        BoatController.setOwner(this);
     }
 
     public categoryType getCategory() {
@@ -264,12 +241,7 @@ public class Boat {
 
     public void setCategory(categoryType category) {
         this.category = category;
-        try {
-            database.SQLUpdate("UPDATE Bateau SET Categorie = ? WHERE ID = ?", category.toString(), String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Category Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        BoatController.setCategory(this);
     }
 
     public placeType getPlace() {
@@ -278,11 +250,6 @@ public class Boat {
 
     public void setPlace(placeType place) {
         this.place = place;
-        try {
-            database.SQLUpdate("UPDATE Bateau SET Place = ? WHERE ID = ?", place.toString(), String.valueOf(this.id));
-        } catch (SQLException e){
-            System.out.println("Place Update error n° " + e.getErrorCode() + " What goes wrong ?");
-            System.out.println(e.getMessage());
-        }
+        BoatController.setPlace(this);
     }
 }
