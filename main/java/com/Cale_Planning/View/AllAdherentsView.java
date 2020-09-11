@@ -1,7 +1,9 @@
 package com.Cale_Planning.View;
 
 import com.Cale_Planning.Controller.AdherentController;
+import com.Cale_Planning.Controller.BoatController;
 import com.Cale_Planning.Models.Adherent;
+import com.Cale_Planning.Models.Boat;
 
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
@@ -11,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
+import java.util.List;
 
 public class AllAdherentsView extends JInternalFrame {
     private JDesktopPane mainPane;
@@ -112,6 +115,11 @@ public class AllAdherentsView extends JInternalFrame {
                 int answer = JOptionPane.showConfirmDialog(thisFrame, "Voulez-vous vraiment supprimer l'adhérent sélectionné ?",
                         "Confirmation", JOptionPane.YES_NO_OPTION);
                 if (answer == 0){
+                    DefaultListModel<Boat> boats = adherent.getBoats();
+                    for (int i = 0; i < boats.size(); ++i){
+                        Boat boat = boats.get(i);
+                        BoatController.deleteBoat(boat);
+                    }
                     AdherentController.deleteAdherent(adherent);
                     DefaultListModel defaultListModel = (DefaultListModel) adherentJList.getModel();
                     defaultListModel.removeElement(adherent);
