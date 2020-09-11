@@ -703,7 +703,7 @@ public class StalledView extends JInternalFrame {
             @Override
             public void itemClick(ItemMouseEvent e) {
                 // display the form if item is double-clicked
-                if (e.getClicks() == 2)
+                if (e.getClicks() != 2)
                     return;
 
                 calendar.resetDrag();
