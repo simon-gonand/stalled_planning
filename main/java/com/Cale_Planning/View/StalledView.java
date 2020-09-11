@@ -19,8 +19,6 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
@@ -331,9 +329,9 @@ public class StalledView extends JInternalFrame {
                     default:
                         break;
                 }
-                StalledController.createAppointment(calendar, startDate, endDate, cale, selectedAdherent, color,
+                int id = StalledController.addAppointmentToDatabase(selectedAdherent, startDate, endDate, cale, color,
                         Float.valueOf(amountText.getValue().toString()), Float.valueOf(depositText.getValue().toString()), selectedBoat);
-                StalledController.addAppointmentToDatabase(selectedAdherent, startDate, endDate, cale, color,
+                StalledController.createAppointment(calendar, startDate, endDate, cale, selectedAdherent, color, id,
                         Float.valueOf(amountText.getValue().toString()), Float.valueOf(depositText.getValue().toString()), selectedBoat);
             }
         });
@@ -698,6 +696,7 @@ public class StalledView extends JInternalFrame {
 
         calendar.endInit();
 
+        JInternalFrame thisFrame = this;
         calendar.addCalendarListener(new CalendarAdapter()
         {
             @Override
@@ -741,6 +740,28 @@ public class StalledView extends JInternalFrame {
 
                 frame.add(amountAndDeposit, BorderLayout.CENTER);
 
+                JPanel buttonsPanel = new JPanel(new BorderLayout());
+
+                JButton delete = new JButton(new ImageIcon("src/main/resources/delete.png"));
+                delete.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        int answer = JOptionPane.showConfirmDialog(thisFrame, "Voulez-vous vraiment supprimer le bateau sélectionné ?",
+                                "Confirmation", JOptionPane.YES_NO_OPTION);
+                        if (answer == 0) {
+                            StalledController.deleteAppointmentOfDatabase(reservation);
+                            calendar.getSchedule().getItems().remove(reservation);
+                            calendar.repaint();
+                            JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, frame);
+                            for (JInternalFrame fr : desktopPane.getAllFrames()) {
+                                if (frame == fr)
+                                    desktopPane.remove(fr);
+                            }
+                            SwingUtilities.updateComponentTreeUI(desktopPane);
+                        } else {return;}
+                    }
+                });
+
                 JButton cancel = new JButton(new ImageIcon("src/main/resources/cancel.png"));
                 cancel.addActionListener(new ActionListener() {
                     @Override
@@ -754,7 +775,9 @@ public class StalledView extends JInternalFrame {
                     }
                 });
 
-                frame.add(cancel, BorderLayout.SOUTH);
+                buttonsPanel.add(delete, BorderLayout.WEST);
+                buttonsPanel.add(cancel, BorderLayout.EAST);
+                frame.add(buttonsPanel, BorderLayout.SOUTH);
 
                 frame.setVisible(true);
                 mainPane.add(frame);
@@ -787,6 +810,7 @@ public class StalledView extends JInternalFrame {
                         attributes.getInt("Cale"),
                         new Adherent(attributes.getInt("Adherent")),
                         Colors.fromName(attributes.getString("Couleur")),
+                        attributes.getInt("ID"),
                         attributes.getInt("Montant"),
                         attributes.getInt("Caution"),
                         new Boat(attributes.getInt("Bateau")));

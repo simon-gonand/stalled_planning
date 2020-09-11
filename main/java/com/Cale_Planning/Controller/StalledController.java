@@ -11,13 +11,14 @@ import com.mindfusion.scheduling.Calendar;
 import com.mindfusion.scheduling.model.Style;
 
 import java.awt.*;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 public class StalledController {
     public static void createAppointment (Calendar calendar, DateTime startDate, DateTime endDate, int cale, Adherent adherent,
-                                          Color color, float amount, float deposit, Boat boat){
-        Reservation appointment = new Reservation(amount, deposit, boat);
+                                          Color color, int id, float amount, float deposit, Boat boat) {
+        Reservation appointment = new Reservation(id, amount, deposit, boat);
         appointment.setHeaderText(adherent.getSurname() + " " + adherent.getName());
         appointment.setStartTime(startDate);
         appointment.setEndTime(endDate);
@@ -32,14 +33,27 @@ public class StalledController {
         calendar.repaint();
     }
 
-    public static void addAppointmentToDatabase(Adherent adherent, DateTime startDate, DateTime endDate, int cale,
+    public static int addAppointmentToDatabase(Adherent adherent, DateTime startDate, DateTime endDate, int cale,
                                                 Color color, float amount, float deposit, Boat boat){
         try {
             Main.getDatabase().SQLUpdate("INSERT INTO Reservation (Adherent, DateDebut, DateFin, Cale, Couleur, Montant, Caution, Bateau)" +
                     " VALUES(?,?,?,?,?,?,?,?)", adherent.getId(), startDate, endDate, cale, colorToName(color), amount, deposit, boat.getId());
+            ResultSet resultSet = Main.getDatabase().SQLSelect("SELECT ID FROM Reservation ORDER BY ID DESC LIMIT 1");
+            resultSet.next();
+            return resultSet.getInt("ID");
         } catch (SQLException ex) {
             System.out.println("Reservation insertion error n° " + ex.getErrorCode() + "What goes wrong ?");
             System.out.println(ex.getMessage());
+        }
+        return 0;
+    }
+
+    public static void deleteAppointmentOfDatabase(Reservation reservation){
+        try {
+            Main.getDatabase().SQLUpdate("DELETE FROM Reservation WHERE ID = ?", reservation.getID());
+        } catch (SQLException e) {
+            System.err.println("Delete from Reservation error n° " + e.getErrorCode());
+            System.err.println("What goes wrong ? " + e.getMessage());
         }
     }
 
