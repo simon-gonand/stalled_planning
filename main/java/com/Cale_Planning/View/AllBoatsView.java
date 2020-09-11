@@ -1,6 +1,8 @@
 package com.Cale_Planning.View;
 
+import com.Cale_Planning.Controller.AdherentController;
 import com.Cale_Planning.Controller.BoatController;
+import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
 
 import javax.swing.*;
@@ -10,32 +12,23 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
+import java.util.Date;
 
 public class AllBoatsView extends JInternalFrame {
+    private JList<Boat> boatJList;
+    private JDesktopPane mainPane;
     public AllBoatsView(JDesktopPane mainPane) throws PropertyVetoException {
         super();
 
+        this.mainPane = mainPane;
         setTitle("Les Bateaux");
         this.getContentPane().setBackground(Color.white);
         this.setLayout(new BorderLayout());
 
         fillBoatsView(mainPane);
-
-        final JInternalFrame thisFrame = this;
-        JButton close = new JButton(new ImageIcon("src/main/resources/cancel.png"));
-        close.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
-                for (JInternalFrame frame : desktopPane.getAllFrames()){
-                    if (frame == thisFrame)
-                        desktopPane.remove(frame);
-                }
-                SwingUtilities.updateComponentTreeUI(desktopPane);
-            }
-        });
-
-        this.add(close, BorderLayout.PAGE_END);
+        JPanel buttonsPanel = new JPanel(new GridBagLayout());
+        addButtons(buttonsPanel);
+        this.add(buttonsPanel, BorderLayout.PAGE_END);
 
         int i = mainPane.getAllFrames().length -1;
         while (i >= 0) {
@@ -57,8 +50,8 @@ public class AllBoatsView extends JInternalFrame {
     }
 
     private void fillBoatsView(JDesktopPane mainPane) {
-        Boat[] allBoats = BoatController.getAllBoat();
-        JList<Boat> boatJList = new JList<>(allBoats);
+        DefaultListModel<Boat> allBoats = BoatController.getAllBoat();
+        boatJList = new JList<>(allBoats);
         boatJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -75,5 +68,75 @@ public class AllBoatsView extends JInternalFrame {
         });
 
         this.add(boatJList, BorderLayout.CENTER);
+    }
+
+    private void addButtons(JPanel buttonsPanel){
+        buttonsPanel.setBackground(Color.white);
+
+        final JInternalFrame thisFrame = this;
+        JButton close = new JButton(new ImageIcon("src/main/resources/cancel.png"));
+        close.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                for (JInternalFrame frame : desktopPane.getAllFrames()){
+                    if (frame == thisFrame)
+                        desktopPane.remove(frame);
+                }
+                SwingUtilities.updateComponentTreeUI(desktopPane);
+            }
+        });
+
+        JButton addBoat = new JButton(new ImageIcon("src/main/resources/add.png"));
+        addBoat.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    new BoatView(mainPane, boatJList);
+                } catch (PropertyVetoException ex) {
+                    ex.printStackTrace();
+                }
+                SwingUtilities.updateComponentTreeUI(thisFrame);
+            }
+        });
+
+        JButton deleteBoat = new JButton(new ImageIcon("src/main/resources/delete.png"));
+        deleteBoat.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Boat boat = boatJList.getSelectedValue();
+                if (boat == null){
+                    JOptionPane.showMessageDialog(thisFrame, "Veuillez sélectionner un bateau à supprimer", "Bateau non sélecitonné",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                int answer = JOptionPane.showConfirmDialog(thisFrame, "Voulez-vous vraiment supprimer le bateau sélectionné ?",
+                        "Confirmation", JOptionPane.YES_NO_OPTION);
+                if (answer == 0){
+                    BoatController.deleteBoat(boat);
+                    DefaultListModel defaultListModel = (DefaultListModel) boatJList.getModel();
+                    defaultListModel.removeElement(boat);
+                    boatJList.setModel(defaultListModel);
+                    SwingUtilities.updateComponentTreeUI(thisFrame);
+                } else
+                    return;
+            }
+        });
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.VERTICAL;
+        constraints.anchor = GridBagConstraints.LINE_START;
+
+        buttonsPanel.add(addBoat, constraints);
+        ++constraints.gridx;
+        constraints.anchor = GridBagConstraints.CENTER;
+        buttonsPanel.add(deleteBoat, constraints);
+        ++constraints.gridx;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        buttonsPanel.add(close, constraints);
     }
 }

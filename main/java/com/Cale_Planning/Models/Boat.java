@@ -149,9 +149,8 @@ public class Boat {
         }
     }
 
-    public Boat(int id, String name, String registration, float length, float width, float draught, float weight, Adherent owner,
+    public Boat(String name, String registration, float length, float width, float draught, float weight, Adherent owner,
                 categoryType category, placeType place) {
-        this.id = id;
         this.name = name;
         this.registration = registration;
         this.length = length;
@@ -161,6 +160,10 @@ public class Boat {
         this.owner = owner;
         this.category = category;
         this.place = place;
+        int id = BoatController.addBoat(this);
+        if (id != 0){
+            this.id = id;
+        }
     }
 
     @Override

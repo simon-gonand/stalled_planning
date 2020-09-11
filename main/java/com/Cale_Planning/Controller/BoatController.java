@@ -47,15 +47,27 @@ public class BoatController {
 
     public static void deleteBoat (Boat boat){
         try {
-            Main.getDatabase().SQLUpdate("DELETE FROM Boat WHERE ID = " + boat.getId());
+            Main.getDatabase().SQLUpdate("DELETE FROM Bateau WHERE ID = " + boat.getId());
         } catch (SQLException e) {
             System.err.println("Delete from Boat error n° " + e.getErrorCode());
             System.err.println("What goes wrong ? " + e.getMessage());
         }
     }
 
-    public static void addBoat (Boat boat){
-
+    public static int addBoat (Boat boat){
+        try{
+            Main.getDatabase().SQLUpdate("INSERT INTO Bateau (Nom, Immatriculation, Categorie, Longueur, Largeur, TirantEau, " +
+                            "Poids, Place, Proprietaire) VALUES (?,?,?,?,?,?,?,?,?)",
+                    boat.getName(), boat.getRegistration(), boat.getCategory().toString(), boat.getLength(), boat.getWidth(), boat.getDraught(),
+                    boat.getWeight(), boat.getPlace().toString(), boat.getOwner().getId());
+            ResultSet resultSet = Main.getDatabase().SQLSelect("SELECT ID FROM Bateau ORDER BY ID DESC LIMIT 1");
+            resultSet.next();
+            return resultSet.getInt("ID");
+        } catch (SQLException e ){
+            System.out.println("Boat insertion error n° " + e.getErrorCode() + " What goes wrong ?");
+            System.out.println(e.getMessage());
+        }
+        return 0;
     }
 
     public static void setName(Boat boat) {

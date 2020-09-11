@@ -12,6 +12,7 @@ import java.beans.PropertyVetoException;
 
 public class BoatView extends JInternalFrame {
     private Boat boat;
+    private JList<Boat> boatJList;
     private JTextField name, registration, length, width, draught, weight;
     private JComboBox<Adherent> owner;
     private JComboBox<Boat.categoryType> category;
@@ -67,6 +68,55 @@ public class BoatView extends JInternalFrame {
         setSelected(true);
     }
 
+    public BoatView(JDesktopPane mainPane, JList<Boat> boatJList) throws PropertyVetoException {
+        super();
+
+        this.boatJList = boatJList;
+        setTitle("Fiche Bateau ");
+        this.getContentPane().setBackground(Color.white);
+        setLayout(new GridLayout(4,1));
+
+        int i = mainPane.getAllFrames().length -1;
+        while (i >= 0) {
+            JInternalFrame frame = mainPane.getAllFrames()[i];
+            if (frame instanceof AdherentView || frame instanceof BoatView || frame instanceof AllAdherentsView || frame instanceof AllBoatsView) {
+                this.setBounds(frame.getX() + 20, frame.getY() + 20, 700, 250);
+                break;
+            }
+            --i;
+        }
+        if (i < 0) {
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            this.setBounds(screenSize.width / 3, screenSize.height / 4, 700, 250);
+        }
+
+        setResizable(true);
+        setVisible(true);
+
+        JPanel boatPropertiesPanel = new JPanel();
+        JPanel ownerCategoryPanel = new JPanel();
+        JPanel placePanel = new JPanel();
+        JPanel buttonPanel = new JPanel();
+
+        boatPropertiesPanel.setBackground(Color.white);
+        ownerCategoryPanel.setBackground(Color.white);
+        placePanel.setBackground(Color.white);
+        buttonPanel.setBackground(Color.white);
+
+        fillBoatPropertiesPanel(boatPropertiesPanel);
+        fillOwnerCategoryPanel(ownerCategoryPanel);
+        fillPlacePanel(placePanel);
+        fillButtonPanel(buttonPanel);
+
+        this.add(boatPropertiesPanel);
+        this.add(ownerCategoryPanel);
+        this.add(placePanel);
+        this.add(buttonPanel);
+
+        mainPane.add(this);
+        setSelected(true);
+    }
+
     private void fillBoatPropertiesPanel (JPanel panel){
         panel.setLayout(new GridLayout(2,1));
 
@@ -76,11 +126,25 @@ public class BoatView extends JInternalFrame {
         firstRow.setBackground(Color.white);
         secondRow.setBackground(Color.white);
 
+        if (boat == null){
+            this.name = new JTextField();
+            this.registration = new JTextField();
+            this.length = new JTextField();
+            this.width = new JTextField();
+            this.draught = new JTextField();
+            this.weight = new JTextField();
+        } else {
+            this.name = new JTextField(boat.getName());
+            this.registration = new JTextField(boat.getRegistration());
+            this.length = new JTextField(String.valueOf(boat.getLength()));
+            this.width = new JTextField(String.valueOf(boat.getWidth()));
+            this.draught = new JTextField(String.valueOf(boat.getDraught()));
+            this.weight = new JTextField(String.valueOf(boat.getWeight()));
+        }
+
         JLabel nameLabel = new JLabel("Nom");
-        this.name = new JTextField(boat.getName());
         this.name.setBackground(new Color(239,239,239));
         JLabel registrationLabel = new JLabel("Immatriculation");
-        this.registration = new JTextField(boat.getRegistration());
         this.registration.setBackground(new Color(239,239,239));
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -103,16 +167,12 @@ public class BoatView extends JInternalFrame {
         firstRow.add(registration, constraints);
 
         JLabel lengthLabel = new JLabel ("Longueur (m)");
-        this.length = new JTextField(String.valueOf(boat.getLength()));
         this.length.setBackground(new Color(239,239,239));
         JLabel widthLabel = new JLabel ("Largeur (m)");
-        this.width = new JTextField(String.valueOf(boat.getWidth()));
         this.width.setBackground(new Color(239,239,239));
         JLabel draughtLabel = new JLabel ("Tirant d'eau (m)");
-        this.draught = new JTextField(String.valueOf(boat.getDraught()));
         this.draught.setBackground(new Color(239,239,239));
         JLabel weightLabel = new JLabel ("Poids (kg)");
-        this.weight = new JTextField(String.valueOf(boat.getWeight()));
         this.weight.setBackground(new Color(239,239,239));
 
         secondRow.add(lengthLabel);
@@ -133,13 +193,16 @@ public class BoatView extends JInternalFrame {
 
         JLabel categoryLabel = new JLabel("Categorie");
         this.category = new JComboBox<Boat.categoryType>(Boat.categoryType.values());
-        this.category.setSelectedItem(boat.getCategory());
         JLabel ownerLabel = new JLabel("Propriétaire");
         Adherent[] allAdherents = AdherentController.getAllAdherentArray();
         this.owner = new JComboBox<Adherent>(allAdherents);
-        for (Adherent adherent : allAdherents){
-            if (adherent.getId() == boat.getOwner().getId())
-                owner.setSelectedItem(adherent);
+
+        if (boat != null) {
+            this.category.setSelectedItem(boat.getCategory());
+            for (Adherent adherent : allAdherents){
+                if (adherent.getId() == boat.getOwner().getId())
+                    owner.setSelectedItem(adherent);
+            }
         }
 
         panel.add(categoryLabel);
@@ -167,23 +230,25 @@ public class BoatView extends JInternalFrame {
         ground.setActionCommand(Boat.placeType.TERRE.toString());
         ground.setBackground(Color.white);
 
-        switch (this.boat.getPlace()){
-            case PASSAGER:
-                temporary.setSelected(true);
-                break;
-            case ANNUEL:
-                annual.setSelected(true);
-                break;
-            case CLUB:
-                club.setSelected(true);
-                break;
-            case TRADITION:
-                tradition.setSelected(true);
-                break;
-            case TERRE:
-                ground.setSelected(true);
-                break;
-            default: break;
+        if (boat != null){
+            switch (this.boat.getPlace()){
+                case PASSAGER:
+                    temporary.setSelected(true);
+                    break;
+                case ANNUEL:
+                    annual.setSelected(true);
+                    break;
+                case CLUB:
+                    club.setSelected(true);
+                    break;
+                case TRADITION:
+                    tradition.setSelected(true);
+                    break;
+                case TERRE:
+                    ground.setSelected(true);
+                    break;
+                default: break;
+            }
         }
 
         this.place = new ButtonGroup();
@@ -224,29 +289,45 @@ public class BoatView extends JInternalFrame {
         submit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                boat.setName(name.getText());
-                boat.setRegistration(registration.getText());
-                boat.setLength(Float.valueOf(length.getText()));
-                boat.setWidth(Float.valueOf(width.getText()));
-                boat.setDraught(Float.valueOf(draught.getText()));
-                boat.setWeight(Float.valueOf(weight.getText()));
-                boat.setPlace(Boat.placeType.parse(place.getSelection().getActionCommand()));
-                boat.setCategory((Boat.categoryType) category.getSelectedItem());
+                if (boat != null) {
+                    boat.setName(name.getText());
+                    boat.setRegistration(registration.getText());
+                    boat.setLength(Float.valueOf(length.getText()));
+                    boat.setWidth(Float.valueOf(width.getText()));
+                    boat.setDraught(Float.valueOf(draught.getText()));
+                    boat.setWeight(Float.valueOf(weight.getText()));
+                    boat.setPlace(Boat.placeType.parse(place.getSelection().getActionCommand()));
+                    boat.setCategory((Boat.categoryType) category.getSelectedItem());
 
-                Adherent oldOwner = boat.getOwner();
-                if (oldOwner.getId() != ((Adherent) owner.getSelectedItem()).getId()) {
-                    boat.setOwner((Adherent) owner.getSelectedItem());
-                    oldOwner.removeBoat(boat);
-                    JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
-                    for (JInternalFrame frame : desktopPane.getAllFrames()) {
-                        if (frame instanceof AdherentView) {
-                            AdherentView adherentView = (AdherentView) frame;
-                            if (adherentView.getAdherent().getId() == ((Adherent) owner.getSelectedItem()).getId())
-                                adherentView.updateBoatList(((Adherent) owner.getSelectedItem()).getBoats());
-                            else if (adherentView.getAdherent().getId() == oldOwner.getId())
-                                adherentView.updateBoatList(oldOwner.getBoats());
+                    Adherent oldOwner = boat.getOwner();
+                    if (oldOwner.getId() != ((Adherent) owner.getSelectedItem()).getId()) {
+                        boat.setOwner((Adherent) owner.getSelectedItem());
+                        oldOwner.removeBoat(boat);
+                        JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                        for (JInternalFrame frame : desktopPane.getAllFrames()) {
+                            if (frame instanceof AdherentView) {
+                                AdherentView adherentView = (AdherentView) frame;
+                                if (adherentView.getAdherent().getId() == ((Adherent) owner.getSelectedItem()).getId())
+                                    adherentView.updateBoatList(((Adherent) owner.getSelectedItem()).getBoats());
+                                else if (adherentView.getAdherent().getId() == oldOwner.getId())
+                                    adherentView.updateBoatList(oldOwner.getBoats());
+                            }
                         }
                     }
+                    JOptionPane.showMessageDialog(thisFrame, "Les informations du bateau " + name.getText() +
+                            " a bien été modifié", "Bateau modifié", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    Boat boat = new Boat(name.getText(), registration.getText(), Float.valueOf(length.getText()), Float.valueOf(width.getText()),
+                            Float.valueOf(draught.getText()), Float.valueOf(weight.getText()), (Adherent) owner.getSelectedItem(),
+                            (Boat.categoryType) category.getSelectedItem(), Boat.placeType.parse(place.getSelection().getActionCommand()));
+                    JOptionPane.showMessageDialog(thisFrame, "Le bateau " + name.getText() +
+                            " a bien été ajouté", "Bateau ajouté", JOptionPane.INFORMATION_MESSAGE);
+                    DefaultListModel defaultListModel = (DefaultListModel) boatJList.getModel();
+                    defaultListModel.add(defaultListModel.size(), boat);
+                    boatJList.setModel(defaultListModel);
+                    JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                    SwingUtilities.updateComponentTreeUI(desktopPane);
                 }
             }
         });
