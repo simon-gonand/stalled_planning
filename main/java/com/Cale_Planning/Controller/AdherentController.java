@@ -44,7 +44,7 @@ public class AdherentController {
         try {
             Main.getDatabase().SQLUpdate("DELETE FROM Adherent WHERE ID = " + adherent.getId());
         } catch (SQLException e) {
-            System.err.println("Select All Adherent error n° " + e.getErrorCode());
+            System.err.println("Delete from Adherent error n° " + e.getErrorCode());
             System.err.println("What goes wrong ? " + e.getMessage());
         }
     }
