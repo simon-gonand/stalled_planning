@@ -303,6 +303,7 @@ public class BoatView extends JInternalFrame {
                     if (oldOwner.getId() != ((Adherent) owner.getSelectedItem()).getId()) {
                         boat.setOwner((Adherent) owner.getSelectedItem());
                         oldOwner.removeBoat(boat);
+                        ((Adherent) owner.getSelectedItem()).addBoat(boat);
                         JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
                         for (JInternalFrame frame : desktopPane.getAllFrames()) {
                             if (frame instanceof AdherentView) {
@@ -315,7 +316,7 @@ public class BoatView extends JInternalFrame {
                         }
                     }
                     JOptionPane.showMessageDialog(thisFrame, "Les informations du bateau " + name.getText() +
-                            " a bien été modifié", "Bateau modifié", JOptionPane.INFORMATION_MESSAGE);
+                            " ont bien été modifié", "Bateau modifié", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else {
                     Boat boat = new Boat(name.getText(), registration.getText(), Float.valueOf(length.getText()), Float.valueOf(width.getText()),
