@@ -49,17 +49,21 @@ public class AdherentController {
         }
     }
 
-    public static void addAdherent (Adherent adherent){
+    public static int addAdherent (Adherent adherent){
         try{
             Main.getDatabase().SQLUpdate("INSERT INTO Adherent (Genre, Nom, Prenom, DateNaissance, DateAdhesion, Batiment, Rue, " +
                             "CodePostal, Ville, Email, Telephone, Portable, Com) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     adherent.getGender().toString(), adherent.getName(), adherent.getSurname(), adherent.getDateOfBirth(),
                     adherent.getSubscriptionYear(), adherent.getBuilding(), adherent.getAddress(), adherent.getPostalCode(), adherent.getCity(),
                     adherent.getEmail(), adherent.getPhone(), adherent.getMobile(), adherent.getComment());
+            ResultSet resultSet = Main.getDatabase().SQLSelect("SELECT ID FROM Adherent ORDER BY ID DESC LIMIT 1");
+            resultSet.next();
+            return resultSet.getInt("ID");
         } catch (SQLException e ){
             System.out.println("Adherent insertion error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
         }
+        return 0;
     }
 
     public static void setSubscriptionYear(Adherent adherent) {

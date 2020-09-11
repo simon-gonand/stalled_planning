@@ -135,7 +135,9 @@ public class Adherent {
         this.comment = comment;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
-        AdherentController.addAdherent(this);
+        int id = AdherentController.addAdherent(this);
+        if (id != 0)
+            this.id = id;
     }
 
     @Override
