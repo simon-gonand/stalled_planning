@@ -2,6 +2,8 @@ package com.Cale_Planning.View;
 
 import com.Cale_Planning.Controller.AdherentController;
 import com.Cale_Planning.Controller.BoatController;
+import com.Cale_Planning.Controller.StalledController;
+import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
 
@@ -13,6 +15,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class AllAdherentsView extends JInternalFrame {
@@ -116,10 +120,24 @@ public class AllAdherentsView extends JInternalFrame {
                         "Confirmation", JOptionPane.YES_NO_OPTION);
                 if (answer == 0){
                     DefaultListModel<Boat> boats = adherent.getBoats();
+
+                    try {
+                        ResultSet resultSet = Main.getDatabase().SQLSelect("SELECT * FROM Reservation");
+                        while (resultSet.next()) {
+                            if (adherent.getId() == resultSet.getInt("Adherent")) {
+                                StalledController.deleteAppointmentOfDatabase(resultSet.getInt("ID"));
+                            }
+                        }
+                    } catch (SQLException ex){
+                        System.out.println("Reservation select error n° " + ex.getErrorCode() + "What goes wrong ?");
+                        System.out.println(ex.getMessage());
+                    }
+
                     for (int i = 0; i < boats.size(); ++i){
                         Boat boat = boats.get(i);
                         BoatController.deleteBoat(boat);
                     }
+
                     AdherentController.deleteAdherent(adherent);
                     DefaultListModel defaultListModel = (DefaultListModel) adherentJList.getModel();
                     defaultListModel.removeElement(adherent);

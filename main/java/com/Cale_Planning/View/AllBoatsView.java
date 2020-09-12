@@ -2,6 +2,8 @@ package com.Cale_Planning.View;
 
 import com.Cale_Planning.Controller.AdherentController;
 import com.Cale_Planning.Controller.BoatController;
+import com.Cale_Planning.Controller.StalledController;
+import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
 
@@ -12,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 public class AllBoatsView extends JInternalFrame {
@@ -113,6 +117,17 @@ public class AllBoatsView extends JInternalFrame {
                 int answer = JOptionPane.showConfirmDialog(thisFrame, "Voulez-vous vraiment supprimer le bateau sélectionné ?",
                         "Confirmation", JOptionPane.YES_NO_OPTION);
                 if (answer == 0){
+                    try {
+                        ResultSet resultSet = Main.getDatabase().SQLSelect("SELECT * FROM Reservation");
+                        while (resultSet.next()) {
+                            if (boat.getId() == resultSet.getInt("Bateau")) {
+                                StalledController.deleteAppointmentOfDatabase(resultSet.getInt("ID"));
+                            }
+                        }
+                    } catch (SQLException ex){
+                        System.out.println("Reservation select error n° " + ex.getErrorCode() + "What goes wrong ?");
+                        System.out.println(ex.getMessage());
+                    }
                     BoatController.deleteBoat(boat);
                     DefaultListModel defaultListModel = (DefaultListModel) boatJList.getModel();
                     defaultListModel.removeElement(boat);

@@ -164,6 +164,7 @@ public class Boat {
         if (id != 0){
             this.id = id;
         }
+        this.owner.addBoat(this);
     }
 
     @Override

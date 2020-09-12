@@ -57,6 +57,15 @@ public class StalledController {
         }
     }
 
+    public static void deleteAppointmentOfDatabase(int id){
+        try {
+            Main.getDatabase().SQLUpdate("DELETE FROM Reservation WHERE ID = ?", id);
+        } catch (SQLException e) {
+            System.err.println("Delete from Reservation error n° " + e.getErrorCode());
+            System.err.println("What goes wrong ? " + e.getMessage());
+        }
+    }
+
     private static String colorToName (Color color){
         if (color.getBlue() == 254 || color.getBlue() == 127 || color.getBlue() == 174)
             color = new Color(color.getRed(), color.getGreen(), color.getBlue() + 1, color.getAlpha());
