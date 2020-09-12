@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 
 public class StalledController {
     public static void createAppointment (Calendar calendar, DateTime startDate, DateTime endDate, int cale, Adherent adherent,
-                                          Color color, int id, float amount, float deposit, Boat boat) {
-        Reservation appointment = new Reservation(id, amount, deposit, boat);
+                                          Color color, int id, float amount, float deposit, Boat boat, boolean isUpToDate) {
+        Reservation appointment = new Reservation(id, amount, deposit, isUpToDate, boat);
         appointment.setHeaderText(adherent.getSurname() + " " + adherent.getName());
         appointment.setStartTime(startDate);
         appointment.setEndTime(endDate);
@@ -27,17 +27,29 @@ public class StalledController {
         style.setLineColor(color);
         style.setFillColor(color);
         style.setBrush(new GradientBrush(Colors.White, color, 90));
-        style.setHeaderTextColor(color);
+        if (!isUpToDate)
+            style.setHeaderTextColor(Color.RED);
 
         calendar.getSchedule().getItems().add(appointment);
         calendar.repaint();
     }
 
+    public static void createAppointment (Calendar calendar, Reservation reservation){
+        Style style = reservation.getStyle();
+        if (!reservation.isUpToDate())
+            style.setHeaderTextColor(Color.RED);
+        else
+            style.setHeaderTextColor(Color.black);
+        calendar.getSchedule().getItems().add(reservation);
+        calendar.repaint();
+    }
+
     public static int addAppointmentToDatabase(Adherent adherent, DateTime startDate, DateTime endDate, int cale,
-                                                Color color, float amount, float deposit, Boat boat){
+                                                Color color, float amount, float deposit, Boat boat, boolean isUpToDate){
         try {
-            Main.getDatabase().SQLUpdate("INSERT INTO Reservation (Adherent, DateDebut, DateFin, Cale, Couleur, Montant, Caution, Bateau)" +
-                    " VALUES(?,?,?,?,?,?,?,?)", adherent.getId(), startDate, endDate, cale, colorToName(color), amount, deposit, boat.getId());
+            Main.getDatabase().SQLUpdate("INSERT INTO Reservation (Adherent, DateDebut, DateFin, Cale, Couleur, Montant, Caution, Bateau, " +
+                            "CotisationAJour) VALUES(?,?,?,?,?,?,?,?,?)", adherent.getId(), startDate, endDate, cale, colorToName(color), amount,
+                    deposit, boat.getId(), isUpToDate);
             ResultSet resultSet = Main.getDatabase().SQLSelect("SELECT ID FROM Reservation ORDER BY ID DESC LIMIT 1");
             resultSet.next();
             return resultSet.getInt("ID");
@@ -128,5 +140,15 @@ public class StalledController {
             }
         }
         return amount;
+    }
+
+    public static void setUpToDate (Reservation reservation){
+        try {
+            Main.getDatabase().SQLUpdate("UPDATE Reservation SET CotisationAJour = ? WHERE ID = ?", reservation.isUpToDate(),
+                    String.valueOf(reservation.getID()));
+        } catch (SQLException e){
+            System.out.println("Boat Name Update error n° " + e.getErrorCode() + " What goes wrong ?");
+            System.out.println(e.getMessage());
+        }
     }
 }

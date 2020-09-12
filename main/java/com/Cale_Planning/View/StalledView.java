@@ -38,6 +38,7 @@ public class StalledView extends JInternalFrame {
     private JDesktopPane mainPane;
     private com.mindfusion.scheduling.Calendar calendar = new com.mindfusion.scheduling.Calendar();
     private MSAccessBase database;
+    private JCheckBox isUpToDate;
 
     public StalledView (JDesktopPane mainPane) throws PropertyVetoException {
         super();
@@ -243,6 +244,9 @@ public class StalledView extends JInternalFrame {
         booking.setBorder(BorderFactory.createTitledBorder("Réservation"));
         fillBookingPanel(booking);
 
+        isUpToDate = new JCheckBox("Cotisation à jour");
+        isUpToDate.setBackground(Color.white);
+
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -256,6 +260,8 @@ public class StalledView extends JInternalFrame {
         panel.add(boatInfo, constraints);
         ++constraints.gridy;
         panel.add(booking, constraints);
+        ++constraints.gridy;
+        panel.add(isUpToDate, constraints);
     }
 
     private void fillBookingPanel (JPanel panel) throws ParseException {
@@ -330,9 +336,11 @@ public class StalledView extends JInternalFrame {
                         break;
                 }
                 int id = StalledController.addAppointmentToDatabase(selectedAdherent, startDate, endDate, cale, color,
-                        Float.valueOf(amountText.getValue().toString()), Float.valueOf(depositText.getValue().toString()), selectedBoat);
+                        Float.valueOf(amountText.getValue().toString()), Float.valueOf(depositText.getValue().toString()), selectedBoat,
+                        isUpToDate.isSelected());
                 StalledController.createAppointment(calendar, startDate, endDate, cale, selectedAdherent, color, id,
-                        Float.valueOf(amountText.getValue().toString()), Float.valueOf(depositText.getValue().toString()), selectedBoat);
+                        Float.valueOf(amountText.getValue().toString()), Float.valueOf(depositText.getValue().toString()), selectedBoat,
+                        isUpToDate.isSelected());
             }
         });
         JButton cancelButton = new JButton("Cancel");
@@ -718,7 +726,7 @@ public class StalledView extends JInternalFrame {
                 title.setHorizontalAlignment(JLabel.CENTER);
                 frame.add(title, BorderLayout.NORTH);
 
-                JPanel amountAndDeposit = new JPanel(new GridLayout(2, 2));
+                JPanel amountAndDeposit = new JPanel(new GridLayout(3, 2));
                 JLabel amountTitle = new JLabel("Montant");
                 amountTitle.setFont(new Font(amountTitle.getFont().getName(), Font.BOLD, 25));
                 amountTitle.setHorizontalAlignment(JLabel.CENTER);
@@ -733,10 +741,23 @@ public class StalledView extends JInternalFrame {
                 depositLabel.setFont(new Font(depositLabel.getFont().getName(), Font.PLAIN, 20));
                 depositLabel.setHorizontalAlignment(JLabel.CENTER);
 
+                JCheckBox UpToDateCheck = new JCheckBox("Cotisation à jour");
+                UpToDateCheck.setSelected(reservation.isUpToDate());
+                UpToDateCheck.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        reservation.setUpToDate(UpToDateCheck.isSelected());
+                        StalledController.setUpToDate(reservation);
+                        calendar.getSchedule().getItems().remove(reservation);
+                        StalledController.createAppointment(calendar, reservation);
+                    }
+                });
+
                 amountAndDeposit.add(amountTitle);
                 amountAndDeposit.add(depositTitle);
                 amountAndDeposit.add(amountLabel);
                 amountAndDeposit.add(depositLabel);
+                amountAndDeposit.add(UpToDateCheck);
 
                 frame.add(amountAndDeposit, BorderLayout.CENTER);
 
@@ -813,7 +834,8 @@ public class StalledView extends JInternalFrame {
                         attributes.getInt("ID"),
                         attributes.getInt("Montant"),
                         attributes.getInt("Caution"),
-                        new Boat(attributes.getInt("Bateau")));
+                        new Boat(attributes.getInt("Bateau")),
+                        attributes.getBoolean("CotisationAJour"));
                 SwingUtilities.updateComponentTreeUI(this);
             }
         } catch (SQLException e){
