@@ -106,6 +106,8 @@ public class MSAccessBase {
                     DateTime dateTime = (DateTime) variables[i];
                     pstmt.setDate(i + 1, new Date(dateTime.toJavaCalendar().getTimeInMillis()));
                 }
+                else if (variables[i] instanceof Boolean)
+                    pstmt.setBoolean(i+1, (Boolean) variables[i]);
             }
             int nrows = pstmt.executeUpdate();
         }
