@@ -28,7 +28,7 @@ import java.util.*;
 public class AdherentView extends JInternalFrame {
     private Adherent adherent;
     private JList adherentList;
-    private JTextField name, surname, subscription, building, street, postalCode, city, email;
+    private JTextField name, surname, subscription, additional, street, postalCode, city, email;
     private JFormattedTextField phone, mobile;
     private JDatePicker birth;
     private ButtonGroup genders;
@@ -157,7 +157,6 @@ public class AdherentView extends JInternalFrame {
                     break;
                 case NO_GENDER:
                     noGender.setSelected(true);
-                    break;
                 default:
                     break;
             }
@@ -269,7 +268,7 @@ public class AdherentView extends JInternalFrame {
         this.mobile = new JFormattedTextField(fmt);
 
         if (adherent != null) {
-            this.building = new JTextField(this.adherent.getBuilding());
+            this.additional = new JTextField(this.adherent.getAdditional());
 
             this.street = new JTextField(this.adherent.getAddress());
 
@@ -283,14 +282,14 @@ public class AdherentView extends JInternalFrame {
             this.email = new JTextField(this.adherent.getEmail());
         }
         else {
-            this.building = new JTextField();
+            this.additional = new JTextField();
             this.street = new JTextField();
             this.city = new JTextField();
             this.postalCode = new JTextField();
             this.email = new JTextField();
         }
 
-        this.building.setBackground(new Color(239, 239, 239));
+        this.additional.setBackground(new Color(239, 239, 239));
         this.street.setBackground(new Color(239, 239, 239));
         this.city.setBackground(new Color(239, 239, 239));
         this.postalCode.setBackground(new Color(239, 239, 239));
@@ -344,20 +343,20 @@ public class AdherentView extends JInternalFrame {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridwidth = 1;
 
-        panel.add(buildingLabel, constraints);
-        ++constraints.gridx;
-        constraints.gridwidth = 5;
-        constraints.weightx = 0.9;
-        panel.add(this.building, constraints);
-        constraints.gridx = 0;
-        ++constraints.gridy;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.1;
         panel.add(streetLabel, constraints);
         ++constraints.gridx;
         constraints.gridwidth = 5;
         constraints.weightx = 0.9;
         panel.add(this.street, constraints);
+        constraints.gridx = 0;
+        ++constraints.gridy;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0.1;
+        panel.add(buildingLabel, constraints);
+        ++constraints.gridx;
+        constraints.gridwidth = 5;
+        constraints.weightx = 0.9;
+        panel.add(this.additional, constraints);
         constraints.gridx = 0;
         ++constraints.gridy;
         constraints.gridwidth = 1;
@@ -483,10 +482,10 @@ public class AdherentView extends JInternalFrame {
                     adherent.setDateOfBirth((Date) birth.getModel().getValue());
                     adherent.setSubscriptionYear(Integer.valueOf(subscription.getText()));
                     adherent.setGender(Adherent.GenderType.parse(genders.getSelection().getActionCommand()));
-                    adherent.setBuilding(building.getText());
+                    adherent.setAdditional(additional.getText());
                     adherent.setAddress(street.getText());
                     adherent.setCity(city.getText());
-                    adherent.setPostalCode(Integer.valueOf(postalCode.getText()));
+                    adherent.setPostalCode(postalCode.getText());
                     adherent.setMobile(mobile.getText());
                     adherent.setPhone(phone.getText());
                     adherent.setEmail(email.getText());
@@ -495,8 +494,8 @@ public class AdherentView extends JInternalFrame {
                             " ont bien été modifié", "Adhérent modifié", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else {
-                    Adherent adherent = new Adherent(Integer.valueOf(subscription.getText()), Integer.valueOf(postalCode.getText()), name.getText(),
-                            surname.getText(), building.getText(), street.getText(), city.getText(), email.getText(), phone.getText(), mobile.getText(),
+                    Adherent adherent = new Adherent(Integer.valueOf(subscription.getText()), postalCode.getText(), name.getText(),
+                            surname.getText(), additional.getText(), street.getText(), city.getText(), email.getText(), phone.getText(), mobile.getText(),
                             comment.getText(), (Date) birth.getModel().getValue(), Adherent.GenderType.parse(genders.getSelection().getActionCommand()));
                     JOptionPane.showMessageDialog(thisFrame, "L'adhérent " + name.getText() + " " + surname.getText() +
                             " a bien été ajouté", "Adhérent ajouté", JOptionPane.INFORMATION_MESSAGE);

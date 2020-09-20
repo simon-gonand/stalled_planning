@@ -1,7 +1,6 @@
 package com.Cale_Planning.Models;
 
 import com.Cale_Planning.Controller.AdherentController;
-import com.Cale_Planning.MSAccessBase;
 import com.Cale_Planning.Main;
 
 import javax.swing.*;
@@ -30,17 +29,22 @@ public class Adherent {
             switch (s){
                 case "Monsieur":
                     return MISTER;
+                case "Masculin":
+                    return MISTER;
                 case "Madame":
+                    return MISS;
+                case "Féminin":
                     return MISS;
                 case "Non genré":
                     return NO_GENDER;
-                default: break;
+                case "Autre":
+                    return NO_GENDER;
             }
             return null;
         }
     }
-    private int id, subscriptionYear, postalCode;
-    private String name, surname, building, address, city, email, phone, mobile, comment;
+    private int id, subscriptionYear;
+    private String name, surname, additional, address, city, postalCode, email, phone, mobile, comment;
     private Date dateOfBirth;
     private GenderType gender;
     private DefaultListModel<Boat> boats;
@@ -53,10 +57,10 @@ public class Adherent {
             this.gender = GenderType.parse(attributes.getString("Genre"));
             this.name = attributes.getString("Prenom");
             this.surname = attributes.getString("Nom");
-            this.building = attributes.getString("Batiment");
+            this.additional = attributes.getString("Batiment");
             this.address = attributes.getString("Rue");
             this.city = attributes.getString("Ville");
-            this.postalCode = attributes.getInt("CodePostal");
+            this.postalCode = attributes.getString("CodePostal");
             this.dateOfBirth = attributes.getDate("DateNaissance");
             this.subscriptionYear = attributes.getInt("DateAdhesion");
             this.email = attributes.getString("Email");
@@ -80,24 +84,13 @@ public class Adherent {
         try {
             ResultSet attributes = Main.getDatabase().SQLSelect("SELECT * FROM Adherent WHERE ID = " + this.id);
             attributes.next();
-            switch (attributes.getString("Genre")){
-                case "Monsieur" :
-                    this.gender = GenderType.MISTER;
-                    break;
-                case "Madame" :
-                    this.gender = GenderType.MISS;
-                    break;
-                case "Non Genre" :
-                    this.gender = GenderType.NO_GENDER;
-                    break;
-                default : break;
-            }
+            this.gender = GenderType.parse(attributes.getString("Genre"));
             this.name = attributes.getString("Prenom");
             this.surname = attributes.getString("Nom");
-            this.building = attributes.getString("Batiment");
+            this.additional = attributes.getString("Batiment");
             this.address = attributes.getString("Rue");
             this.city = attributes.getString("Ville");
-            this.postalCode = attributes.getInt("CodePostal");
+            this.postalCode = attributes.getString("CodePostal");
             this.dateOfBirth = attributes.getDate("DateNaissance");
             this.subscriptionYear = attributes.getInt("DateAdhesion");
             this.email = attributes.getString("Email");
@@ -116,13 +109,13 @@ public class Adherent {
         }
     }
 
-    public Adherent(int subscriptionYear, int postalCode, String name, String surname, String building, String address,
+    public Adherent(int subscriptionYear, String postalCode, String name, String surname, String additional, String address,
                     String city, String email, String phone, String mobile, String comment, Date dateOfBirth, GenderType gender) {
         this.subscriptionYear = subscriptionYear;
         this.postalCode = postalCode;
         this.name = name;
         this.surname = surname;
-        this.building = building;
+        this.additional = additional;
         this.address = address;
         this.city = city;
         this.email = email;
@@ -158,11 +151,11 @@ public class Adherent {
         AdherentController.setSubscriptionYear(this);
     }
 
-    public int getPostalCode() {
+    public String getPostalCode() {
         return postalCode;
     }
 
-    public void setPostalCode(int postalCode) {
+    public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
         AdherentController.setPostalCode(this);
     }
@@ -185,12 +178,12 @@ public class Adherent {
         AdherentController.setSurname(this);
     }
 
-    public String getBuilding() {
-        return building;
+    public String getAdditional() {
+        return additional;
     }
 
-    public void setBuilding(String building) {
-        this.building = building;
+    public void setAdditional(String additional) {
+        this.additional = additional;
         AdherentController.setBuilding(this);
     }
 

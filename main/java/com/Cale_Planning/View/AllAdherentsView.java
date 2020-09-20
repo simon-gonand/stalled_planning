@@ -6,18 +6,22 @@ import com.Cale_Planning.Controller.StalledController;
 import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
+import com.Cale_Planning.Parser;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
-import javax.swing.event.ListDataListener;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
+import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.text.ParseException;
 
 public class AllAdherentsView extends JInternalFrame {
     private JDesktopPane mainPane;
@@ -33,7 +37,7 @@ public class AllAdherentsView extends JInternalFrame {
 
         fillAdherentsView();
 
-        JPanel buttonsPanel = new JPanel(new GridBagLayout());
+        JPanel buttonsPanel = new JPanel(new GridLayout(1,4,125,0));
         addButtons(buttonsPanel);
         this.add(buttonsPanel, BorderLayout.PAGE_END);
 
@@ -148,20 +152,36 @@ public class AllAdherentsView extends JInternalFrame {
             }
         });
 
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.fill = GridBagConstraints.VERTICAL;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        JButton importFile = new JButton(new ImageIcon("src/main/resources/upload-file.png"));
+        importFile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                int result = fileChooser.showOpenDialog(thisFrame);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    Parser parser = new Parser(file.getPath());
+                    try {
+                        parser.importAdherents(mainPane);
+                    } catch (ParserConfigurationException ex) {
+                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
+                    } catch (SAXException ex) {
+                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
+                    } catch (ParseException ex) {
+                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement dû au mauvais " +
+                                "format d'une date");
+                    } catch (NullPointerException ex) {
+                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement dû à des valeurs nulles");
+                    }
+                }
+            }
+        });
 
-        buttonsPanel.add(addAdherent, constraints);
-        ++constraints.gridx;
-        constraints.anchor = GridBagConstraints.CENTER;
-        buttonsPanel.add(deleteAdherent, constraints);
-        ++constraints.gridx;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        buttonsPanel.add(close, constraints);
+        buttonsPanel.add(addAdherent);
+        buttonsPanel.add(deleteAdherent);
+        buttonsPanel.add(importFile);
+        buttonsPanel.add(close);
     }
 }

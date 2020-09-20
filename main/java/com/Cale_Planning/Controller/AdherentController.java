@@ -54,7 +54,7 @@ public class AdherentController {
             Main.getDatabase().SQLUpdate("INSERT INTO Adherent (Genre, Nom, Prenom, DateNaissance, DateAdhesion, Batiment, Rue, " +
                             "CodePostal, Ville, Email, Telephone, Portable, Com) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     adherent.getGender().toString(), adherent.getName(), adherent.getSurname(), adherent.getDateOfBirth(),
-                    adherent.getSubscriptionYear(), adherent.getBuilding(), adherent.getAddress(), adherent.getPostalCode(), adherent.getCity(),
+                    adherent.getSubscriptionYear(), adherent.getAdditional(), adherent.getAddress(), adherent.getPostalCode(), adherent.getCity(),
                     adherent.getEmail(), adherent.getPhone(), adherent.getMobile(), adherent.getComment());
             ResultSet resultSet = Main.getDatabase().SQLSelect("SELECT ID FROM Adherent ORDER BY ID DESC LIMIT 1");
             resultSet.next();
@@ -106,7 +106,7 @@ public class AdherentController {
 
     public static void setBuilding(Adherent adherent) {
         try {
-            Main.getDatabase().SQLUpdate("UPDATE Adherent SET Batiment = ? WHERE ID = ?", adherent.getBuilding(), String.valueOf(adherent.getId()));
+            Main.getDatabase().SQLUpdate("UPDATE Adherent SET Batiment = ? WHERE ID = ?", adherent.getAdditional(), String.valueOf(adherent.getId()));
         } catch (SQLException e){
             System.out.println("Building Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
