@@ -156,26 +156,59 @@ public class AllAdherentsView extends JInternalFrame {
         importFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                int result = fileChooser.showOpenDialog(thisFrame);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File file = fileChooser.getSelectedFile();
-                    Parser parser = new Parser(file.getPath());
-                    try {
-                        parser.importAdherents(mainPane);
-                    } catch (ParserConfigurationException ex) {
-                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
-                    } catch (SAXException ex) {
-                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
-                    } catch (ParseException ex) {
-                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement dû au mauvais " +
-                                "format d'une date");
-                    } catch (NullPointerException ex) {
-                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement dû à des valeurs nulles");
+                final JDialog d = new JDialog();
+                JPanel p1 = new JPanel(new GridLayout(2,1));
+                JLabel firstLine = new JLabel("Importation des adhérents en cours.");
+                JLabel secondLine = new JLabel("Veuillez patienter");
+                firstLine.setHorizontalAlignment(JLabel.CENTER);
+                secondLine.setHorizontalAlignment(JLabel.CENTER);
+                p1.add(firstLine);
+                p1.add(secondLine);
+                d.getContentPane().add(p1);
+                d.setSize(300,200);
+                d.setLocationRelativeTo(thisFrame);
+                d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                d.setModal(true);
+                Thread t = new Thread(){
+                    public void run(){
+                        JFileChooser fileChooser = new JFileChooser();
+                        int result = fileChooser.showOpenDialog(thisFrame);
+                        if (result == JFileChooser.APPROVE_OPTION) {
+                            File file = fileChooser.getSelectedFile();
+                            Parser parser = new Parser(file.getPath());
+                            try {
+                                parser.importAdherents(mainPane);
+                            } catch (ParserConfigurationException ex) {
+                                JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
+                                d.dispose();
+                                interrupt();
+                            } catch (IOException ex) {
+                                JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
+                                d.dispose();
+                                interrupt();
+                            } catch (SAXException ex) {
+                                JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
+                                d.dispose();
+                                interrupt();
+                            } catch (ParseException ex) {
+                                JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement dû au mauvais " +
+                                        "format d'une date");
+                                d.dispose();
+                                interrupt();
+                            } catch (NullPointerException ex) {
+                                JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement dû à des valeurs nulles");
+                                d.dispose();
+                                interrupt();
+                            }
+                            JOptionPane.showMessageDialog(thisFrame, "Les adhérents ont été importés correctement", "Succès",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            d.dispose();
+                            interrupt();
+                        }
                     }
-                }
+                };
+                t.start();
+                d.setVisible(true);
             }
         });
 
