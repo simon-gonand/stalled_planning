@@ -67,8 +67,41 @@ public class Parser {
                 Adherent.GenderType genderType = Adherent.GenderType.parse(
                         adherentElement.getElementsByTagName("Sexe").item(0).getTextContent());
 
-                String phone = adherentElement.getElementsByTagName("Tél_Domicile").item(0).getTextContent().replace(".", " ");
-                String mobile = adherentElement.getElementsByTagName("Tél_Portable").item(0).getTextContent().replace(".", " ");
+
+                String phone = adherentElement.getElementsByTagName("Tél_Domicile").item(0).getTextContent();
+                String mobile = adherentElement.getElementsByTagName("Tél_Portable").item(0).getTextContent();
+                if (phone.length() != 0 && phone.charAt(0) == '_')
+                    phone = "";
+                if (mobile.length() != 0 && mobile.charAt(0) == '_')
+                    mobile = "";
+
+                if (phone.length() == 14)
+                    phone = phone.replace(".", " ");
+                else {
+                    int index = 0;
+                    StringBuilder stringBuilder = new StringBuilder();
+                    while (index < phone.length()){
+                        stringBuilder.append(phone.charAt(index));
+                        if (index % 2 == 1)
+                            stringBuilder.append(" ");
+                        ++index;
+                    }
+                    phone = stringBuilder.toString();
+                }
+
+                if (mobile.length() == 14)
+                    mobile = mobile.replace(".", " ");
+                else {
+                    int index = 0;
+                    StringBuilder stringBuilder = new StringBuilder();
+                    while (index < mobile.length()){
+                        stringBuilder.append(mobile.charAt(index));
+                        if (index % 2 == 1)
+                            stringBuilder.append(" ");
+                        ++index;
+                    }
+                    mobile = stringBuilder.toString();
+                }
                 new Adherent(subscriptionYear, postalCode,
                         adherentElement.getElementsByTagName("Prénom").item(0).getTextContent(),
                         adherentElement.getElementsByTagName("Nom").item(0).getTextContent(),
