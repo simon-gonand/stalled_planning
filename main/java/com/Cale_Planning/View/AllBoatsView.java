@@ -70,8 +70,9 @@ public class AllBoatsView extends JInternalFrame {
                 }
             }
         });
-
-        this.add(boatJList, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(boatJList);
+        scrollPane.setBackground(Color.white);
+        this.add(scrollPane, BorderLayout.CENTER);
     }
 
     private void addButtons(JPanel buttonsPanel){

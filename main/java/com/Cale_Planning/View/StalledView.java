@@ -93,8 +93,12 @@ public class StalledView extends JInternalFrame {
         DefaultListModel<Adherent> allAdherents = AdherentController.getAllAdherent();
         JList<Adherent> adherentJList = new JList<>(allAdherents);
         adherentJList.setFont(new Font(adherentJList.getFont().getName(), Font.BOLD, 15));
+        JScrollPane adherentScrollPane = new JScrollPane(adherentJList);
+        adherentScrollPane.setBackground(Color.white);
         JList<Boat> boatJList = new JList<>();
         boatJList.setFont(new Font(adherentJList.getFont().getName(), Font.BOLD, 15));
+        JScrollPane boatScrollPane = new JScrollPane(boatJList);
+        boatScrollPane.setBackground(Color.white);
 
         JLabel adherentLabel = new JLabel("Créer une réservation, veuillez sélectionner un adhérent");
         adherentLabel.setFont(new Font(adherentLabel.getFont().getName(), Font.BOLD, 16));
@@ -167,20 +171,20 @@ public class StalledView extends JInternalFrame {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.anchor = GridBagConstraints.PAGE_START;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         adherentAndBoatChoice.add(adherentLabel, constraints);
         ++constraints.gridy;
         constraints.weighty = 1;
-        adherentAndBoatChoice.add(adherentJList, constraints);
+        adherentAndBoatChoice.add(adherentScrollPane, constraints);
         ++constraints.gridy;
         constraints.weighty = 0.1;
         adherentAndBoatChoice.add(boatLabel, constraints);
         ++constraints.gridy;
         constraints.weighty = 1;
-        adherentAndBoatChoice.add(boatJList, constraints);
+        adherentAndBoatChoice.add(boatScrollPane, constraints);
 
         constraints = new GridBagConstraints();
         constraints.gridy = 0;

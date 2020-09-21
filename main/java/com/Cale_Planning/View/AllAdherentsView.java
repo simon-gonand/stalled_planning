@@ -61,6 +61,7 @@ public class AllAdherentsView extends JInternalFrame {
     }
 
     private void fillAdherentsView(){
+
         DefaultListModel<Adherent> allAdherents = AdherentController.getAllAdherent();
         adherentJList = new JList<>(allAdherents);
         adherentJList.addMouseListener(new MouseAdapter() {
@@ -77,7 +78,9 @@ public class AllAdherentsView extends JInternalFrame {
                 }
             }
         });
-        this.add(adherentJList, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(adherentJList);
+        scrollPane.setBackground(Color.white);
+        this.add(scrollPane, BorderLayout.CENTER);
     }
 
     private void addButtons(JPanel buttonsPanel){
@@ -158,7 +161,7 @@ public class AllAdherentsView extends JInternalFrame {
             public void actionPerformed(ActionEvent e) {
                 final JDialog d = new JDialog();
                 JPanel p1 = new JPanel(new GridLayout(2,1));
-                JLabel firstLine = new JLabel("Importation des adhérents en cours.");
+                JLabel firstLine = new JLabel("Importation des adhérents en cours...");
                 JLabel secondLine = new JLabel("Veuillez patienter");
                 firstLine.setHorizontalAlignment(JLabel.CENTER);
                 secondLine.setHorizontalAlignment(JLabel.CENTER);
