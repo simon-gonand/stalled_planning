@@ -40,6 +40,19 @@ public class AdherentController {
         return adherentList.toArray(allAdherents);
     }
 
+    public static Adherent getAdherentByIDComptable (int id){
+        try{
+            ResultSet results = Main.getDatabase().SQLSelect("SELECT ID FROM Adherent WHERE IDComptable = " + id);
+
+            if (results.next() != false)
+                return new Adherent(results.getInt("ID"));
+        } catch (SQLException e){
+            System.err.println("Select All Adherent error n° " + e.getErrorCode());
+            System.err.println("What goes wrong ? " + e.getMessage());
+        }
+        return null;
+    }
+
     public static void deleteAdherent(Adherent adherent){
         try {
             Main.getDatabase().SQLUpdate("DELETE FROM Adherent WHERE ID = " + adherent.getId());
@@ -52,10 +65,10 @@ public class AdherentController {
     public static int addAdherent (Adherent adherent){
         try{
             Main.getDatabase().SQLUpdate("INSERT INTO Adherent (Genre, Nom, Prenom, DateNaissance, DateAdhesion, Batiment, Rue, " +
-                            "CodePostal, Ville, Email, Telephone, Portable, Com) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                            "CodePostal, Ville, Email, Telephone, Portable, Com, IDComptable) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     adherent.getGender().toString(), adherent.getName(), adherent.getSurname(), adherent.getDateOfBirth(),
                     adherent.getSubscriptionYear(), adherent.getAdditional(), adherent.getAddress(), adherent.getPostalCode(), adherent.getCity(),
-                    adherent.getEmail(), adherent.getPhone(), adherent.getMobile(), adherent.getComment());
+                    adherent.getEmail(), adherent.getPhone(), adherent.getMobile(), adherent.getComment(), adherent.getIdComptable());
             ResultSet resultSet = Main.getDatabase().SQLSelect("SELECT ID FROM Adherent ORDER BY ID DESC LIMIT 1");
             resultSet.next();
             return resultSet.getInt("ID");
@@ -181,6 +194,15 @@ public class AdherentController {
             Main.getDatabase().SQLUpdate("UPDATE Adherent SET Genre = ? WHERE ID = ?", adherent.getGender().toString(), String.valueOf(adherent.getId()));
         } catch (SQLException e){
             System.out.println("Gender Update error n° " + e.getErrorCode() + " What goes wrong ?");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void setIdComptable (Adherent adherent){
+        try {
+            Main.getDatabase().SQLUpdate("UPDATE Adherent SET IDComptable = ? WHERE ID = ?", adherent.getIdComptable(), String.valueOf(adherent.getId()));
+        } catch (SQLException e){
+            System.out.println("IDComptable Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
         }
     }

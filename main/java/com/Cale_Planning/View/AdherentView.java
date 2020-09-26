@@ -496,7 +496,7 @@ public class AdherentView extends JInternalFrame {
                 else {
                     Adherent adherent = new Adherent(Integer.valueOf(subscription.getText()), postalCode.getText(), name.getText(),
                             surname.getText(), additional.getText(), street.getText(), city.getText(), email.getText(), phone.getText(), mobile.getText(),
-                            comment.getText(), (Date) birth.getModel().getValue(), Adherent.GenderType.parse(genders.getSelection().getActionCommand()));
+                            comment.getText(), (Date) birth.getModel().getValue(), Adherent.GenderType.parse(genders.getSelection().getActionCommand()),0);
                     JOptionPane.showMessageDialog(thisFrame, "L'adhérent " + name.getText() + " " + surname.getText() +
                             " a bien été ajouté", "Adhérent ajouté", JOptionPane.INFORMATION_MESSAGE);
                     DefaultListModel defaultListModel = (DefaultListModel) adherentList.getModel();

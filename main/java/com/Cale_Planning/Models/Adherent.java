@@ -43,7 +43,7 @@ public class Adherent {
             return null;
         }
     }
-    private int id, subscriptionYear;
+    private int id, subscriptionYear, idComptable;
     private String name, surname, additional, address, city, postalCode, email, phone, mobile, comment;
     private Date dateOfBirth;
     private GenderType gender;
@@ -67,6 +67,7 @@ public class Adherent {
             this.phone = attributes.getString("Telephone");
             this.mobile = attributes.getString("Portable");
             this.comment = attributes.getString("Com");
+            this.idComptable = attributes.getInt("IDComptable");
 
             boats = new DefaultListModel<Boat>();
             ResultSet boatsID = Main.getDatabase().SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
@@ -97,6 +98,7 @@ public class Adherent {
             this.phone = attributes.getString("Telephone");
             this.mobile = attributes.getString("Portable");
             this.comment = attributes.getString("Com");
+            this.idComptable = attributes.getInt("IDComptable");
 
             boats = new DefaultListModel<Boat>();
             ResultSet boatsID = Main.getDatabase().SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
@@ -110,7 +112,7 @@ public class Adherent {
     }
 
     public Adherent(int subscriptionYear, String postalCode, String name, String surname, String additional, String address,
-                    String city, String email, String phone, String mobile, String comment, Date dateOfBirth, GenderType gender) {
+                    String city, String email, String phone, String mobile, String comment, Date dateOfBirth, GenderType gender, int idComptable) {
         this.subscriptionYear = subscriptionYear;
         this.postalCode = postalCode;
         this.name = name;
@@ -128,6 +130,7 @@ public class Adherent {
         this.comment = comment;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
+        this.idComptable = idComptable;
         int id = AdherentController.addAdherent(this);
         if (id != 0)
             this.id = id;
@@ -273,6 +276,15 @@ public class Adherent {
 
     public void removeBoat(Boat boat){
         this.boats.removeElement(boat);
+    }
+
+    public int getIdComptable() {
+        return idComptable;
+    }
+
+    public void setIdComptable(int idComptable) {
+        this.idComptable = idComptable;
+        AdherentController.setIdComptable(this);
     }
 }
 
