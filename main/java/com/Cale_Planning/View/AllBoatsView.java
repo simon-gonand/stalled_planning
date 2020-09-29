@@ -105,6 +105,7 @@ public class AllBoatsView extends JInternalFrame {
                 }
             }
         });
+        boatJList.setFont(new Font(boatJList.getFont().getName(), Font.BOLD, 15));
         JScrollPane scrollPane = new JScrollPane(boatJList);
         scrollPane.setBackground(Color.white);
         this.add(scrollPane, BorderLayout.CENTER);

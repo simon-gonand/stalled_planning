@@ -133,6 +133,7 @@ public class StalledView extends JInternalFrame {
                 super.mouseClicked(e);
                 if (e.getClickCount() == 2){
                     selectedBoat = (Boat) boatJList.getModel().getElementAt(boatJList.locationToIndex(e.getPoint()));
+                    adherentAndBoatChoice.remove(searchPanel);
                     adherentAndBoatChoice.remove(adherentJList);
                     adherentAndBoatChoice.remove(boatJList);
                     adherentAndBoatChoice.remove(adherentLabel);

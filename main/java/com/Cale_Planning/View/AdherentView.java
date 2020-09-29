@@ -34,6 +34,8 @@ public class AdherentView extends JInternalFrame {
     private ButtonGroup genders;
     private JTextArea comment;
     private JList boats;
+    private Font fontBold = new Font(Font.DIALOG, Font.BOLD, 15);
+    private Font fontPlain = new Font(Font.DIALOG, Font.PLAIN, 15);
 
     public AdherentView(Adherent adherent, JDesktopPane mainPane) throws PropertyVetoException {
         super();
@@ -48,7 +50,7 @@ public class AdherentView extends JInternalFrame {
         while (i >= 0) {
             JInternalFrame frame = mainPane.getAllFrames()[i];
             if (frame instanceof AdherentView || frame instanceof BoatView || frame instanceof AllAdherentsView || frame instanceof AllBoatsView) {
-                this.setBounds(frame.getX() + 20, frame.getY() + 20, 650, 525);
+                this.setBounds(frame.getX() + 20, frame.getY() + 20, 750, 525);
                 break;
             }
             --i;
@@ -143,10 +145,13 @@ public class AdherentView extends JInternalFrame {
 
         JRadioButton mister = new JRadioButton(Adherent.GenderType.MISTER.toString());
         mister.setActionCommand(Adherent.GenderType.MISTER.toString());
+        mister.setFont(fontPlain);
         JRadioButton miss = new JRadioButton(Adherent.GenderType.MISS.toString());
         miss.setActionCommand(Adherent.GenderType.MISS.toString());
+        miss.setFont(fontPlain);
         JRadioButton noGender = new JRadioButton(Adherent.GenderType.NO_GENDER.toString());
         noGender.setActionCommand(Adherent.GenderType.NO_GENDER.toString());
+        noGender.setFont(fontPlain);
         if (adherent != null) {
             switch (adherent.getGender()) {
                 case MISTER:
@@ -178,9 +183,13 @@ public class AdherentView extends JInternalFrame {
         gendersChoice.add(noGender);
 
         JLabel labelName = new JLabel("Prénom");
+        labelName.setFont(fontBold);
         JLabel labelSurname = new JLabel("Nom");
+        labelSurname.setFont(fontBold);
         JLabel birthLabel = new JLabel("Date naissance");
+        birthLabel.setFont(fontBold);
         JLabel subscriptionLabel = new JLabel("Date adhésion");
+        subscriptionLabel.setFont(fontBold);
         if (adherent != null) {
             this.name = new JTextField(adherent.getName());
             this.surname = new JTextField(adherent.getSurname());
@@ -201,7 +210,6 @@ public class AdherentView extends JInternalFrame {
 
             this.subscription = new JTextField();
         }
-
         this.name.setBackground(new Color(239,239,239));
         this.surname.setBackground(new Color(239,239,239));
         this.subscription.setBackground(new Color(239,239,239));
@@ -249,14 +257,21 @@ public class AdherentView extends JInternalFrame {
 
     private void fillAddressPanel(JPanel panel){
         JLabel buildingLabel = new JLabel ("Bâtiment");
+        buildingLabel.setFont(fontBold);
         JLabel streetLabel = new JLabel("Rue");
+        streetLabel.setFont(fontBold);
         JLabel cityLabel = new JLabel("Ville");
+        cityLabel.setFont(fontBold);
         JLabel postalCodeLabel = new JLabel("Code Postal");
+        postalCodeLabel.setFont(fontBold);
         JLabel phoneLabel = new JLabel("Téléphone");
+        phoneLabel.setFont(fontBold);
         JLabel mobileLabel = new JLabel("Portable");
+        mobileLabel.setFont(fontBold);
         JButton deletePhone = new JButton(new ImageIcon("src/main/resources/telephoneDelete.png"));
         JButton deleteMobile = new JButton(new ImageIcon("src/main/resources/telephoneDelete.png"));
         JLabel emailLabel = new JLabel("Email");
+        emailLabel.setFont(fontBold);
 
         MaskFormatter fmt = null;
         try {
@@ -430,6 +445,7 @@ public class AdherentView extends JInternalFrame {
         // Stop text area stretching
         comment.setLineWrap(true);
         comment.setWrapStyleWord(true);
+        comment.setFont(fontBold);
 
         final JInternalFrame thisFrame = this;
         this.boats.addMouseListener(new MouseAdapter() {
@@ -448,6 +464,7 @@ public class AdherentView extends JInternalFrame {
                 }
             }
         });
+        boats.setFont(new Font(Font.DIALOG, Font.BOLD, 15));
 
         comment.setBackground(new Color(239,239,239));
         boats.setBackground(new Color(239,239,239));

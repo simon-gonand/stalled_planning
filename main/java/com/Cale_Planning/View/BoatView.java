@@ -17,6 +17,8 @@ public class BoatView extends JInternalFrame {
     private JComboBox<Adherent> owner;
     private JComboBox<Boat.categoryType> category;
     private ButtonGroup place;
+    private Font fontPlain = new Font(Font.DIALOG, Font.PLAIN, 15);
+    private Font fontBold = new Font(Font.DIALOG, Font.BOLD, 15);
 
 
     public BoatView(Boat boat, JDesktopPane mainPane) throws PropertyVetoException {
@@ -31,7 +33,7 @@ public class BoatView extends JInternalFrame {
         while (i >= 0) {
             JInternalFrame frame = mainPane.getAllFrames()[i];
             if (frame instanceof AdherentView || frame instanceof BoatView || frame instanceof AllAdherentsView || frame instanceof AllBoatsView) {
-                this.setBounds(frame.getX() + 20, frame.getY() + 20, 700, 250);
+                this.setBounds(frame.getX() + 20, frame.getY() + 20, 900, 250);
                 break;
             }
             --i;
@@ -143,8 +145,10 @@ public class BoatView extends JInternalFrame {
         }
 
         JLabel nameLabel = new JLabel("Nom");
+        nameLabel.setFont(fontBold);
         this.name.setBackground(new Color(239,239,239));
         JLabel registrationLabel = new JLabel("Immatriculation");
+        registrationLabel.setFont(fontBold);
         this.registration.setBackground(new Color(239,239,239));
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -167,12 +171,16 @@ public class BoatView extends JInternalFrame {
         firstRow.add(registration, constraints);
 
         JLabel lengthLabel = new JLabel ("Longueur (m)");
+        lengthLabel.setFont(fontBold);
         this.length.setBackground(new Color(239,239,239));
         JLabel widthLabel = new JLabel ("Largeur (m)");
+        widthLabel.setFont(fontBold);
         this.width.setBackground(new Color(239,239,239));
         JLabel draughtLabel = new JLabel ("Tirant d'eau (m)");
+        draughtLabel.setFont(fontBold);
         this.draught.setBackground(new Color(239,239,239));
         JLabel weightLabel = new JLabel ("Poids (kg)");
+        weightLabel.setFont(fontBold);
         this.weight.setBackground(new Color(239,239,239));
 
         secondRow.add(lengthLabel);
@@ -192,8 +200,10 @@ public class BoatView extends JInternalFrame {
         panel.setLayout(new GridLayout(2,2));
 
         JLabel categoryLabel = new JLabel("Categorie");
+        categoryLabel.setFont(fontBold);
         this.category = new JComboBox<Boat.categoryType>(Boat.categoryType.values());
         JLabel ownerLabel = new JLabel("Propriétaire");
+        ownerLabel.setFont(fontBold);
         Adherent[] allAdherents = AdherentController.getAllAdherentArray();
         this.owner = new JComboBox<Adherent>(allAdherents);
 
@@ -215,18 +225,23 @@ public class BoatView extends JInternalFrame {
         panel.setLayout(new GridBagLayout());
 
         JRadioButton temporary = new JRadioButton(Boat.placeType.PASSAGER.toString());
+        temporary.setFont(fontPlain);
         temporary.setActionCommand(Boat.placeType.PASSAGER.toString());
         temporary.setBackground(Color.white);
         JRadioButton annual = new JRadioButton(Boat.placeType.ANNUEL.toString());
+        annual.setFont(fontPlain);
         annual.setActionCommand(Boat.placeType.ANNUEL.toString());
         annual.setBackground(Color.white);
         JRadioButton club = new JRadioButton(Boat.placeType.CLUB.toString());
+        club.setFont(fontPlain);
         club.setActionCommand(Boat.placeType.CLUB.toString());
         club.setBackground(Color.white);
         JRadioButton tradition = new JRadioButton(Boat.placeType.TRADITION.toString());
+        tradition.setFont(fontPlain);
         tradition.setActionCommand(Boat.placeType.TRADITION.toString());
         tradition.setBackground(Color.white);
         JRadioButton ground = new JRadioButton(Boat.placeType.TERRE.toString());
+        ground.setFont(fontPlain);
         ground.setActionCommand(Boat.placeType.TERRE.toString());
         ground.setBackground(Color.white);
 
@@ -259,6 +274,7 @@ public class BoatView extends JInternalFrame {
         place.add(ground);
 
         JLabel placeLabel = new JLabel("Place");
+        placeLabel.setFont(fontBold);
         JPanel placePanel = new JPanel(new GridLayout(1,4));
         placePanel.add(temporary);
         placePanel.add(annual);

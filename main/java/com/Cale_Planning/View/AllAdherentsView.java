@@ -119,6 +119,7 @@ public class AllAdherentsView extends JInternalFrame {
                 }
             }
         });
+        adherentJList.setFont(new Font(adherentJList.getFont().getName(), Font.BOLD, 15));
         JScrollPane scrollPane = new JScrollPane(adherentJList);
         scrollPane.setBackground(Color.white);
         this.add(scrollPane, BorderLayout.CENTER);
