@@ -9,10 +9,7 @@ import com.Cale_Planning.Models.Boat;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.beans.PropertyVetoException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,6 +17,7 @@ import java.util.Date;
 
 public class AllBoatsView extends JInternalFrame {
     private JList<Boat> boatJList;
+    private DefaultListModel defaultBoatList;
     private JDesktopPane mainPane;
     public AllBoatsView(JDesktopPane mainPane) throws PropertyVetoException {
         super();
@@ -29,6 +27,7 @@ public class AllBoatsView extends JInternalFrame {
         this.getContentPane().setBackground(Color.white);
         this.setLayout(new BorderLayout());
 
+        dynamicSearchView();
         fillBoatsView(mainPane);
         JPanel buttonsPanel = new JPanel(new GridBagLayout());
         addButtons(buttonsPanel);
@@ -53,9 +52,45 @@ public class AllBoatsView extends JInternalFrame {
         setSelected(true);
     }
 
+    private void dynamicSearchView() {
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        JLabel searchLabel = new JLabel("Rechercher");
+        searchLabel.setFont(new Font(searchLabel.getFont().getName(), Font.BOLD, 15));
+        JTextField searchText = new JTextField();
+
+        searchText.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                DefaultListModel model = new DefaultListModel();
+                String enteredText = searchText.getText();
+                if (enteredText.equals(""))
+                    boatJList.setModel(defaultBoatList);
+                else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                    for (int i = 0; i < defaultBoatList.getSize(); i++) {
+                        if (defaultBoatList.getElementAt(i).toString().toLowerCase().indexOf(enteredText.toLowerCase()) != -1) {
+                            model.addElement(defaultBoatList.getElementAt(i));
+                        }
+                    }
+                    boatJList.setModel(model);
+                }
+                else {
+                    for (int i = 0; i < boatJList.getModel().getSize(); i++) {
+                        if (boatJList.getModel().getElementAt(i).toString().toLowerCase().indexOf(enteredText.toLowerCase()) != -1) {
+                            model.addElement(boatJList.getModel().getElementAt(i));
+                        }
+                    }
+                    boatJList.setModel(model);
+                }
+            }
+        });
+        searchPanel.add(searchLabel, BorderLayout.WEST);
+        searchPanel.add(searchText, BorderLayout.CENTER);
+        this.add(searchPanel, BorderLayout.NORTH);
+    }
+
     private void fillBoatsView(JDesktopPane mainPane) {
-        DefaultListModel<Boat> allBoats = BoatController.getAllBoat();
-        boatJList = new JList<>(allBoats);
+        defaultBoatList = BoatController.getAllBoat();
+        boatJList = new JList<>(defaultBoatList);
         boatJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

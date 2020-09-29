@@ -10,12 +10,15 @@ import com.Cale_Planning.Parser;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +29,7 @@ import java.text.ParseException;
 public class AllAdherentsView extends JInternalFrame {
     private JDesktopPane mainPane;
     private JList<Adherent> adherentJList;
+    private DefaultListModel defaultAdherentList;
     public AllAdherentsView(JDesktopPane mainPane) throws PropertyVetoException {
         super();
 
@@ -35,6 +39,7 @@ public class AllAdherentsView extends JInternalFrame {
         this.getContentPane().setBackground(Color.white);
         this.setLayout(new BorderLayout());
 
+        dynamicSearchView();
         fillAdherentsView();
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1,4,125,0));
@@ -60,10 +65,46 @@ public class AllAdherentsView extends JInternalFrame {
         setSelected(true);
     }
 
-    private void fillAdherentsView(){
+    private void dynamicSearchView(){
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        JLabel searchLabel = new JLabel("Rechercher");
+        searchLabel.setFont(new Font(searchLabel.getFont().getName(), Font.BOLD, 15));
+        JTextField searchText = new JTextField();
 
-        DefaultListModel<Adherent> allAdherents = AdherentController.getAllAdherent();
-        adherentJList = new JList<>(allAdherents);
+        searchText.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                DefaultListModel model = new DefaultListModel();
+                String enteredText = searchText.getText();
+                if (enteredText.equals(""))
+                    adherentJList.setModel(defaultAdherentList);
+                else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                    for (int i = 0; i < defaultAdherentList.getSize(); i++) {
+                        if (defaultAdherentList.getElementAt(i).toString().toLowerCase().indexOf(enteredText.toLowerCase()) != -1) {
+                            model.addElement(defaultAdherentList.getElementAt(i));
+                        }
+                    }
+                    adherentJList.setModel(model);
+                }
+                else {
+                    for (int i = 0; i < adherentJList.getModel().getSize(); i++) {
+                        if (adherentJList.getModel().getElementAt(i).toString().toLowerCase().indexOf(enteredText.toLowerCase()) != -1) {
+                            model.addElement(adherentJList.getModel().getElementAt(i));
+                        }
+                    }
+                    adherentJList.setModel(model);
+                }
+            }
+        });
+
+        searchPanel.add(searchLabel, BorderLayout.WEST);
+        searchPanel.add(searchText, BorderLayout.CENTER);
+        this.add(searchPanel, BorderLayout.NORTH);
+    }
+
+    private void fillAdherentsView(){
+        defaultAdherentList = AdherentController.getAllAdherent();
+        adherentJList = new JList<>(defaultAdherentList);
         adherentJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

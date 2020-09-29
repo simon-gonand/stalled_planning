@@ -40,6 +40,9 @@ public class StalledView extends JInternalFrame {
     private MSAccessBase database;
     private JCheckBox isUpToDate;
 
+    private JList adherentJList;
+    private DefaultListModel defaultAdherentList;
+
     public StalledView (JDesktopPane mainPane) throws PropertyVetoException {
         super();
 
@@ -90,8 +93,9 @@ public class StalledView extends JInternalFrame {
         JPanel adherentAndBoatChoice = new JPanel(new GridBagLayout());
         adherentAndBoatChoice.setBackground(Color.white);
 
-        DefaultListModel<Adherent> allAdherents = AdherentController.getAllAdherent();
-        JList<Adherent> adherentJList = new JList<>(allAdherents);
+        JPanel searchPanel = dynamicSearchView();
+        defaultAdherentList = AdherentController.getAllAdherent();
+        adherentJList = new JList<>(defaultAdherentList);
         adherentJList.setFont(new Font(adherentJList.getFont().getName(), Font.BOLD, 15));
         JScrollPane adherentScrollPane = new JScrollPane(adherentJList);
         adherentScrollPane.setBackground(Color.white);
@@ -177,6 +181,8 @@ public class StalledView extends JInternalFrame {
         constraints.weighty = 0.1;
         adherentAndBoatChoice.add(adherentLabel, constraints);
         ++constraints.gridy;
+        adherentAndBoatChoice.add(searchPanel, constraints);
+        ++constraints.gridy;
         constraints.weighty = 1;
         adherentAndBoatChoice.add(adherentScrollPane, constraints);
         ++constraints.gridy;
@@ -194,6 +200,43 @@ public class StalledView extends JInternalFrame {
         constraints.anchor = GridBagConstraints.LINE_START;
         constraints.fill = GridBagConstraints.BOTH;
         panel.add(adherentAndBoatChoice, constraints);
+    }
+
+    private JPanel dynamicSearchView(){
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        JLabel searchLabel = new JLabel("Rechercher");
+        searchLabel.setFont(new Font(searchLabel.getFont().getName(), Font.BOLD, 15));
+        JTextField searchText = new JTextField();
+
+        searchText.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                DefaultListModel model = new DefaultListModel();
+                String enteredText = searchText.getText();
+                if (enteredText.equals(""))
+                    adherentJList.setModel(defaultAdherentList);
+                else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                    for (int i = 0; i < defaultAdherentList.getSize(); i++) {
+                        if (defaultAdherentList.getElementAt(i).toString().toLowerCase().indexOf(enteredText.toLowerCase()) != -1) {
+                            model.addElement(defaultAdherentList.getElementAt(i));
+                        }
+                    }
+                    adherentJList.setModel(model);
+                }
+                else {
+                    for (int i = 0; i < adherentJList.getModel().getSize(); i++) {
+                        if (adherentJList.getModel().getElementAt(i).toString().toLowerCase().indexOf(enteredText.toLowerCase()) != -1) {
+                            model.addElement(adherentJList.getModel().getElementAt(i));
+                        }
+                    }
+                    adherentJList.setModel(model);
+                }
+            }
+        });
+
+        searchPanel.add(searchLabel, BorderLayout.WEST);
+        searchPanel.add(searchText, BorderLayout.CENTER);
+        return searchPanel;
     }
 
     private void fillBookingFormPanel(JPanel panel) throws ParseException {
