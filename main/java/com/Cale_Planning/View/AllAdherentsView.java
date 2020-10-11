@@ -247,9 +247,9 @@ public class AllAdherentsView extends JInternalFrame {
                             }
                             JOptionPane.showMessageDialog(thisFrame, "Les adhérents ont été importés correctement", "Succès",
                                     JOptionPane.INFORMATION_MESSAGE);
-                            d.dispose();
-                            interrupt();
                         }
+                        d.dispose();
+                        interrupt();
                     }
                 };
                 t.start();
