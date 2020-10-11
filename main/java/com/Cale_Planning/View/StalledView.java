@@ -414,6 +414,9 @@ public class StalledView extends JInternalFrame {
                 StalledController.createAppointment(calendar, startDate, endDate, cale, selectedAdherent, color, id,
                         Float.valueOf(amountText.getValue().toString()), Float.valueOf(depositText.getValue().toString()), selectedBoat,
                         isUpToDate.isSelected());
+
+                JOptionPane.showMessageDialog(thisFrame, "La réservation a bien été enregistrée", "Réservation réussie",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         });
         JButton cancelButton = new JButton("Cancel");
