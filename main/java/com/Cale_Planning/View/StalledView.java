@@ -408,6 +408,18 @@ public class StalledView extends JInternalFrame {
                     default:
                         break;
                 }
+
+                ItemList reservations = calendar.getSchedule().getAllItems(startDate, endDate);
+                for (int i = 0; i < reservations.size(); ++i){
+                    if (reservations.get(i).getContacts().get(0).getLastName().equals(String.valueOf(cale))){
+                        if (endDate.compareTo(reservations.get(i).getStartTime()) != 0) {
+                            JOptionPane.showMessageDialog(thisFrame, "Une réservation a déjà lieu ce jour-ci sur la cale n° " + cale, "Erreur",
+                                    JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
+
+                }
                 int id = StalledController.addAppointmentToDatabase(selectedAdherent, startDate, endDate, cale, color,
                         Float.valueOf(amountText.getValue().toString()), Float.valueOf(depositText.getValue().toString()), selectedBoat,
                         isUpToDate.isSelected());
