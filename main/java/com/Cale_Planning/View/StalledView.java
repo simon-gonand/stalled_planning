@@ -135,7 +135,9 @@ public class StalledView extends JInternalFrame {
                     selectedBoat = (Boat) boatJList.getModel().getElementAt(boatJList.locationToIndex(e.getPoint()));
                     adherentAndBoatChoice.remove(searchPanel);
                     adherentAndBoatChoice.remove(adherentJList);
+                    adherentAndBoatChoice.remove(adherentScrollPane);
                     adherentAndBoatChoice.remove(boatJList);
+                    adherentAndBoatChoice.remove(boatScrollPane);
                     adherentAndBoatChoice.remove(adherentLabel);
                     adherentAndBoatChoice.remove(boatLabel);
                     JButton newReservationButton = new JButton("Nouvelle Réservation");
@@ -152,6 +154,7 @@ public class StalledView extends JInternalFrame {
 
                     GridBagConstraints constraints = new GridBagConstraints();
                     constraints.gridx = 0;
+                    constraints.gridy = 0;
                     constraints.gridwidth = 1;
                     constraints.ipady = 20;
                     constraints.weightx = 0.2;
@@ -313,6 +316,8 @@ public class StalledView extends JInternalFrame {
     }
 
     private void fillBookingPanel (JPanel panel) throws ParseException {
+        JInternalFrame thisFrame = this;
+
         JPanel stalledChoicePanel = new JPanel(new GridLayout(6,1));
         ButtonGroup stalledChoice = fillStalledChoicePanel(stalledChoicePanel);
         stalledChoicePanel.setBackground(Color.white);
@@ -356,9 +361,29 @@ public class StalledView extends JInternalFrame {
             public void actionPerformed(ActionEvent e) {
                DateModel modelStartDate = datePickers.get("from").getModel();
                DateModel modelEndDate = datePickers.get("to").getModel();
+               if (modelStartDate.getValue() == null || modelEndDate.getValue() == null){
+                   JOptionPane.showMessageDialog(thisFrame, "Vous n'avez pas saisi de dates", "Erreur",
+                           JOptionPane.ERROR_MESSAGE);
+                   return;
+               }
                DateTime startDate = new DateTime(modelStartDate.getYear(), modelStartDate.getMonth() + 1, modelStartDate.getDay());
+               if (startDate.compareTo(DateTime.today()) == -1){
+                   JOptionPane.showMessageDialog(thisFrame, "Vous ne pouvez pas saisir une date antérieure à la date d'aujourd'hui",
+                           "Erreur", JOptionPane.ERROR_MESSAGE);
+                   return;
+               }
                DateTime endDate = new DateTime(modelEndDate.getYear(), modelEndDate.getMonth() + 1, modelEndDate.getDay());
+               if (endDate.compareTo(startDate) == 0){
+                   JOptionPane.showMessageDialog(thisFrame, "La date de fin de réservation est la même que la date de début", "Erreur",
+                           JOptionPane.ERROR_MESSAGE);
+                   return;
+               }
 
+               if (selectedColor == null){
+                   JOptionPane.showMessageDialog(thisFrame,"Vous n'avez pas sélectionnez de couleur","Erreur",
+                           JOptionPane.ERROR_MESSAGE);
+                   return;
+               }
                Color color = selectedColor.getBackground().brighter();
                int cale = 0;
                 switch (stalledChoice.getSelection().getActionCommand()){
