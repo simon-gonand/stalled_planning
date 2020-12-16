@@ -5,6 +5,8 @@ import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,11 +16,12 @@ public class BoatView extends JInternalFrame {
     private Boat boat;
     private JList<Boat> boatJList;
     private JTextField name, registration, length, width, draught, weight;
+    private JTextArea comments;
     private JComboBox<Adherent> owner;
     private JComboBox<Boat.categoryType> category;
     private ButtonGroup place;
-    private Font fontPlain = new Font(Font.DIALOG, Font.PLAIN, 15);
-    private Font fontBold = new Font(Font.DIALOG, Font.BOLD, 15);
+    private Font fontPlain = new Font(Font.DIALOG, Font.PLAIN, 13);
+    private Font fontBold = new Font(Font.DIALOG, Font.BOLD, 13);
 
 
     public BoatView(Boat boat, JDesktopPane mainPane) throws PropertyVetoException {
@@ -27,20 +30,20 @@ public class BoatView extends JInternalFrame {
 
         setTitle("Fiche Bateau " + boat.getName());
         this.getContentPane().setBackground(Color.white);
-        setLayout(new GridLayout(4,1));
+        setLayout(new GridLayout(5,1));
 
         int i = mainPane.getAllFrames().length -1;
         while (i >= 0) {
             JInternalFrame frame = mainPane.getAllFrames()[i];
             if (frame instanceof AdherentView || frame instanceof BoatView || frame instanceof AllAdherentsView || frame instanceof AllBoatsView) {
-                this.setBounds(frame.getX() + 20, frame.getY() + 20, 900, 250);
+                this.setBounds(frame.getX() + 20, frame.getY() + 20, 900, 350);
                 break;
             }
             --i;
         }
         if (i < 0) {
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            this.setBounds(screenSize.width / 3, screenSize.height / 4, 700, 250);
+            this.setBounds(screenSize.width / 3, screenSize.height / 4, 900, 350);
         }
 
         setResizable(true);
@@ -49,21 +52,25 @@ public class BoatView extends JInternalFrame {
         JPanel boatPropertiesPanel = new JPanel();
         JPanel ownerCategoryPanel = new JPanel();
         JPanel placePanel = new JPanel();
+        JPanel commentPanel = new JPanel();
         JPanel buttonPanel = new JPanel();
 
         boatPropertiesPanel.setBackground(Color.white);
         ownerCategoryPanel.setBackground(Color.white);
         placePanel.setBackground(Color.white);
+        commentPanel.setBackground(Color.white);
         buttonPanel.setBackground(Color.white);
 
         fillBoatPropertiesPanel(boatPropertiesPanel);
         fillOwnerCategoryPanel(ownerCategoryPanel);
         fillPlacePanel(placePanel);
+        fillCommentPanel(commentPanel);
         fillButtonPanel(buttonPanel);
 
         this.add(boatPropertiesPanel);
         this.add(ownerCategoryPanel);
         this.add(placePanel);
+        this.add(commentPanel);
         this.add(buttonPanel);
 
         mainPane.add(this);
@@ -295,6 +302,25 @@ public class BoatView extends JInternalFrame {
         panel.add(placePanel, constraints);
     }
 
+    private void fillCommentPanel(JPanel panel){
+        panel.setLayout(new GridLayout(1,1));
+
+        if (boat == null)
+            this.comments = new JTextArea();
+        else
+            this.comments = new JTextArea(boat.getComment());
+        // Stop text area stretching
+        comments.setLineWrap(true);
+        comments.setWrapStyleWord(true);
+        comments.setFont(fontBold);
+
+        comments.setBackground(new Color(239,239,239));
+
+        panel.setBorder(BorderFactory.createTitledBorder("Commentaires"));
+
+        panel.add(comments);
+    }
+
     private void fillButtonPanel(JPanel panel){
         panel.setLayout(new GridBagLayout()); // Set a layout
 
@@ -314,6 +340,7 @@ public class BoatView extends JInternalFrame {
                     boat.setWeight(Float.valueOf(weight.getText()));
                     boat.setPlace(Boat.placeType.parse(place.getSelection().getActionCommand()));
                     boat.setCategory((Boat.categoryType) category.getSelectedItem());
+                    boat.setComment(comments.getText());
 
                     Adherent oldOwner = boat.getOwner();
                     if (oldOwner.getId() != ((Adherent) owner.getSelectedItem()).getId()) {
@@ -337,7 +364,8 @@ public class BoatView extends JInternalFrame {
                 else {
                     Boat boat = new Boat(name.getText(), registration.getText(), Float.valueOf(length.getText()), Float.valueOf(width.getText()),
                             Float.valueOf(draught.getText()), Float.valueOf(weight.getText()), (Adherent) owner.getSelectedItem(),
-                            (Boat.categoryType) category.getSelectedItem(), Boat.placeType.parse(place.getSelection().getActionCommand()));
+                            (Boat.categoryType) category.getSelectedItem(), Boat.placeType.parse(place.getSelection().getActionCommand()),
+                            comments.getText());
                     JOptionPane.showMessageDialog(thisFrame, "Le bateau " + name.getText() +
                             " a bien été ajouté", "Bateau ajouté", JOptionPane.INFORMATION_MESSAGE);
                     DefaultListModel defaultListModel = (DefaultListModel) boatJList.getModel();

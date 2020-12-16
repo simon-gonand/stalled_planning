@@ -101,7 +101,7 @@ public class Boat {
     }
 
     private int id;
-    private String name, registration;
+    private String name, registration, comment;
     private float length, width, draught, weight;
     private Adherent owner;
     private categoryType category;
@@ -121,6 +121,7 @@ public class Boat {
             this.draught = attributes.getFloat("TirantEau");
             this.weight = attributes.getFloat("Poids");
             this.owner = new Adherent(attributes.getInt("Proprietaire"), this);
+            this.comment = attributes.getString("Commentaire");
 
         } catch (SQLException e){
             System.out.println("Select boat query error n° " + e.getErrorCode() + " What goes wrong ?");
@@ -142,6 +143,7 @@ public class Boat {
             this.draught = attributes.getFloat("TirantEau");
             this.weight = attributes.getFloat("Poids");
             this.owner = adherent;
+            this.comment = attributes.getString("Commentaire");
 
         } catch (SQLException e){
             System.out.println("Select boat query error n° " + e.getErrorCode() + " What goes wrong ?");
@@ -150,7 +152,7 @@ public class Boat {
     }
 
     public Boat(String name, String registration, float length, float width, float draught, float weight, Adherent owner,
-                categoryType category, placeType place) {
+                categoryType category, placeType place, String comment) {
         this.name = name;
         this.registration = registration;
         this.length = length;
@@ -160,6 +162,7 @@ public class Boat {
         this.owner = owner;
         this.category = category;
         this.place = place;
+        this.comment = comment;
         int id = BoatController.addBoat(this);
         if (id != 0){
             this.id = id;
@@ -255,5 +258,14 @@ public class Boat {
     public void setPlace(placeType place) {
         this.place = place;
         BoatController.setPlace(this);
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+        BoatController.setComment(this);
     }
 }

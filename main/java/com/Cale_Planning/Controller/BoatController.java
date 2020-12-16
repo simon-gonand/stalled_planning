@@ -153,4 +153,13 @@ public class BoatController {
             System.out.println(e.getMessage());
         }
     }
+
+    public static void setComment(Boat boat) {
+        try {
+            Main.getDatabase().SQLUpdate("UPDATE Bateau SET Commentaire = ? WHERE ID = ?", boat.getComment(), String.valueOf(boat.getId()));
+        } catch (SQLException e) {
+            System.out.println("Comment Update error n° " + e.getErrorCode() + " What goes wrong ?");
+            System.out.println(e.getMessage());
+        }
+    }
 }
