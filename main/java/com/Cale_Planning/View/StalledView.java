@@ -140,6 +140,8 @@ public class StalledView extends JInternalFrame {
                     adherentAndBoatChoice.remove(boatScrollPane);
                     adherentAndBoatChoice.remove(adherentLabel);
                     adherentAndBoatChoice.remove(boatLabel);
+                    JPanel buttons = new JPanel(new GridBagLayout());
+                    buttons.setBackground(Color.white);
                     JButton newReservationButton = new JButton("Nouvelle Réservation");
                     newReservationButton.setBounds(adherentAndBoatChoice.getWidth(),0, adherentAndBoatChoice.getWidth(), 20);
                     newReservationButton.addActionListener(new ActionListener() {
@@ -151,14 +153,30 @@ public class StalledView extends JInternalFrame {
                             SwingUtilities.updateComponentTreeUI(thisFrame);
                         }
                     });
+                    JButton print = new JButton(new ImageIcon("src/main/resources/printer.png"));
+                    GridBagConstraints buttonsConstraints = new GridBagConstraints();
+                    buttonsConstraints.gridx = 0;
+                    buttonsConstraints.gridy = 0;
+                    buttonsConstraints.gridwidth = 1;
+                    buttonsConstraints.weightx = 1;
+                    buttonsConstraints.weighty = 1;
+                    buttonsConstraints.ipady = 20;
+                    buttonsConstraints.anchor = GridBagConstraints.CENTER;
+                    buttonsConstraints.fill = GridBagConstraints.HORIZONTAL;
+                    buttons.add(newReservationButton, buttonsConstraints);
+                    ++buttonsConstraints.gridy;
+                    buttonsConstraints.ipady = 0;
+                    buttonsConstraints.fill = GridBagConstraints.NONE;
+                    buttons.add(print, buttonsConstraints);
 
                     GridBagConstraints constraints = new GridBagConstraints();
                     constraints.gridx = 0;
                     constraints.gridy = 0;
                     constraints.gridwidth = 1;
+                    constraints.fill = GridBagConstraints.HORIZONTAL;
                     constraints.ipady = 20;
                     constraints.weightx = 0.2;
-                    adherentAndBoatChoice.add(newReservationButton, constraints);
+                    adherentAndBoatChoice.add(buttons, constraints);
                     try {
                         fillBookingFormPanel(bookingFormPanel);
                     } catch (ParseException ex) {
