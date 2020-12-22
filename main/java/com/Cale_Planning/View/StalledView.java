@@ -7,27 +7,40 @@ import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
 import com.Cale_Planning.Models.Reservation;
+
 import com.mindfusion.common.DateTime;
 import com.mindfusion.common.Duration;
 import com.mindfusion.drawing.Colors;
 import com.mindfusion.drawing.TextAlignment;
 import com.mindfusion.scheduling.*;
 import com.mindfusion.scheduling.model.*;
+import org.apache.poi.xwpf.usermodel.*;
+import org.apache.xmlbeans.XmlCursor;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
 import org.jdatepicker.DateModel;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyVetoException;
+import java.io.*;
+import static java.nio.file.StandardCopyOption.*;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.*;
 import java.util.*;
 import java.util.Calendar;
+import java.util.List;
 
 public class StalledView extends JInternalFrame {
     private static JButton selectedColor;
@@ -37,6 +50,7 @@ public class StalledView extends JInternalFrame {
     private Contact cale1, cale2, cale3, cale4, cale5, cale6;
     private JDesktopPane mainPane;
     private com.mindfusion.scheduling.Calendar calendar = new com.mindfusion.scheduling.Calendar();
+    private Map<String, JDatePickerImpl> datePickers;
     private MSAccessBase database;
     private JCheckBox isUpToDate;
 
@@ -153,7 +167,104 @@ public class StalledView extends JInternalFrame {
                             SwingUtilities.updateComponentTreeUI(thisFrame);
                         }
                     });
-                    JButton print = new JButton(new ImageIcon("src/main/resources/printer.png"));
+                    JButton printButton = new JButton(new ImageIcon("src/main/resources/printer.png"));
+                    printButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            // Set dates and adherent information into the supported document
+                            try {
+                                XWPFDocument document = new XWPFDocument(new FileInputStream("src/main/resources/cautionDoc.docx"));
+                                for (XWPFParagraph p : document.getParagraphs()) {
+                                    for (int i = 0; i < p.getRuns().size(); ++i) {
+                                        XWPFRun run = p.getRuns().get(i);
+                                        String text = run.getText(0);
+                                        if (run.getText(0) == null)
+                                            continue;
+                                        if (datePickers.get("from").getModel().getValue() == null ||
+                                                datePickers.get("to").getModel().getValue() == null) {
+                                            JOptionPane.showMessageDialog(thisFrame, "Vous n'avez pas saisi de dates", "Erreur",
+                                                    JOptionPane.ERROR_MESSAGE);
+                                             return;
+                                        }
+                                        if (text.contains("Du ")){
+                                            DateModel from = datePickers.get("from").getModel();
+                                            String sFrom = from.getDay() + "/" + from.getMonth() + "/" + from.getYear();
+                                            text = text.replace("Du ",
+                                                    sFrom);
+                                            run.setText(text);
+                                        }
+
+                                        if (text.contains("au") && text.length() <= 3){
+                                            XWPFRun nextRun = p.getRuns().get(i + 1);
+                                            if (nextRun.getText(0).equals(" ")) {
+                                                DateModel to = datePickers.get("to").getModel();
+                                                String sTo = to.getDay() + "/" + to.getMonth() + "/" + to.getYear();
+                                                text = text.replace("au",
+                                                        sTo);
+                                                run.setText(text);
+                                            }
+                                        }
+
+                                        if (text.contains("Date") && !text.contains("Date et")) {
+                                            XWPFRun nextRun = p.getRuns().get(i + 1);
+                                            String nextText = nextRun.text();
+                                            if (nextText.contains(":")) {
+                                                DateTime date = DateTime.today();
+                                                String sDate = date.getDay() + "/" + date.getMonth() + "/" + date.getYear();
+                                                nextText = nextText.replace(":", sDate);
+                                                nextRun.setText(nextText);
+                                            }
+                                        }
+                                    }
+
+                                    // Get text in text boxes by using method describes in this url:
+                                    // https://stackoverflow.com/questions/46802369/replace-text-in-text-box-of-docx-by-using-apache-poi
+                                    XmlCursor cursor = p.getCTP().newCursor();
+                                    cursor.selectPath("declare namespace w='http://schemas.openxmlformats.org/wordprocessingml/2006/main' .//*/w:txbxContent/w:p/w:r");
+
+                                    List<XmlObject> ctrsintxtbx = new ArrayList<XmlObject>();
+
+                                    while(cursor.hasNextSelection()) {
+                                        cursor.toNextSelection();
+                                        XmlObject obj = cursor.getObject();
+                                        ctrsintxtbx.add(obj);
+                                    }
+                                    for (XmlObject obj : ctrsintxtbx) {
+                                        CTR ctr = CTR.Factory.parse(obj.xmlText());
+                                        XWPFRun bufferrun = new XWPFRun(ctr, (IRunBody)p);
+                                        String text = bufferrun.getText(0);
+                                        if (text != null && text.contains("Prénom")) {
+                                            text = text.replace("Prénom :", "Prénom : " + selectedAdherent.getName());
+                                            bufferrun.setText(text, 0);
+                                        }
+                                        if (text != null && text.contains("Nom")) {
+                                            text = text.replace("Nom :", "Nom : " + selectedAdherent.getSurname());
+                                            bufferrun.setText(text, 0);
+                                        }
+                                        if (text != null && text.contains("Bateau")) {
+                                            text = text.replace("Bateau :", "Bateau : " + selectedBoat.getName());
+                                            bufferrun.setText(text, 0);
+                                        }
+                                        if (text != null && text.contains("Tel")) {
+                                            String phoneNumber = "";
+                                                if (selectedAdherent.getMobile() != null)
+                                                    phoneNumber = selectedAdherent.getMobile();
+                                                else if (selectedAdherent.getPhone() != null)
+                                                    phoneNumber = selectedAdherent.getPhone();
+                                            text = text.replace("Tel :", "Tel : " + phoneNumber);
+                                            bufferrun.setText(text, 0);
+                                        }
+                                        obj.set(bufferrun.getCTR());
+                                    }
+                                }
+                                document.write(new FileOutputStream("src/main/resources/newDoc.docx"));
+                                document.close();
+                            } catch (IOException | XmlException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    });
+
                     GridBagConstraints buttonsConstraints = new GridBagConstraints();
                     buttonsConstraints.gridx = 0;
                     buttonsConstraints.gridy = 0;
@@ -167,7 +278,7 @@ public class StalledView extends JInternalFrame {
                     ++buttonsConstraints.gridy;
                     buttonsConstraints.ipady = 0;
                     buttonsConstraints.fill = GridBagConstraints.NONE;
-                    buttons.add(print, buttonsConstraints);
+                    buttons.add(printButton, buttonsConstraints);
 
                     GridBagConstraints constraints = new GridBagConstraints();
                     constraints.gridx = 0;
@@ -342,7 +453,7 @@ public class StalledView extends JInternalFrame {
 
         JPanel dateChoice = new JPanel(new GridBagLayout());
         dateChoice.setBackground(Color.white);
-        Map<String, JDatePickerImpl> datePickers = fillDateChoicePanel(dateChoice);
+        datePickers = fillDateChoicePanel(dateChoice);
 
         JPanel colorChoice = new JPanel(new GridLayout(3,3));
         colorChoice.setBackground(Color.white);
