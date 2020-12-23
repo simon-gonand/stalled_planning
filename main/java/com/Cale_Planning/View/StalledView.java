@@ -14,7 +14,9 @@ import com.mindfusion.drawing.Colors;
 import com.mindfusion.drawing.TextAlignment;
 import com.mindfusion.scheduling.*;
 import com.mindfusion.scheduling.model.*;
+import fr.opensagres.poi.xwpf.converter.pdf.PdfConverter;
 import org.apache.poi.xwpf.usermodel.*;
+
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
@@ -27,14 +29,10 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.*;;
 import java.beans.PropertyVetoException;
 import java.io.*;
-import static java.nio.file.StandardCopyOption.*;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.*;
@@ -173,7 +171,7 @@ public class StalledView extends JInternalFrame {
                         public void actionPerformed(ActionEvent e) {
                             // Set dates and adherent information into the supported document
                             try {
-                                XWPFDocument document = new XWPFDocument(new FileInputStream("src/main/resources/cautionDoc.docx"));
+                                XWPFDocument document = new XWPFDocument(new FileInputStream("src/main/resources/stalledDoc.docx"));
                                 for (XWPFParagraph p : document.getParagraphs()) {
                                     for (int i = 0; i < p.getRuns().size(); ++i) {
                                         XWPFRun run = p.getRuns().get(i);
@@ -188,7 +186,8 @@ public class StalledView extends JInternalFrame {
                                         }
                                         if (text.contains("Du ")){
                                             DateModel from = datePickers.get("from").getModel();
-                                            String sFrom = from.getDay() + "/" + from.getMonth() + "/" + from.getYear();
+                                            int month = from.getMonth() + 1;
+                                            String sFrom = from.getDay() + "/" + month + "/" + from.getYear();
                                             text = text.replace("Du ",
                                                     sFrom);
                                             run.setText(text);
@@ -198,7 +197,8 @@ public class StalledView extends JInternalFrame {
                                             XWPFRun nextRun = p.getRuns().get(i + 1);
                                             if (nextRun.getText(0).equals(" ")) {
                                                 DateModel to = datePickers.get("to").getModel();
-                                                String sTo = to.getDay() + "/" + to.getMonth() + "/" + to.getYear();
+                                                int month = to.getMonth() + 1;
+                                                String sTo = to.getDay() + "/" + month + "/" + to.getYear();
                                                 text = text.replace("au",
                                                         sTo);
                                                 run.setText(text);
@@ -262,6 +262,10 @@ public class StalledView extends JInternalFrame {
                             } catch (IOException | XmlException ex) {
                                 ex.printStackTrace();
                             }
+
+                            // Print the document
+                            // First convert the document into a PDF
+
                         }
                     });
 
