@@ -14,7 +14,9 @@ import com.mindfusion.drawing.Colors;
 import com.mindfusion.drawing.TextAlignment;
 import com.mindfusion.scheduling.*;
 import com.mindfusion.scheduling.model.*;
-import fr.opensagres.poi.xwpf.converter.pdf.PdfConverter;
+import com.spire.doc.FileFormat;
+import com.spire.doc.ToPdfParameterList;
+import com.spire.pdf.PdfDocument;
 import org.apache.poi.xwpf.usermodel.*;
 
 import org.apache.xmlbeans.XmlCursor;
@@ -30,6 +32,10 @@ import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.beans.PropertyVetoException;
 import java.io.*;
 
@@ -264,8 +270,34 @@ public class StalledView extends JInternalFrame {
                             }
 
                             // Print the document
-                            // First convert the document into a PDF
+                            com.spire.doc.Document document = new com.spire.doc.Document();
+                            document.loadFromFile("src/main/resources/newDoc.docx");
 
+                            ToPdfParameterList ppl = new ToPdfParameterList();
+                            ppl.isEmbeddedAllFonts(true);
+                            ppl.setDisableLink(true);
+                            document.setJPEGQuality(80);
+                            document.saveToFile("src/main/resources/stalledDoc.pdf", FileFormat.PDF);
+
+                            PdfDocument pdf = new PdfDocument();
+                            pdf.loadFromFile("src/main/resources/stalledDoc.pdf");
+
+                            PrinterJob printerJob = PrinterJob.getPrinterJob();
+
+                            PageFormat format = printerJob.defaultPage();
+                            Paper paper = format.getPaper();
+                            paper.setImageableArea(0,0, format.getWidth(), format.getHeight());
+                            format.setPaper(paper);
+
+                            printerJob.setPrintable(pdf, format);
+                            if (printerJob.printDialog()){
+                                try {
+                                    printerJob.print();
+                                } catch (PrinterException ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                            document.close();
                         }
                     });
 
