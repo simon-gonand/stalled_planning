@@ -175,110 +175,135 @@ public class StalledView extends JInternalFrame {
                     printButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            // Set dates and adherent information into the supported document
-                            try {
-                                XWPFDocument document = new XWPFDocument(new FileInputStream("src/main/resources/stalledDoc.docx"));
-                                for (XWPFParagraph p : document.getParagraphs()) {
-                                    for (int i = 0; i < p.getRuns().size(); ++i) {
-                                        XWPFRun run = p.getRuns().get(i);
-                                        String text = run.getText(0);
-                                        if (run.getText(0) == null)
-                                            continue;
-                                        if (datePickers.get("from").getModel().getValue() == null ||
-                                                datePickers.get("to").getModel().getValue() == null) {
-                                            JOptionPane.showMessageDialog(thisFrame, "Vous n'avez pas saisi de dates", "Erreur",
-                                                    JOptionPane.ERROR_MESSAGE);
-                                             return;
-                                        }
-                                        if (text.contains("Du ")){
-                                            DateModel from = datePickers.get("from").getModel();
-                                            int month = from.getMonth() + 1;
-                                            String sFrom = from.getDay() + "/" + month + "/" + from.getYear();
-                                            text = text.replace("Du ",
-                                                    sFrom);
-                                            run.setText(text);
-                                        }
+                            final JDialog d = new JDialog();
+                            JPanel p1 = new JPanel(new GridLayout(2,1));
+                            JLabel firstLine = new JLabel("Création du document en cours...");
+                            JLabel secondLine = new JLabel("Veuillez patienter");
+                            firstLine.setHorizontalAlignment(JLabel.CENTER);
+                            secondLine.setHorizontalAlignment(JLabel.CENTER);
+                            p1.add(firstLine);
+                            p1.add(secondLine);
+                            d.getContentPane().add(p1);
+                            d.setSize(300,200);
+                            d.setLocationRelativeTo(thisFrame);
+                            d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                            d.setModal(true);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    // Set dates and adherent information into the supported document
+                                    try {
+                                        XWPFDocument document = new XWPFDocument(new FileInputStream("src/main/resources/stalledDoc.docx"));
+                                        for (XWPFParagraph p : document.getParagraphs()) {
+                                            for (int i = 0; i < p.getRuns().size(); ++i) {
+                                                XWPFRun run = p.getRuns().get(i);
+                                                String text = run.getText(0);
+                                                if (run.getText(0) == null)
+                                                    continue;
+                                                if (datePickers.get("from").getModel().getValue() == null ||
+                                                        datePickers.get("to").getModel().getValue() == null) {
+                                                    JOptionPane.showMessageDialog(thisFrame, "Vous n'avez pas saisi de dates", "Erreur",
+                                                            JOptionPane.ERROR_MESSAGE);
+                                                    return;
+                                                }
+                                                if (text.contains("Du ")){
+                                                    DateModel from = datePickers.get("from").getModel();
+                                                    int month = from.getMonth() + 1;
+                                                    String sFrom = from.getDay() + "/" + month + "/" + from.getYear();
+                                                    text = text.replace("Du ",
+                                                            sFrom);
+                                                    run.setText(text);
+                                                }
 
-                                        if (text.contains("au") && text.length() <= 3){
-                                            XWPFRun nextRun = p.getRuns().get(i + 1);
-                                            if (nextRun.getText(0).equals(" ")) {
-                                                DateModel to = datePickers.get("to").getModel();
-                                                int month = to.getMonth() + 1;
-                                                String sTo = to.getDay() + "/" + month + "/" + to.getYear();
-                                                text = text.replace("au",
-                                                        sTo);
-                                                run.setText(text);
+                                                if (text.contains("au") && text.length() <= 3){
+                                                    XWPFRun nextRun = p.getRuns().get(i + 1);
+                                                    if (nextRun.getText(0).equals(" ")) {
+                                                        DateModel to = datePickers.get("to").getModel();
+                                                        int month = to.getMonth() + 1;
+                                                        String sTo = to.getDay() + "/" + month + "/" + to.getYear();
+                                                        text = text.replace("au",
+                                                                sTo);
+                                                        run.setText(text);
+                                                    }
+                                                }
+
+                                                if (text.contains("Date") && !text.contains("Date et")) {
+                                                    XWPFRun nextRun = p.getRuns().get(i + 1);
+                                                    String nextText = nextRun.text();
+                                                    if (nextText.contains(":")) {
+                                                        DateTime date = DateTime.today();
+                                                        String sDate = date.getDay() + "/" + date.getMonth() + "/" + date.getYear();
+                                                        nextText = nextText.replace(":", sDate);
+                                                        nextRun.setText(nextText);
+                                                    }
+                                                }
+                                            }
+
+                                            // Get text in text boxes by using method describes in this url:
+                                            // https://stackoverflow.com/questions/46802369/replace-text-in-text-box-of-docx-by-using-apache-poi
+                                            XmlCursor cursor = p.getCTP().newCursor();
+                                            cursor.selectPath("declare namespace w='http://schemas.openxmlformats.org/wordprocessingml/2006/main' .//*/w:txbxContent/w:p/w:r");
+
+                                            List<XmlObject> ctrsintxtbx = new ArrayList<XmlObject>();
+
+                                            while(cursor.hasNextSelection()) {
+                                                cursor.toNextSelection();
+                                                XmlObject obj = cursor.getObject();
+                                                ctrsintxtbx.add(obj);
+                                            }
+                                            for (XmlObject obj : ctrsintxtbx) {
+                                                CTR ctr = CTR.Factory.parse(obj.xmlText());
+                                                XWPFRun bufferrun = new XWPFRun(ctr, (IRunBody)p);
+                                                String text = bufferrun.getText(0);
+                                                if (text != null && text.contains("Prénom")) {
+                                                    text = text.replace("Prénom :", "Prénom : " + selectedAdherent.getName());
+                                                    bufferrun.setText(text, 0);
+                                                }
+                                                if (text != null && text.contains("Nom")) {
+                                                    text = text.replace("Nom :", "Nom : " + selectedAdherent.getSurname());
+                                                    bufferrun.setText(text, 0);
+                                                }
+                                                if (text != null && text.contains("Bateau")) {
+                                                    text = text.replace("Bateau :", "Bateau : " + selectedBoat.getName());
+                                                    bufferrun.setText(text, 0);
+                                                }
+                                                if (text != null && text.contains("Tel")) {
+                                                    String phoneNumber = "";
+                                                    if (selectedAdherent.getMobile() != null)
+                                                        phoneNumber = selectedAdherent.getMobile();
+                                                    else if (selectedAdherent.getPhone() != null)
+                                                        phoneNumber = selectedAdherent.getPhone();
+                                                    text = text.replace("Tel :", "Tel : " + phoneNumber);
+                                                    bufferrun.setText(text, 0);
+                                                }
+                                                obj.set(bufferrun.getCTR());
                                             }
                                         }
+                                        document.write(new FileOutputStream("src/main/resources/newDoc.docx"));
+                                        document.close();
 
-                                        if (text.contains("Date") && !text.contains("Date et")) {
-                                            XWPFRun nextRun = p.getRuns().get(i + 1);
-                                            String nextText = nextRun.text();
-                                            if (nextText.contains(":")) {
-                                                DateTime date = DateTime.today();
-                                                String sDate = date.getDay() + "/" + date.getMonth() + "/" + date.getYear();
-                                                nextText = nextText.replace(":", sDate);
-                                                nextRun.setText(nextText);
-                                            }
-                                        }
+                                        com.spire.doc.Document newDocument = new com.spire.doc.Document();
+                                        newDocument.loadFromFile("src/main/resources/newDoc.docx");
+
+                                        ToPdfParameterList ppl = new ToPdfParameterList();
+                                        ppl.isEmbeddedAllFonts(true);
+                                        ppl.setDisableLink(true);
+                                        newDocument.setJPEGQuality(100);
+                                        newDocument.saveToFile("src/main/resources/stalledDoc.pdf", FileFormat.PDF);
+                                        newDocument.close();
+                                    } catch (IOException | XmlException ex) {
+                                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas pu se créer", "Erreur",
+                                                JOptionPane.ERROR_MESSAGE);
+                                        d.dispose();
+                                        interrupt();
                                     }
-
-                                    // Get text in text boxes by using method describes in this url:
-                                    // https://stackoverflow.com/questions/46802369/replace-text-in-text-box-of-docx-by-using-apache-poi
-                                    XmlCursor cursor = p.getCTP().newCursor();
-                                    cursor.selectPath("declare namespace w='http://schemas.openxmlformats.org/wordprocessingml/2006/main' .//*/w:txbxContent/w:p/w:r");
-
-                                    List<XmlObject> ctrsintxtbx = new ArrayList<XmlObject>();
-
-                                    while(cursor.hasNextSelection()) {
-                                        cursor.toNextSelection();
-                                        XmlObject obj = cursor.getObject();
-                                        ctrsintxtbx.add(obj);
-                                    }
-                                    for (XmlObject obj : ctrsintxtbx) {
-                                        CTR ctr = CTR.Factory.parse(obj.xmlText());
-                                        XWPFRun bufferrun = new XWPFRun(ctr, (IRunBody)p);
-                                        String text = bufferrun.getText(0);
-                                        if (text != null && text.contains("Prénom")) {
-                                            text = text.replace("Prénom :", "Prénom : " + selectedAdherent.getName());
-                                            bufferrun.setText(text, 0);
-                                        }
-                                        if (text != null && text.contains("Nom")) {
-                                            text = text.replace("Nom :", "Nom : " + selectedAdherent.getSurname());
-                                            bufferrun.setText(text, 0);
-                                        }
-                                        if (text != null && text.contains("Bateau")) {
-                                            text = text.replace("Bateau :", "Bateau : " + selectedBoat.getName());
-                                            bufferrun.setText(text, 0);
-                                        }
-                                        if (text != null && text.contains("Tel")) {
-                                            String phoneNumber = "";
-                                                if (selectedAdherent.getMobile() != null)
-                                                    phoneNumber = selectedAdherent.getMobile();
-                                                else if (selectedAdherent.getPhone() != null)
-                                                    phoneNumber = selectedAdherent.getPhone();
-                                            text = text.replace("Tel :", "Tel : " + phoneNumber);
-                                            bufferrun.setText(text, 0);
-                                        }
-                                        obj.set(bufferrun.getCTR());
-                                    }
+                                    d.dispose();
+                                    interrupt();
                                 }
-                                document.write(new FileOutputStream("src/main/resources/newDoc.docx"));
-                                document.close();
-                            } catch (IOException | XmlException ex) {
-                                ex.printStackTrace();
-                            }
-
+                            };
+                            t.start();
+                            d.setVisible(true);
                             // Print the document
-                            com.spire.doc.Document document = new com.spire.doc.Document();
-                            document.loadFromFile("src/main/resources/newDoc.docx");
-
-                            ToPdfParameterList ppl = new ToPdfParameterList();
-                            ppl.isEmbeddedAllFonts(true);
-                            ppl.setDisableLink(true);
-                            document.setJPEGQuality(80);
-                            document.saveToFile("src/main/resources/stalledDoc.pdf", FileFormat.PDF);
-
                             PdfDocument pdf = new PdfDocument();
                             pdf.loadFromFile("src/main/resources/stalledDoc.pdf");
 
@@ -297,7 +322,7 @@ public class StalledView extends JInternalFrame {
                                     ex.printStackTrace();
                                 }
                             }
-                            document.close();
+                            pdf.close();
                         }
                     });
 
