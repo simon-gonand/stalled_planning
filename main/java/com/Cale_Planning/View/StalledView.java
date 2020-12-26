@@ -20,7 +20,6 @@ import com.spire.pdf.PdfDocument;
 import org.apache.poi.xwpf.usermodel.*;
 
 import org.apache.xmlbeans.XmlCursor;
-import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.jdatepicker.DateModel;
 import org.jdatepicker.impl.JDatePanelImpl;
@@ -204,6 +203,8 @@ public class StalledView extends JInternalFrame {
                                                         datePickers.get("to").getModel().getValue() == null) {
                                                     JOptionPane.showMessageDialog(thisFrame, "Vous n'avez pas saisi de dates", "Erreur",
                                                             JOptionPane.ERROR_MESSAGE);
+                                                    d.dispose();
+                                                    interrupt();
                                                     return;
                                                 }
                                                 if (text.contains("Du ")){
@@ -253,7 +254,7 @@ public class StalledView extends JInternalFrame {
                                             }
                                             for (XmlObject obj : ctrsintxtbx) {
                                                 CTR ctr = CTR.Factory.parse(obj.xmlText());
-                                                XWPFRun bufferrun = new XWPFRun(ctr, (IRunBody)p);
+                                                XWPFRun bufferrun = new XWPFRun(ctr, p);
                                                 String text = bufferrun.getText(0);
                                                 if (text != null && text.contains("Prénom")) {
                                                     text = text.replace("Prénom :", "Prénom : " + selectedAdherent.getName());
@@ -291,7 +292,7 @@ public class StalledView extends JInternalFrame {
                                         newDocument.setJPEGQuality(100);
                                         newDocument.saveToFile("src/main/resources/stalledDoc.pdf", FileFormat.PDF);
                                         newDocument.close();
-                                    } catch (IOException | XmlException ex) {
+                                    } catch (Exception ex) {
                                         JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas pu se créer", "Erreur",
                                                 JOptionPane.ERROR_MESSAGE);
                                         d.dispose();
