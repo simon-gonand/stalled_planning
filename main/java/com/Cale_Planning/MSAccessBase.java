@@ -39,11 +39,11 @@ public class MSAccessBase {
             connection = DriverManager.getConnection(connectionString);
         }
         catch (ClassNotFoundException e) {
-            System.out.println("Problème avec le driver ODBC");
+            System.err.println("Problème avec le driver ODBC");
             return false;
         }
         catch (SQLException e) {
-            System.out.println("Impossible de se connecter à la base " + e.getErrorCode() + " " + e.getMessage());
+            System.err.println("Impossible de se connecter à la base " + e.getErrorCode() + " " + e.getMessage());
             return false;
         }
         return true;
