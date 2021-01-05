@@ -83,20 +83,20 @@ public class BoatView extends JInternalFrame {
         this.boatJList = boatJList;
         setTitle("Fiche Bateau ");
         this.getContentPane().setBackground(Color.white);
-        setLayout(new GridLayout(4,1));
+        setLayout(new GridLayout(5,1));
 
         int i = mainPane.getAllFrames().length -1;
         while (i >= 0) {
             JInternalFrame frame = mainPane.getAllFrames()[i];
             if (frame instanceof AdherentView || frame instanceof BoatView || frame instanceof AllAdherentsView || frame instanceof AllBoatsView) {
-                this.setBounds(frame.getX() + 20, frame.getY() + 20, 700, 250);
+                this.setBounds(frame.getX() + 20, frame.getY() + 20, 800, 250);
                 break;
             }
             --i;
         }
         if (i < 0) {
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            this.setBounds(screenSize.width / 3, screenSize.height / 4, 700, 250);
+            this.setBounds(screenSize.width / 3, screenSize.height / 4, 800, 250);
         }
 
         setResizable(true);
@@ -105,21 +105,25 @@ public class BoatView extends JInternalFrame {
         JPanel boatPropertiesPanel = new JPanel();
         JPanel ownerCategoryPanel = new JPanel();
         JPanel placePanel = new JPanel();
+        JPanel commentPanel= new JPanel();
         JPanel buttonPanel = new JPanel();
 
         boatPropertiesPanel.setBackground(Color.white);
         ownerCategoryPanel.setBackground(Color.white);
         placePanel.setBackground(Color.white);
+        commentPanel.setBackground(Color.white);
         buttonPanel.setBackground(Color.white);
 
         fillBoatPropertiesPanel(boatPropertiesPanel);
         fillOwnerCategoryPanel(ownerCategoryPanel);
         fillPlacePanel(placePanel);
+        fillCommentPanel(commentPanel);
         fillButtonPanel(buttonPanel);
 
         this.add(boatPropertiesPanel);
         this.add(ownerCategoryPanel);
         this.add(placePanel);
+        this.add(commentPanel);
         this.add(buttonPanel);
 
         mainPane.add(this);
