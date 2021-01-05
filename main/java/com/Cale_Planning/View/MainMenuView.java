@@ -1,5 +1,6 @@
 package com.Cale_Planning.View;
 
+import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
 
@@ -38,9 +39,21 @@ public class MainMenuView extends JInternalFrame {
         adherentsViewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (!Main.windowManagment.isEmpty()) {
+                    for (JInternalFrame frame : Main.windowManagment)
+                        if (frame.getClass().equals(AllAdherentsView.class)){
+                            try {
+                                frame.setSelected(true);
+                            } catch (PropertyVetoException ex) {
+                                ex.printStackTrace();
+                            }
+                            return;
+                        }
+                }
                 JDesktopPane mainPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
                 try {
-                    new AllAdherentsView(mainPane);
+                    AllAdherentsView view = new AllAdherentsView(mainPane);
+                    Main.windowManagment.add(view);
                 } catch (PropertyVetoException ex) {
                     ex.printStackTrace();
                 }
@@ -50,9 +63,21 @@ public class MainMenuView extends JInternalFrame {
         boatViewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (!Main.windowManagment.isEmpty()) {
+                    for (JInternalFrame frame : Main.windowManagment)
+                        if (frame.getClass().equals(AllBoatsView.class)){
+                            try {
+                                frame.setSelected(true);
+                            } catch (PropertyVetoException ex) {
+                                ex.printStackTrace();
+                            }
+                            return;
+                        }
+                }
                 JDesktopPane mainPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
                 try {
-                    new AllBoatsView(mainPane);
+                    AllBoatsView view = new AllBoatsView(mainPane);
+                    Main.windowManagment.add(view);
                 } catch (PropertyVetoException ex) {
                     ex.printStackTrace();
                 }
@@ -62,9 +87,21 @@ public class MainMenuView extends JInternalFrame {
         stalledViewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (!Main.windowManagment.isEmpty()) {
+                    for (JInternalFrame frame : Main.windowManagment)
+                        if (frame.getClass().equals(StalledView.class)){
+                            try {
+                                frame.setSelected(true);
+                            } catch (PropertyVetoException ex) {
+                                ex.printStackTrace();
+                            }
+                            return;
+                        }
+                }
                 JDesktopPane mainPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
                 try {
-                    new StalledView(mainPane);
+                    StalledView view = new StalledView(mainPane);
+                    Main.windowManagment.add(view);
                 } catch (PropertyVetoException ex) {
                     ex.printStackTrace();
                 }

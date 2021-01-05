@@ -882,6 +882,7 @@ public class StalledView extends JInternalFrame {
         close.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Main.windowManagment.remove(thisFrame);
                 JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
                 for (JInternalFrame frame : desktopPane.getAllFrames()){
                     if (frame == thisFrame)

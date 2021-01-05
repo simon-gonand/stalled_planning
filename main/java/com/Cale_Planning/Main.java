@@ -4,10 +4,12 @@ import com.Cale_Planning.View.MainMenuView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Main {
     private static MSAccessBase database = new MSAccessBase("src/main/resources/Database.accdb");
     public static MSAccessBase getDatabase(){ return database; }
+    public static ArrayList<JInternalFrame> windowManagment = new ArrayList<JInternalFrame>();
 
     public static void main(String[] args){
         JFrame mainWindow = new JFrame("Planning Cale");
