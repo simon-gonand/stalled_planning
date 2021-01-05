@@ -96,8 +96,29 @@ public class AllBoatsView extends JInternalFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (e.getClickCount() == 2){
+                    if (!Main.windowManagment.isEmpty()) {
+                        for (JInternalFrame frame : Main.windowManagment)
+                            if (frame.getClass().equals(BoatView.class)){
+                                BoatView view = (BoatView) frame;
+                                if (view.getBoat() != null &&
+                                        view.getBoat().getName().equals(
+                                                boatJList.getModel().getElementAt(boatJList.locationToIndex(e.getPoint())).getName()) &&
+                                        view.getBoat().getOwner().getName().equals(
+                                                boatJList.getModel().getElementAt(boatJList.locationToIndex(e.getPoint())).getOwner().getName()) &&
+                                        view.getBoat().getOwner().getSurname().equals(
+                                                boatJList.getModel().getElementAt(boatJList.locationToIndex(e.getPoint())).getOwner().getSurname())) {
+                                    try {
+                                        frame.setSelected(true);
+                                    } catch (PropertyVetoException ex) {
+                                        ex.printStackTrace();
+                                    }
+                                    return;
+                                }
+                            }
+                    }
                     try {
-                        new BoatView(boatJList.getModel().getElementAt(boatJList.locationToIndex(e.getPoint())), mainPane);
+                        BoatView view = new BoatView(boatJList.getModel().getElementAt(boatJList.locationToIndex(e.getPoint())), mainPane);
+                        Main.windowManagment.add(view);
                     } catch (PropertyVetoException ex) {
                         ex.printStackTrace();
                     }
@@ -133,8 +154,23 @@ public class AllBoatsView extends JInternalFrame {
         addBoat.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (!Main.windowManagment.isEmpty()) {
+                    for (JInternalFrame frame : Main.windowManagment)
+                        if (frame.getClass().equals(BoatView.class)){
+                            BoatView view = (BoatView) frame;
+                            if (view.getBoat() == null) {
+                                try {
+                                    frame.setSelected(true);
+                                } catch (PropertyVetoException ex) {
+                                    ex.printStackTrace();
+                                }
+                                return;
+                            }
+                        }
+                }
                 try {
-                    new BoatView(mainPane, boatJList);
+                    BoatView view = new BoatView(mainPane, boatJList);
+                    Main.windowManagment.add(view);
                 } catch (PropertyVetoException ex) {
                     ex.printStackTrace();
                 }

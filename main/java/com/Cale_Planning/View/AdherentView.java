@@ -1,5 +1,6 @@
 package com.Cale_Planning.View;
 
+import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
 import org.jdatepicker.JDatePicker;
@@ -528,6 +529,7 @@ public class AdherentView extends JInternalFrame {
         cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Main.windowManagment.remove(thisFrame);
                 JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
                 for (JInternalFrame frame : desktopPane.getAllFrames()){
                     if (frame == thisFrame)

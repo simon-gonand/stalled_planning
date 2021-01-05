@@ -110,8 +110,28 @@ public class AllAdherentsView extends JInternalFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (e.getClickCount() == 2){
+                    if (!Main.windowManagment.isEmpty()) {
+                        for (JInternalFrame frame : Main.windowManagment)
+                            if (frame.getClass().equals(AdherentView.class)){
+                                AdherentView view = (AdherentView) frame;
+                                if (view.getAdherent() != null &&
+                                        view.getAdherent().getName().equals(
+                                                adherentJList.getModel().getElementAt(adherentJList.locationToIndex(e.getPoint())).getName()) &&
+                                        view.getAdherent().getSurname().equals(
+                                                adherentJList.getModel().getElementAt(adherentJList.locationToIndex(e.getPoint())).getSurname())) {
+                                    try {
+                                        frame.setSelected(true);
+                                    } catch (PropertyVetoException ex) {
+                                        ex.printStackTrace();
+                                    }
+                                    return;
+                                }
+                            }
+                    }
                     try {
-                        new AdherentView(adherentJList.getModel().getElementAt(adherentJList.locationToIndex(e.getPoint())), mainPane);
+                        AdherentView view = new AdherentView(
+                                adherentJList.getModel().getElementAt(adherentJList.locationToIndex(e.getPoint())), mainPane);
+                        Main.windowManagment.add(view);
                     } catch (PropertyVetoException ex) {
                         ex.printStackTrace();
                     }
@@ -147,8 +167,23 @@ public class AllAdherentsView extends JInternalFrame {
         addAdherent.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (!Main.windowManagment.isEmpty()) {
+                    for (JInternalFrame frame : Main.windowManagment)
+                        if (frame.getClass().equals(AdherentView.class)){
+                            AdherentView view = (AdherentView) frame;
+                            if (view.getAdherent() == null) {
+                                try {
+                                    frame.setSelected(true);
+                                } catch (PropertyVetoException ex) {
+                                    ex.printStackTrace();
+                                }
+                                return;
+                            }
+                        }
+                }
                 try {
-                    new AdherentView(mainPane, adherentJList);
+                    AdherentView view = new AdherentView(mainPane, adherentJList);
+                    Main.windowManagment.add(view);
                 } catch (PropertyVetoException ex) {
                     ex.printStackTrace();
                 }

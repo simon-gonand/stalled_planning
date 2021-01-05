@@ -1,6 +1,7 @@
 package com.Cale_Planning.View;
 
 import com.Cale_Planning.Controller.AdherentController;
+import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
 
@@ -384,6 +385,7 @@ public class BoatView extends JInternalFrame {
         cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Main.windowManagment.remove(thisFrame);
                 JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
                 for (JInternalFrame frame : desktopPane.getAllFrames()){
                     if (frame == thisFrame)
@@ -404,5 +406,9 @@ public class BoatView extends JInternalFrame {
         ++constraints.gridx;
         constraints.anchor = GridBagConstraints.LINE_END;
         panel.add(cancel, constraints);
+    }
+
+    public Boat getBoat() {
+        return boat;
     }
 }
