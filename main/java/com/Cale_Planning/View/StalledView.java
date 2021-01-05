@@ -546,7 +546,7 @@ public class StalledView extends JInternalFrame {
 
         JPanel buttons = new JPanel (new GridLayout(2,1));
         buttons.setBackground(Color.white);
-        JButton submitButton = new JButton("Submit");
+        JButton submitButton = new JButton("Valider");
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -622,7 +622,7 @@ public class StalledView extends JInternalFrame {
                         JOptionPane.INFORMATION_MESSAGE);
             }
         });
-        JButton cancelButton = new JButton("Cancel");
+        JButton cancelButton = new JButton("Annuler");
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
