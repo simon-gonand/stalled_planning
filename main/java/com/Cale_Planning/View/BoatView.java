@@ -336,6 +336,30 @@ public class BoatView extends JInternalFrame {
         submit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (name.getText().equals("")) {
+                    JOptionPane.showMessageDialog(thisFrame, "Le bateau n'a pas de nom", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (registration.getText().equals("")) {
+                    JOptionPane.showMessageDialog(thisFrame, "Le bateau n'a pas d'immatriculat", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (length.getText().equals("") || width.getText().equals("") || draught.getText().equals("") || weight.getText().equals("")) {
+                    JOptionPane.showMessageDialog(thisFrame, "La fiche technique du bateau est incomplète", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (place.getSelection() == null){
+                    JOptionPane.showMessageDialog(thisFrame, "Le bateau n'a pas de place", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (category.getSelectedItem() == null){
+                    JOptionPane.showMessageDialog(thisFrame, "Le bateau n'a pas de catégorie", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (owner.getSelectedItem() == null){
+                    JOptionPane.showMessageDialog(thisFrame, "Le bateau n'a pas d'adhérent", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 if (boat != null) {
                     boat.setName(name.getText());
                     boat.setRegistration(registration.getText());

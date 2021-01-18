@@ -494,6 +494,18 @@ public class AdherentView extends JInternalFrame {
         submit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (name.getText().equals("") || surname.getText().equals("")) {
+                    JOptionPane.showMessageDialog(thisFrame, "L'adhérent n'a pas de nom", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (birth.getModel().getValue() == null) {
+                    JOptionPane.showMessageDialog(thisFrame, "L'adhérent n'a pas de date de naissance", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (genders.getSelection() == null) {
+                    JOptionPane.showMessageDialog(thisFrame, "L'adhérent n'a pas de genre", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 if (adherent != null) {
                     adherent.setName(name.getText());
                     adherent.setSurname(surname.getText());
