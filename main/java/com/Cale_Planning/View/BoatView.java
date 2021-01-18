@@ -376,7 +376,12 @@ public class BoatView extends JInternalFrame {
                     DefaultListModel defaultListModel = (DefaultListModel) boatJList.getModel();
                     defaultListModel.add(defaultListModel.size(), boat);
                     boatJList.setModel(defaultListModel);
+                    Main.windowManagment.remove(thisFrame);
                     JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                    for (JInternalFrame frame : desktopPane.getAllFrames()){
+                        if (frame == thisFrame)
+                            desktopPane.remove(frame);
+                    }
                     SwingUtilities.updateComponentTreeUI(desktopPane);
                 }
             }

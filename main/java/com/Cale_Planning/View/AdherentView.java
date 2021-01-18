@@ -521,6 +521,11 @@ public class AdherentView extends JInternalFrame {
                     defaultListModel.add(defaultListModel.size(), adherent);
                     adherentList.setModel(defaultListModel);
                     JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
+                    Main.windowManagment.remove(thisFrame);
+                    for (JInternalFrame frame : desktopPane.getAllFrames()){
+                        if (frame == thisFrame)
+                            desktopPane.remove(frame);
+                    }
                     SwingUtilities.updateComponentTreeUI(desktopPane);
                 }
             }
