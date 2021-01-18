@@ -31,8 +31,6 @@ public class Parser {
 
         NodeList adherentList = doc.getElementsByTagName("TABLE_Adherent");
         for (int i = 0; i < adherentList.getLength(); ++i){
-            boolean isSameAdherent = false;
-
             Node adherentNode = adherentList.item(i);
             if (adherentNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element adherentElement = (Element) adherentNode;
@@ -47,8 +45,26 @@ public class Parser {
                         adherent.setName(adherentElement.getElementsByTagName("Prénom").item(0).getTextContent());
                         adherent.setSurname(adherentElement.getElementsByTagName("Nom").item(0).getTextContent());
                         adherent.setEmail(adherentElement.getElementsByTagName("E-mail").item(0).getTextContent());
-                        adherent.setPhone(adherentElement.getElementsByTagName("Tél_Domicile").item(0).getTextContent());
-                        adherent.setMobile(adherentElement.getElementsByTagName("Tél_Portable").item(0).getTextContent());
+                        String telDom = adherentElement.getElementsByTagName("Tél_Domicile").item(0).getTextContent();
+                        if (telDom.length() >= 10){
+                            if (telDom.charAt(2) == '.')
+                                telDom = telDom.replace('.', ' ');
+                            else {
+                                telDom = telDom.substring(0, 2) + " " + telDom.substring(2, 4) + " " + telDom.substring(4, 6) + " " +
+                                        telDom.substring(6, 8) + " " + telDom.substring(8);
+                            }
+                        }
+                        adherent.setPhone(telDom);
+                        String phone = adherentElement.getElementsByTagName("Tél_Portable").item(0).getTextContent();
+                        if (phone.length() >= 10){
+                            if (phone.charAt(2) == '.')
+                                phone = phone.replace('.', ' ');
+                            else {
+                                phone = phone.substring(0, 2) + " " + phone.substring(2, 4) + " " + phone.substring(4, 6) + " " +
+                                        phone.substring(6, 8) + " " + phone.substring(8);
+                            }
+                        }
+                        adherent.setMobile(phone);
                         adherent.setCity(adherentElement.getElementsByTagName("Commune").item(0).getTextContent());
                         adherent.setAddress(adherentElement.getElementsByTagName("N__et_nom_de_la_voie").item(0).getTextContent());
                         if (!subscriptionStr.equals(""))
@@ -72,10 +88,9 @@ public class Parser {
                                     " a mal été saisi par l'utilisateur", "Problème avec le code postal", JOptionPane.ERROR_MESSAGE);
                         }
                         adherent.setPostalCode(postalCode);
-                        isSameAdherent = true;
                     }
                 }
-                if (!isSameAdherent) {
+                else {
                     int subscriptionYear = 0;
                     try {
                         if (!subscriptionStr.equals(""))
