@@ -69,9 +69,9 @@ public class Parser {
                         adherent.setMobile(phone);
                         adherent.setCity(adherentElement.getElementsByTagName("Commune").item(0).getTextContent());
                         adherent.setAddress(adherentElement.getElementsByTagName("N__et_nom_de_la_voie").item(0).getTextContent());
+
                         if (!subscriptionStr.equals(""))
-                            adherent.setSubscriptionYear(Integer.valueOf(
-                                    subscriptionStr.substring(6)));
+                            adherent.setSubscriptionYear(Integer.valueOf(subscriptionStr.substring(6)));
                         if (!birthStr.equals("")) {
                             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
                             adherent.setDateOfBirth(formatter.parse(birthStr));

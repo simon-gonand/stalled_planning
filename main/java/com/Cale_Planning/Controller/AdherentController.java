@@ -42,10 +42,9 @@ public class AdherentController {
 
     public static Adherent getAdherentByIDComptable (int id, String name, String surname) throws SQLException {
         try{
-            System.out.println("SELECT ID FROM Adherent WHERE IDComptable = " + id + " AND Nom = '" + surname +
-                    "' AND Prenom = '" + name + "'");
-            ResultSet results = Main.getDatabase().SQLSelect("SELECT ID FROM Adherent WHERE IDComptable = " + id + " AND Nom = " + surname +
-                    " AND Prenom = " + name);
+            String str = "SELECT ID FROM Adherent WHERE IDComptable = " + id + " AND Nom = \"" + surname +
+                    "\" AND Prenom = \"" + name + "\"";
+            ResultSet results = Main.getDatabase().SQLSelect(str);
 
             if (results.next() != false)
                 return new Adherent(results.getInt("ID"));
@@ -70,7 +69,7 @@ public class AdherentController {
         try{
             Main.getDatabase().SQLUpdate("INSERT INTO Adherent (Genre, Nom, Prenom, DateNaissance, DateAdhesion, Batiment, Rue, " +
                             "CodePostal, Ville, Email, Telephone, Portable, Com, IDComptable) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                    adherent.getGender().toString(), adherent.getName(), adherent.getSurname(), adherent.getDateOfBirth(),
+                    adherent.getGender().toString(), adherent.getSurname(), adherent.getName(), adherent.getDateOfBirth(),
                     adherent.getSubscriptionYear(), adherent.getAdditional(), adherent.getAddress(), adherent.getPostalCode(), adherent.getCity(),
                     adherent.getEmail(), adherent.getPhone(), adherent.getMobile(), adherent.getComment(), adherent.getIdComptable());
             ResultSet resultSet = Main.getDatabase().SQLSelect("SELECT ID FROM Adherent ORDER BY ID DESC LIMIT 1");
