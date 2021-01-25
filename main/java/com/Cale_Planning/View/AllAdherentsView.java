@@ -263,7 +263,12 @@ public class AllAdherentsView extends JInternalFrame {
                                 JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
                                 d.dispose();
                                 interrupt();
-                            } catch (IOException ex) {
+                            } catch (SQLException ex) {
+                                JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
+                                d.dispose();
+                                interrupt();
+                            }
+                            catch (IOException ex) {
                                 JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas été importé correctement");
                                 d.dispose();
                                 interrupt();

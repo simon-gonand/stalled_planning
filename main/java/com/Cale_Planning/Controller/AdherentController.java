@@ -40,15 +40,19 @@ public class AdherentController {
         return adherentList.toArray(allAdherents);
     }
 
-    public static Adherent getAdherentByIDComptable (int id){
+    public static Adherent getAdherentByIDComptable (int id, String name, String surname) throws SQLException {
         try{
-            ResultSet results = Main.getDatabase().SQLSelect("SELECT ID FROM Adherent WHERE IDComptable = " + id);
+            System.out.println("SELECT ID FROM Adherent WHERE IDComptable = " + id + " AND Nom = '" + surname +
+                    "' AND Prenom = '" + name + "'");
+            ResultSet results = Main.getDatabase().SQLSelect("SELECT ID FROM Adherent WHERE IDComptable = " + id + " AND Nom = " + surname +
+                    " AND Prenom = " + name);
 
             if (results.next() != false)
                 return new Adherent(results.getInt("ID"));
         } catch (SQLException e){
-            System.err.println("Select All Adherent error n° " + e.getErrorCode());
+            System.err.println("Select get adherent by IDCompable error n° " + e.getErrorCode());
             System.err.println("What goes wrong ? " + e.getMessage());
+            throw e;
         }
         return null;
     }

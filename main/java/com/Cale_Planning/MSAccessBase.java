@@ -70,18 +70,10 @@ public class MSAccessBase {
      *@return : result
      */
     public ResultSet SQLSelect(String sql) throws SQLException {
-        Statement statement = null;
-        ResultSet result = null;
-        try {
-            statement = connection.createStatement();
-            result = statement.executeQuery(sql);
-            return result;
-        }
-        catch (SQLException e) {
-            System.out.println("Select error: " + e.getMessage());
-            statement.close();
-            return null;
-        }
+        Statement statement = connection.createStatement();
+        ResultSet result = statement.executeQuery(sql);
+        return result;
+
     }
 
     /*
@@ -89,31 +81,26 @@ public class MSAccessBase {
      *@param : sql
      */
     public void SQLUpdate(String sql, Object... variables) throws SQLException {
-        try {
-            PreparedStatement pstmt = connection.prepareStatement(sql);
-            for (int i = 0; i < variables.length; ++i){
-                if (variables[i] instanceof String)
-                    pstmt.setString(i+1, (String) variables[i]);
-                else if (variables[i] instanceof Float)
-                    pstmt.setFloat(i+1, (Float) variables[i]);
-                else if (variables[i] instanceof Integer)
-                    pstmt.setInt(i+1, (Integer) variables[i]);
-                else if (variables[i] instanceof java.util.Date) {
-                    Date date = new Date(((java.util.Date) variables[i]).getTime());
-                    pstmt.setDate(i + 1, date);
-                }
-                else if (variables[i] instanceof DateTime){
-                    DateTime dateTime = (DateTime) variables[i];
-                    pstmt.setDate(i + 1, new Date(dateTime.toJavaCalendar().getTimeInMillis()));
-                }
-                else if (variables[i] instanceof Boolean)
-                    pstmt.setBoolean(i+1, (Boolean) variables[i]);
-            }
-            int nrows = pstmt.executeUpdate();
+    PreparedStatement pstmt = connection.prepareStatement(sql);
+    for (int i = 0; i < variables.length; ++i){
+        if (variables[i] instanceof String)
+            pstmt.setString(i+1, (String) variables[i]);
+        else if (variables[i] instanceof Float)
+            pstmt.setFloat(i+1, (Float) variables[i]);
+        else if (variables[i] instanceof Integer)
+            pstmt.setInt(i+1, (Integer) variables[i]);
+        else if (variables[i] instanceof java.util.Date) {
+            Date date = new Date(((java.util.Date) variables[i]).getTime());
+            pstmt.setDate(i + 1, date);
         }
-        catch (SQLException e) {
-            System.out.println("Update error " + e.getMessage() + " " + sql);
+        else if (variables[i] instanceof DateTime){
+            DateTime dateTime = (DateTime) variables[i];
+            pstmt.setDate(i + 1, new Date(dateTime.toJavaCalendar().getTimeInMillis()));
         }
+        else if (variables[i] instanceof Boolean)
+            pstmt.setBoolean(i+1, (Boolean) variables[i]);
+    }
+    int nrows = pstmt.executeUpdate();
     }
 }
 

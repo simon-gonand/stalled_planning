@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,7 +24,7 @@ public class Parser {
         inputFile = new File(fileName);
     }
 
-    public void importAdherents(JDesktopPane mainPane) throws ParserConfigurationException, IOException, SAXException, ParseException {
+    public void importAdherents(JDesktopPane mainPane) throws ParserConfigurationException, IOException, SAXException, ParseException, SQLException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(inputFile);
@@ -39,11 +40,12 @@ public class Parser {
                     id = Integer.valueOf(adherentElement.getElementsByTagName("N_").item(0).getTextContent());
                 String subscriptionStr = adherentElement.getElementsByTagName("Date_d_adhésion").item(0).getTextContent();
                 String birthStr = adherentElement.getElementsByTagName("Né_e__le").item(0).getTextContent();
-                Adherent adherent = AdherentController.getAdherentByIDComptable(id);
+                String name = adherentElement.getElementsByTagName("Prénom").item(0).getTextContent();
+                String surname = adherentElement.getElementsByTagName("Nom").item(0).getTextContent();
+                Adherent adherent = AdherentController.getAdherentByIDComptable(id, name, surname);
                 if (adherent != null){
-                    if (adherent.getIdComptable() == Integer.valueOf(adherentElement.getElementsByTagName("N_").item(0).getTextContent())){
-                        adherent.setName(adherentElement.getElementsByTagName("Prénom").item(0).getTextContent());
-                        adherent.setSurname(adherentElement.getElementsByTagName("Nom").item(0).getTextContent());
+                    if (adherent.getIdComptable() == Integer.valueOf(adherentElement.getElementsByTagName("N_").item(0).getTextContent())
+                    &&  adherent.getName().equals(name) && adherent.getSurname().equals(surname)){
                         adherent.setEmail(adherentElement.getElementsByTagName("E-mail").item(0).getTextContent());
                         String telDom = adherentElement.getElementsByTagName("Tél_Domicile").item(0).getTextContent();
                         if (telDom.length() >= 10){
