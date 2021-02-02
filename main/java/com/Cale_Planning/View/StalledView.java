@@ -1041,7 +1041,7 @@ public class StalledView extends JInternalFrame {
 
                 frame.add(amountAndDeposit, BorderLayout.CENTER);
 
-                JPanel buttonsPanel = new JPanel(new GridLayout(1,3));
+                JPanel buttonsPanel = new JPanel(new GridLayout(1,3, 125, 0));
 
                 JButton delete = new JButton(new ImageIcon("src/main/resources/delete.png"));
                 delete.addActionListener(new ActionListener() {
