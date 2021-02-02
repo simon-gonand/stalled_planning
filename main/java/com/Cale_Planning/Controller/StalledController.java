@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class StalledController {
     public static void createAppointment (Calendar calendar, DateTime startDate, DateTime endDate, int cale, Adherent adherent,
                                           Color color, int id, float amount, float deposit, Boat boat, boolean isUpToDate) {
-        Reservation appointment = new Reservation(id, amount, deposit, isUpToDate, boat);
+        Reservation appointment = new Reservation(id, amount, deposit, isUpToDate, boat, adherent);
         appointment.setHeaderText(adherent.getSurname() + " " + adherent.getName());
         appointment.setStartTime(startDate);
         appointment.setEndTime(endDate);

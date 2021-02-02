@@ -8,8 +8,9 @@ public class Reservation extends Appointment {
     private float deposit;
     private boolean isUpToDate;
     private Boat boat;
+    private Adherent adherent;
 
-    public Reservation(int id, float amount, float deposit, boolean isUpToDate, Boat boat){
+    public Reservation(int id, float amount, float deposit, boolean isUpToDate, Boat boat, Adherent adherent){
         super();
 
         this.id = id;
@@ -17,6 +18,7 @@ public class Reservation extends Appointment {
         this.deposit = deposit;
         this.isUpToDate = isUpToDate;
         this.boat = boat;
+        this.adherent = adherent;
     }
 
     public float getAmount() {
@@ -43,5 +45,9 @@ public class Reservation extends Appointment {
 
     public void setBoat(Boat boat) {
         this.boat = boat;
+    }
+
+    public Adherent getAdherent() {
+        return adherent;
     }
 }

@@ -1041,7 +1041,7 @@ public class StalledView extends JInternalFrame {
 
                 frame.add(amountAndDeposit, BorderLayout.CENTER);
 
-                JPanel buttonsPanel = new JPanel(new BorderLayout());
+                JPanel buttonsPanel = new JPanel(new GridLayout(1,3));
 
                 JButton delete = new JButton(new ImageIcon("src/main/resources/delete.png"));
                 delete.addActionListener(new ActionListener() {
@@ -1063,6 +1063,153 @@ public class StalledView extends JInternalFrame {
                     }
                 });
 
+                JButton print = new JButton(new ImageIcon("src/main/resources/printer.png"));
+                print.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        final JDialog d = new JDialog();
+                        JPanel p1 = new JPanel(new GridLayout(2,1));
+                        JLabel firstLine = new JLabel("Création du document en cours...");
+                        JLabel secondLine = new JLabel("Veuillez patienter");
+                        firstLine.setHorizontalAlignment(JLabel.CENTER);
+                        secondLine.setHorizontalAlignment(JLabel.CENTER);
+                        p1.add(firstLine);
+                        p1.add(secondLine);
+                        d.getContentPane().add(p1);
+                        d.setSize(300,200);
+                        d.setLocationRelativeTo(thisFrame);
+                        d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                        d.setModal(true);
+                        Thread t = new Thread() {
+                            @Override
+                            public void run() {
+                                // Set dates and adherent information into the supported document
+                                try {
+                                    XWPFDocument document = new XWPFDocument(new FileInputStream("src/main/resources/stalledDoc.docx"));
+                                    for (XWPFParagraph p : document.getParagraphs()) {
+                                        for (int i = 0; i < p.getRuns().size(); ++i) {
+                                            XWPFRun run = p.getRuns().get(i);
+                                            String text = run.getText(0);
+                                            if (run.getText(0) == null)
+                                                continue;
+                                            if (text.contains("Du ")){
+                                                DateTime from = reservation.getStartTime();
+                                                String sFrom = from.getDay() + "/" + from.getMonth() + "/" + from.getYear();
+                                                text = text.replace("Du ",
+                                                        sFrom);
+                                                run.setText(text);
+                                            }
+
+                                            if (text.contains("au") && text.length() <= 3){
+                                                XWPFRun nextRun = p.getRuns().get(i + 1);
+                                                if (nextRun.getText(0).equals(" ")) {
+                                                    DateTime to = reservation.getEndTime();
+                                                    String sTo = to.getDay() + "/" + to.getMonth() + "/" + to.getYear();
+                                                    text = text.replace("au",
+                                                            sTo);
+                                                    run.setText(text);
+                                                }
+                                            }
+
+                                            if (text.contains("Date") && !text.contains("Date et")) {
+                                                XWPFRun nextRun = p.getRuns().get(i + 1);
+                                                String nextText = nextRun.text();
+                                                if (nextText.contains(":")) {
+                                                    DateTime date = DateTime.today();
+                                                    String sDate = date.getDay() + "/" + date.getMonth() + "/" + date.getYear();
+                                                    nextText = nextText.replace(":", sDate);
+                                                    nextRun.setText(nextText);
+                                                }
+                                            }
+                                        }
+
+                                        // Get text in text boxes by using method describes in this url:
+                                        // https://stackoverflow.com/questions/46802369/replace-text-in-text-box-of-docx-by-using-apache-poi
+                                        XmlCursor cursor = p.getCTP().newCursor();
+                                        cursor.selectPath("declare namespace w='http://schemas.openxmlformats.org/wordprocessingml/2006/main' .//*/w:txbxContent/w:p/w:r");
+
+                                        List<XmlObject> ctrsintxtbx = new ArrayList<XmlObject>();
+
+                                        while(cursor.hasNextSelection()) {
+                                            cursor.toNextSelection();
+                                            XmlObject obj = cursor.getObject();
+                                            ctrsintxtbx.add(obj);
+                                        }
+                                        for (XmlObject obj : ctrsintxtbx) {
+                                            CTR ctr = CTR.Factory.parse(obj.xmlText());
+                                            XWPFRun bufferrun = new XWPFRun(ctr, p);
+                                            String text = bufferrun.getText(0);
+                                            if (text != null && text.contains("Prénom")) {
+                                                text = text.replace("Prénom :", "Prénom : " + reservation.getAdherent().getName());
+                                                bufferrun.setText(text, 0);
+                                            }
+                                            if (text != null && text.contains("Nom")) {
+                                                text = text.replace("Nom :", "Nom : " + reservation.getAdherent().getSurname());
+                                                bufferrun.setText(text, 0);
+                                            }
+                                            if (text != null && text.contains("Bateau")) {
+                                                text = text.replace("Bateau :", "Bateau : " + reservation.getBoat().getName());
+                                                bufferrun.setText(text, 0);
+                                            }
+                                            if (text != null && text.contains("Tel")) {
+                                                String phoneNumber = "";
+                                                if (reservation.getAdherent().getMobile() != null)
+                                                    phoneNumber = reservation.getAdherent().getMobile();
+                                                else if (reservation.getAdherent().getPhone() != null)
+                                                    phoneNumber = reservation.getAdherent().getPhone();
+                                                text = text.replace("Tel :", "Tel : " + phoneNumber);
+                                                bufferrun.setText(text, 0);
+                                            }
+                                            obj.set(bufferrun.getCTR());
+                                        }
+                                    }
+                                    document.write(new FileOutputStream("src/main/resources/newDoc.docx"));
+                                    document.close();
+
+                                    com.spire.doc.Document newDocument = new com.spire.doc.Document();
+                                    newDocument.loadFromFile("src/main/resources/newDoc.docx");
+
+                                    ToPdfParameterList ppl = new ToPdfParameterList();
+                                    ppl.isEmbeddedAllFonts(true);
+                                    ppl.setDisableLink(true);
+                                    newDocument.setJPEGQuality(100);
+                                    newDocument.saveToFile("src/main/resources/stalledDoc.pdf", FileFormat.PDF);
+                                    newDocument.close();
+                                } catch (Exception ex) {
+                                    JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas pu se créer", "Erreur",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    d.dispose();
+                                    interrupt();
+                                }
+                                d.dispose();
+                                interrupt();
+                            }
+                        };
+                        t.start();
+                        d.setVisible(true);
+                        // Print the document
+                        PdfDocument pdf = new PdfDocument();
+                        pdf.loadFromFile("src/main/resources/stalledDoc.pdf");
+
+                        PrinterJob printerJob = PrinterJob.getPrinterJob();
+
+                        PageFormat format = printerJob.defaultPage();
+                        Paper paper = format.getPaper();
+                        paper.setImageableArea(0,0, format.getWidth(), format.getHeight());
+                        format.setPaper(paper);
+
+                        printerJob.setPrintable(pdf, format);
+                        if (printerJob.printDialog()){
+                            try {
+                                printerJob.print();
+                            } catch (PrinterException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        pdf.close();
+                    }
+                });
+
                 JButton cancel = new JButton(new ImageIcon("src/main/resources/cancel.png"));
                 cancel.addActionListener(new ActionListener() {
                     @Override
@@ -1076,8 +1223,9 @@ public class StalledView extends JInternalFrame {
                     }
                 });
 
-                buttonsPanel.add(delete, BorderLayout.WEST);
-                buttonsPanel.add(cancel, BorderLayout.EAST);
+                buttonsPanel.add(delete);
+                buttonsPanel.add(print);
+                buttonsPanel.add(cancel);
                 frame.add(buttonsPanel, BorderLayout.SOUTH);
 
                 frame.setVisible(true);
