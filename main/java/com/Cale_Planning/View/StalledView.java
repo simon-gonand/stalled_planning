@@ -1047,7 +1047,7 @@ public class StalledView extends JInternalFrame {
                 delete.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        int answer = JOptionPane.showConfirmDialog(thisFrame, "Voulez-vous vraiment supprimer le bateau sélectionné ?",
+                        int answer = JOptionPane.showConfirmDialog(thisFrame, "Voulez-vous vraiment supprimer la réservation sélectionné ?",
                                 "Confirmation", JOptionPane.YES_NO_OPTION);
                         if (answer == 0) {
                             StalledController.deleteAppointmentOfDatabase(reservation);
