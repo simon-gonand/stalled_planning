@@ -557,13 +557,15 @@ public class StalledView extends JInternalFrame {
                            JOptionPane.ERROR_MESSAGE);
                    return;
                }
-               DateTime startDate = new DateTime(modelStartDate.getYear(), modelStartDate.getMonth() + 1, modelStartDate.getDay());
+               DateTime startDate = new DateTime(modelStartDate.getYear(), modelStartDate.getMonth() + 1, modelStartDate.getDay(),
+                       12, 00, 00);
                if (startDate.compareTo(DateTime.today()) == -1){
                    JOptionPane.showMessageDialog(thisFrame, "Vous ne pouvez pas saisir une date antérieure à la date d'aujourd'hui",
                            "Erreur", JOptionPane.ERROR_MESSAGE);
                    return;
                }
-               DateTime endDate = new DateTime(modelEndDate.getYear(), modelEndDate.getMonth() + 1, modelEndDate.getDay());
+               DateTime endDate = new DateTime(modelEndDate.getYear(), modelEndDate.getMonth() + 1, modelEndDate.getDay(),
+                       12, 00, 00);
                if (endDate.compareTo(startDate) == 0){
                    JOptionPane.showMessageDialog(thisFrame, "La date de fin de réservation est la même que la date de début", "Erreur",
                            JOptionPane.ERROR_MESSAGE);
@@ -932,7 +934,7 @@ public class StalledView extends JInternalFrame {
         calendar.getResourceViewSettings().setRowHeaderSize(75);
         calendar.getResourceViewSettings().setViewStyle(ResourceViewStyle.Lanes);
         calendar.getResourceViewSettings().setVisibleRows(6);
-        calendar.getResourceViewSettings().setSnapUnit(TimeUnit.Day);
+        calendar.getResourceViewSettings().setSnapUnit(TimeUnit.Hour);
         calendar.getResourceViewSettings().setMinResourceLength(200);
         calendar.getResourceViewSettings().setLaneSize(50);
         calendar.getResourceViewSettings().getStyle().setHeaderFont(new Font("Verdana", Font.BOLD, 13));
@@ -1254,8 +1256,12 @@ public class StalledView extends JInternalFrame {
         try {
             ResultSet attributes = database.SQLSelect("SELECT * FROM Reservation");
             while (attributes.next()){
-                StalledController.createAppointment(calendar, new DateTime(attributes.getDate("DateDebut")),
-                        new DateTime(attributes.getDate("DateFin")),
+                DateTime startDate = new DateTime(attributes.getDate("DateDebut"));
+                DateTime startTime = new DateTime(startDate.getYear(), startDate.getMonth(), startDate.getDay(), 12, 00, 00);
+                DateTime endDate = new DateTime(attributes.getDate("DateFin"));
+                DateTime endTime = new DateTime(endDate.getYear(), endDate.getMonth(), endDate.getDay(), 12, 00, 00);
+                StalledController.createAppointment(calendar, startTime,
+                        endTime,
                         attributes.getInt("Cale"),
                         new Adherent(attributes.getInt("Adherent")),
                         Colors.fromName(attributes.getString("Couleur")),
