@@ -9,6 +9,7 @@ import com.Cale_Planning.Models.Boat;
 import com.Cale_Planning.Models.Reservation;
 
 import com.mindfusion.common.DateTime;
+import com.mindfusion.common.DayOfWeek;
 import com.mindfusion.common.Duration;
 import com.mindfusion.drawing.Colors;
 import com.mindfusion.drawing.TextAlignment;
@@ -56,6 +57,7 @@ public class StalledView extends JInternalFrame {
     private Map<String, JDatePickerImpl> datePickers;
     private MSAccessBase database;
     private JCheckBox isUpToDate;
+    private int year;
 
     private JList adherentJList;
     private DefaultListModel defaultAdherentList;
@@ -870,6 +872,15 @@ public class StalledView extends JInternalFrame {
 
     private void fillHistoricPanel(JPanel historicPanel){
         historicPanel.setLayout(new BorderLayout());
+        JPanel calendarChoicePanel = new JPanel (new GridLayout(2,1));
+
+        year = calendar.getDate().getYear();
+        JPanel yearChoicePanel = new JPanel(new BorderLayout());
+        JLabel yearChoiceTitle = new JLabel("" + year);
+        yearChoiceTitle.setFont(new Font(yearChoiceTitle.getFont().getName(), Font.BOLD, 15));
+        yearChoiceTitle.setHorizontalAlignment(JLabel.CENTER);
+        yearChoicePanel.add(yearChoiceTitle, BorderLayout.CENTER);
+
         JPanel monthChoicePanel = new JPanel(new BorderLayout());
         JLabel monthChoiceTitle = new JLabel("Choix du mois");
         monthChoiceTitle.setFont(new Font(monthChoiceTitle.getFont().getName(), Font.BOLD, 15));
@@ -897,6 +908,28 @@ public class StalledView extends JInternalFrame {
         closePanel.add(close);
         historicPanel.add(closePanel);
 
+        JButton previousYear = new JButton();
+        JButton nextYear = new JButton();
+        previousYear.setIcon(new ImageIcon("src/main/resources/leftArrow.png"));
+        nextYear.setIcon(new ImageIcon("src/main/resources/rightArrow.png"));
+        previousYear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                --year;
+                calendar.setDate(new DateTime(year, calendar.getDate().getMonth(), 1));
+                calendar.setEndDate(calendar.getDate().addDays(31));
+                yearChoiceTitle.setText("" + year);
+            }
+        });
+        nextYear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ++year;
+                calendar.setDate(new DateTime(year, calendar.getDate().getMonth(), 1));
+                calendar.setEndDate(calendar.getDate().addDays(31));
+                yearChoiceTitle.setText("" + year);
+            }
+        });
 
         JButton previousMonth = new JButton();
         JButton nextMonth = new JButton();
@@ -905,21 +938,38 @@ public class StalledView extends JInternalFrame {
         previousMonth.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                calendar.setDate(new DateTime(calendar.getDate().getYear(), calendar.getDate().getMonth() - 1, 1));
+                int month = calendar.getDate().getMonth() - 1;
+                if (month <= 0){
+                    month = 12;
+                    --year;
+                    yearChoiceTitle.setText("" + year);
+                }
+                calendar.setDate(new DateTime(year, month, 1));
                 calendar.setEndDate(calendar.getDate().addDays(31));
             }
         });
         nextMonth.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                calendar.setDate(new DateTime(calendar.getDate().getYear(), calendar.getDate().getMonth() + 1, 1));
+                int month = calendar.getDate().getMonth() + 1;
+                int year = calendar.getDate().getYear();
+                if (month > 12){
+                    month = 1;
+                    ++year;
+                    yearChoiceTitle.setText("" + year);
+                }
+                calendar.setDate(new DateTime(year, month, 1));
                 calendar.setEndDate(calendar.getDate().addDays(31));
             }
         });
 
+        yearChoicePanel.add(previousYear, BorderLayout.WEST);
+        yearChoicePanel.add(nextYear, BorderLayout.EAST);
         monthChoicePanel.add(previousMonth, BorderLayout.WEST);
         monthChoicePanel.add(nextMonth, BorderLayout.EAST);
-        historicPanel.add(monthChoicePanel, BorderLayout.SOUTH);
+        calendarChoicePanel.add(yearChoicePanel);
+        calendarChoicePanel.add(monthChoicePanel);
+        historicPanel.add(calendarChoicePanel, BorderLayout.SOUTH);
     }
 
     private void fillDownPanel(JPanel downPanel){
@@ -940,6 +990,7 @@ public class StalledView extends JInternalFrame {
         calendar.getResourceViewSettings().getStyle().setHeaderFont(new Font("Verdana", Font.BOLD, 13));
         calendar.getResourceViewSettings().getStyle().setHeaderTextAlignment(EnumSet.of(TextAlignment.MiddleCenter));
         calendar.getResourceViewSettings().setExpandableRows(false);
+        calendar.getResourceViewSettings().setHiddenDays(EnumSet.of(DayOfWeek.Wednesday, DayOfWeek.Saturday));
 
         calendar.getResourceViewSettings().getBottomTimelineSettings().setSize(30);
         calendar.getResourceViewSettings().getBottomTimelineSettings().getStyle().setHeaderFont(new Font("Verdana", Font.BOLD, 13));
