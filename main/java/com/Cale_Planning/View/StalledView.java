@@ -59,6 +59,8 @@ public class StalledView extends JInternalFrame {
     private JCheckBox isUpToDate;
     private int year;
 
+    private Map<Reservation, JInternalFrame> subReservationFrames = new HashMap();
+
     private JList adherentJList;
     private DefaultListModel defaultAdherentList;
 
@@ -1048,245 +1050,284 @@ public class StalledView extends JInternalFrame {
 
                 calendar.resetDrag();
 
-                JInternalFrame frame = new JInternalFrame(e.getItem().getHeaderText());
                 Reservation reservation = (Reservation) e.getItem();
-                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                frame.setBounds(screenSize.width / 3, screenSize.height / 4, 500, 325);
-
-                frame.setLayout(new BorderLayout());
-                JLabel title = new JLabel(reservation.getBoat().getName());
-                title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40));
-                title.setHorizontalAlignment(JLabel.CENTER);
-                frame.add(title, BorderLayout.NORTH);
-
-                JPanel amountAndDeposit = new JPanel(new GridLayout(3, 2));
-                JLabel amountTitle = new JLabel("Montant");
-                amountTitle.setFont(new Font(amountTitle.getFont().getName(), Font.BOLD, 25));
-                amountTitle.setHorizontalAlignment(JLabel.CENTER);
-                JLabel depositTitle = new JLabel("Caution");
-                depositTitle.setFont(new Font(depositTitle.getFont().getName(), Font.BOLD, 25));
-                depositTitle.setHorizontalAlignment(JLabel.CENTER);
-
-                JLabel amountLabel = new JLabel(String.valueOf(reservation.getAmount()));
-                amountLabel.setFont(new Font(amountLabel.getFont().getName(), Font.PLAIN, 20));
-                amountLabel.setHorizontalAlignment(JLabel.CENTER);
-                JLabel depositLabel = new JLabel(String.valueOf(reservation.getDeposit()));
-                depositLabel.setFont(new Font(depositLabel.getFont().getName(), Font.PLAIN, 20));
-                depositLabel.setHorizontalAlignment(JLabel.CENTER);
-
-                JCheckBox UpToDateCheck = new JCheckBox("Cotisation à jour");
-                UpToDateCheck.setSelected(reservation.isUpToDate());
-                UpToDateCheck.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        reservation.setUpToDate(UpToDateCheck.isSelected());
-                        StalledController.setUpToDate(reservation);
-                        calendar.getSchedule().getItems().remove(reservation);
-                        StalledController.createAppointment(calendar, reservation);
+                JInternalFrame alreadyExistantFrame = subReservationFrames.get(reservation);
+                if (alreadyExistantFrame != null) {
+                    try {
+                        alreadyExistantFrame.setSelected(true);
+                    } catch (PropertyVetoException propertyVetoException) {
+                        propertyVetoException.printStackTrace();
                     }
-                });
+                }
+                else {
+                    JInternalFrame frame = new JInternalFrame(e.getItem().getHeaderText());
+                    subReservationFrames.put(reservation, frame);
+                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                    frame.setBounds(screenSize.width / 3, screenSize.height / 4, 500, 325);
 
-                amountAndDeposit.add(amountTitle);
-                amountAndDeposit.add(depositTitle);
-                amountAndDeposit.add(amountLabel);
-                amountAndDeposit.add(depositLabel);
-                amountAndDeposit.add(UpToDateCheck);
+                    frame.setLayout(new BorderLayout());
+                    JLabel title = new JLabel(reservation.getBoat().getName());
+                    title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40));
+                    title.setHorizontalAlignment(JLabel.CENTER);
+                    frame.add(title, BorderLayout.NORTH);
 
-                frame.add(amountAndDeposit, BorderLayout.CENTER);
+                    JPanel amountAndDeposit = new JPanel(new GridLayout(3, 2));
+                    JLabel amountTitle = new JLabel("Montant");
+                    amountTitle.setFont(new Font(amountTitle.getFont().getName(), Font.BOLD, 25));
+                    amountTitle.setHorizontalAlignment(JLabel.CENTER);
+                    JLabel depositTitle = new JLabel("Caution");
+                    depositTitle.setFont(new Font(depositTitle.getFont().getName(), Font.BOLD, 25));
+                    depositTitle.setHorizontalAlignment(JLabel.CENTER);
 
-                JPanel buttonsPanel = new JPanel(new GridLayout(1,3, 125, 0));
+                    JLabel amountLabel = new JLabel(String.valueOf(reservation.getAmount()));
+                    amountLabel.setFont(new Font(amountLabel.getFont().getName(), Font.PLAIN, 20));
+                    amountLabel.setHorizontalAlignment(JLabel.CENTER);
+                    JLabel depositLabel = new JLabel(String.valueOf(reservation.getDeposit()));
+                    depositLabel.setFont(new Font(depositLabel.getFont().getName(), Font.PLAIN, 20));
+                    depositLabel.setHorizontalAlignment(JLabel.CENTER);
 
-                JButton delete = new JButton(new ImageIcon("src/main/resources/delete.png"));
-                delete.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        int answer = JOptionPane.showConfirmDialog(thisFrame, "Voulez-vous vraiment supprimer la réservation sélectionné ?",
-                                "Confirmation", JOptionPane.YES_NO_OPTION);
-                        if (answer == 0) {
-                            StalledController.deleteAppointmentOfDatabase(reservation);
+                    JCheckBox UpToDateCheck = new JCheckBox("Cotisation à jour");
+                    UpToDateCheck.setSelected(reservation.isUpToDate());
+                    UpToDateCheck.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            reservation.setUpToDate(UpToDateCheck.isSelected());
+                            StalledController.setUpToDate(reservation);
                             calendar.getSchedule().getItems().remove(reservation);
-                            calendar.repaint();
+                            StalledController.createAppointment(calendar, reservation);
+                        }
+                    });
+
+                    amountAndDeposit.add(amountTitle);
+                    amountAndDeposit.add(depositTitle);
+                    amountAndDeposit.add(amountLabel);
+                    amountAndDeposit.add(depositLabel);
+                    amountAndDeposit.add(UpToDateCheck);
+
+                    frame.add(amountAndDeposit, BorderLayout.CENTER);
+
+                    JPanel buttonsPanel = new JPanel(new GridLayout(1,4, 50, 0));
+
+                    JButton modify = new JButton(new ImageIcon("src/main/resources/pencil.png"));
+                    modify.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if (!Main.windowManagment.isEmpty()) {
+                                for (JInternalFrame frame : Main.windowManagment)
+                                    if (frame.getClass().equals(ReservationView.class)){
+                                        ReservationView view = (ReservationView) frame;
+                                        if (view.getReservation().getID() == reservation.getID()) {
+                                            try {
+                                                frame.setSelected(true);
+                                            } catch (PropertyVetoException ex) {
+                                                ex.printStackTrace();
+                                            }
+                                            return;
+                                        }
+                                    }
+                            }
+                            try {
+                                Main.windowManagment.add(new ReservationView(mainPane, thisFrame, reservation));
+                            } catch (PropertyVetoException propertyVetoException) {
+                                JOptionPane.showMessageDialog(thisFrame, "Erreur du chargement de la page de modification de la réservation",
+                                        "Erreur", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                    });
+
+                    JButton delete = new JButton(new ImageIcon("src/main/resources/delete.png"));
+                    delete.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            int answer = JOptionPane.showConfirmDialog(thisFrame, "Voulez-vous vraiment supprimer la réservation sélectionné ?",
+                                    "Confirmation", JOptionPane.YES_NO_OPTION);
+                            if (answer == 0) {
+                                StalledController.deleteAppointmentOfDatabase(reservation);
+                                calendar.getSchedule().getItems().remove(reservation);
+                                calendar.repaint();
+                                JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, frame);
+                                for (JInternalFrame fr : desktopPane.getAllFrames()) {
+                                    if (frame == fr)
+                                        desktopPane.remove(fr);
+                                }
+                                SwingUtilities.updateComponentTreeUI(desktopPane);
+                            } else {return;}
+                        }
+                    });
+
+                    JButton print = new JButton(new ImageIcon("src/main/resources/printer.png"));
+                    print.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            final JDialog d = new JDialog();
+                            JPanel p1 = new JPanel(new GridLayout(2,1));
+                            JLabel firstLine = new JLabel("Création du document en cours...");
+                            JLabel secondLine = new JLabel("Veuillez patienter");
+                            firstLine.setHorizontalAlignment(JLabel.CENTER);
+                            secondLine.setHorizontalAlignment(JLabel.CENTER);
+                            p1.add(firstLine);
+                            p1.add(secondLine);
+                            d.getContentPane().add(p1);
+                            d.setSize(300,200);
+                            d.setLocationRelativeTo(thisFrame);
+                            d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                            d.setModal(true);
+                            Thread t = new Thread() {
+                                @Override
+                                public void run() {
+                                    // Set dates and adherent information into the supported document
+                                    try {
+                                        XWPFDocument document = new XWPFDocument(new FileInputStream("src/main/resources/stalledDoc.docx"));
+                                        for (XWPFParagraph p : document.getParagraphs()) {
+                                            for (int i = 0; i < p.getRuns().size(); ++i) {
+                                                XWPFRun run = p.getRuns().get(i);
+                                                String text = run.getText(0);
+                                                if (run.getText(0) == null)
+                                                    continue;
+                                                if (text.contains("Du ")){
+                                                    DateTime from = reservation.getStartTime();
+                                                    String sFrom = from.getDay() + "/" + from.getMonth() + "/" + from.getYear();
+                                                    text = text.replace("Du ",
+                                                            sFrom);
+                                                    run.setText(text);
+                                                }
+
+                                                if (text.contains("au") && text.length() <= 3){
+                                                    XWPFRun nextRun = p.getRuns().get(i + 1);
+                                                    if (nextRun.getText(0).equals(" ")) {
+                                                        DateTime to = reservation.getEndTime();
+                                                        String sTo = to.getDay() + "/" + to.getMonth() + "/" + to.getYear();
+                                                        text = text.replace("au",
+                                                                sTo);
+                                                        run.setText(text);
+                                                    }
+                                                }
+
+                                                if (text.contains("Date") && !text.contains("Date et")) {
+                                                    XWPFRun nextRun = p.getRuns().get(i + 1);
+                                                    String nextText = nextRun.text();
+                                                    if (nextText.contains(":")) {
+                                                        DateTime date = DateTime.today();
+                                                        String sDate = date.getDay() + "/" + date.getMonth() + "/" + date.getYear();
+                                                        nextText = nextText.replace(":", sDate);
+                                                        nextRun.setText(nextText);
+                                                    }
+                                                }
+                                            }
+
+                                            // Get text in text boxes by using method describes in this url:
+                                            // https://stackoverflow.com/questions/46802369/replace-text-in-text-box-of-docx-by-using-apache-poi
+                                            XmlCursor cursor = p.getCTP().newCursor();
+                                            cursor.selectPath("declare namespace w='http://schemas.openxmlformats.org/wordprocessingml/2006/main' .//*/w:txbxContent/w:p/w:r");
+
+                                            List<XmlObject> ctrsintxtbx = new ArrayList<XmlObject>();
+
+                                            while(cursor.hasNextSelection()) {
+                                                cursor.toNextSelection();
+                                                XmlObject obj = cursor.getObject();
+                                                ctrsintxtbx.add(obj);
+                                            }
+                                            for (XmlObject obj : ctrsintxtbx) {
+                                                CTR ctr = CTR.Factory.parse(obj.xmlText());
+                                                XWPFRun bufferrun = new XWPFRun(ctr, p);
+                                                String text = bufferrun.getText(0);
+                                                if (text != null && text.contains("Prénom")) {
+                                                    text = text.replace("Prénom :", "Prénom : " + reservation.getAdherent().getName());
+                                                    bufferrun.setText(text, 0);
+                                                }
+                                                if (text != null && text.contains("Nom")) {
+                                                    text = text.replace("Nom :", "Nom : " + reservation.getAdherent().getSurname());
+                                                    bufferrun.setText(text, 0);
+                                                }
+                                                if (text != null && text.contains("Bateau")) {
+                                                    text = text.replace("Bateau :", "Bateau : " + reservation.getBoat().getName());
+                                                    bufferrun.setText(text, 0);
+                                                }
+                                                if (text != null && text.contains("Tel")) {
+                                                    String phoneNumber = "";
+                                                    if (reservation.getAdherent().getMobile() != null)
+                                                        phoneNumber = reservation.getAdherent().getMobile();
+                                                    else if (reservation.getAdherent().getPhone() != null)
+                                                        phoneNumber = reservation.getAdherent().getPhone();
+                                                    text = text.replace("Tel :", "Tel : " + phoneNumber);
+                                                    bufferrun.setText(text, 0);
+                                                }
+                                                obj.set(bufferrun.getCTR());
+                                            }
+                                        }
+                                        document.write(new FileOutputStream("src/main/resources/newDoc.docx"));
+                                        document.close();
+
+                                        com.spire.doc.Document newDocument = new com.spire.doc.Document();
+                                        newDocument.loadFromFile("src/main/resources/newDoc.docx");
+
+                                        ToPdfParameterList ppl = new ToPdfParameterList();
+                                        ppl.isEmbeddedAllFonts(true);
+                                        ppl.setDisableLink(true);
+                                        newDocument.setJPEGQuality(100);
+                                        newDocument.saveToFile("src/main/resources/stalledDoc.pdf", FileFormat.PDF);
+                                        newDocument.close();
+                                    } catch (Exception ex) {
+                                        JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas pu se créer", "Erreur",
+                                                JOptionPane.ERROR_MESSAGE);
+                                        d.dispose();
+                                        interrupt();
+                                    }
+                                    d.dispose();
+                                    interrupt();
+                                }
+                            };
+                            t.start();
+                            d.setVisible(true);
+                            // Print the document
+                            PdfDocument pdf = new PdfDocument();
+                            pdf.loadFromFile("src/main/resources/stalledDoc.pdf");
+
+                            PrinterJob printerJob = PrinterJob.getPrinterJob();
+
+                            PageFormat format = printerJob.defaultPage();
+                            Paper paper = format.getPaper();
+                            paper.setImageableArea(0,0, format.getWidth(), format.getHeight());
+                            format.setPaper(paper);
+
+                            printerJob.setPrintable(pdf, format);
+                            if (printerJob.printDialog()){
+                                try {
+                                    printerJob.print();
+                                } catch (PrinterException ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                            pdf.close();
+                        }
+                    });
+
+                    JButton cancel = new JButton(new ImageIcon("src/main/resources/cancel32.png"));
+                    cancel.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
                             JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, frame);
                             for (JInternalFrame fr : desktopPane.getAllFrames()) {
                                 if (frame == fr)
                                     desktopPane.remove(fr);
                             }
                             SwingUtilities.updateComponentTreeUI(desktopPane);
-                        } else {return;}
-                    }
-                });
-
-                JButton print = new JButton(new ImageIcon("src/main/resources/printer.png"));
-                print.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        final JDialog d = new JDialog();
-                        JPanel p1 = new JPanel(new GridLayout(2,1));
-                        JLabel firstLine = new JLabel("Création du document en cours...");
-                        JLabel secondLine = new JLabel("Veuillez patienter");
-                        firstLine.setHorizontalAlignment(JLabel.CENTER);
-                        secondLine.setHorizontalAlignment(JLabel.CENTER);
-                        p1.add(firstLine);
-                        p1.add(secondLine);
-                        d.getContentPane().add(p1);
-                        d.setSize(300,200);
-                        d.setLocationRelativeTo(thisFrame);
-                        d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-                        d.setModal(true);
-                        Thread t = new Thread() {
-                            @Override
-                            public void run() {
-                                // Set dates and adherent information into the supported document
-                                try {
-                                    XWPFDocument document = new XWPFDocument(new FileInputStream("src/main/resources/stalledDoc.docx"));
-                                    for (XWPFParagraph p : document.getParagraphs()) {
-                                        for (int i = 0; i < p.getRuns().size(); ++i) {
-                                            XWPFRun run = p.getRuns().get(i);
-                                            String text = run.getText(0);
-                                            if (run.getText(0) == null)
-                                                continue;
-                                            if (text.contains("Du ")){
-                                                DateTime from = reservation.getStartTime();
-                                                String sFrom = from.getDay() + "/" + from.getMonth() + "/" + from.getYear();
-                                                text = text.replace("Du ",
-                                                        sFrom);
-                                                run.setText(text);
-                                            }
-
-                                            if (text.contains("au") && text.length() <= 3){
-                                                XWPFRun nextRun = p.getRuns().get(i + 1);
-                                                if (nextRun.getText(0).equals(" ")) {
-                                                    DateTime to = reservation.getEndTime();
-                                                    String sTo = to.getDay() + "/" + to.getMonth() + "/" + to.getYear();
-                                                    text = text.replace("au",
-                                                            sTo);
-                                                    run.setText(text);
-                                                }
-                                            }
-
-                                            if (text.contains("Date") && !text.contains("Date et")) {
-                                                XWPFRun nextRun = p.getRuns().get(i + 1);
-                                                String nextText = nextRun.text();
-                                                if (nextText.contains(":")) {
-                                                    DateTime date = DateTime.today();
-                                                    String sDate = date.getDay() + "/" + date.getMonth() + "/" + date.getYear();
-                                                    nextText = nextText.replace(":", sDate);
-                                                    nextRun.setText(nextText);
-                                                }
-                                            }
-                                        }
-
-                                        // Get text in text boxes by using method describes in this url:
-                                        // https://stackoverflow.com/questions/46802369/replace-text-in-text-box-of-docx-by-using-apache-poi
-                                        XmlCursor cursor = p.getCTP().newCursor();
-                                        cursor.selectPath("declare namespace w='http://schemas.openxmlformats.org/wordprocessingml/2006/main' .//*/w:txbxContent/w:p/w:r");
-
-                                        List<XmlObject> ctrsintxtbx = new ArrayList<XmlObject>();
-
-                                        while(cursor.hasNextSelection()) {
-                                            cursor.toNextSelection();
-                                            XmlObject obj = cursor.getObject();
-                                            ctrsintxtbx.add(obj);
-                                        }
-                                        for (XmlObject obj : ctrsintxtbx) {
-                                            CTR ctr = CTR.Factory.parse(obj.xmlText());
-                                            XWPFRun bufferrun = new XWPFRun(ctr, p);
-                                            String text = bufferrun.getText(0);
-                                            if (text != null && text.contains("Prénom")) {
-                                                text = text.replace("Prénom :", "Prénom : " + reservation.getAdherent().getName());
-                                                bufferrun.setText(text, 0);
-                                            }
-                                            if (text != null && text.contains("Nom")) {
-                                                text = text.replace("Nom :", "Nom : " + reservation.getAdherent().getSurname());
-                                                bufferrun.setText(text, 0);
-                                            }
-                                            if (text != null && text.contains("Bateau")) {
-                                                text = text.replace("Bateau :", "Bateau : " + reservation.getBoat().getName());
-                                                bufferrun.setText(text, 0);
-                                            }
-                                            if (text != null && text.contains("Tel")) {
-                                                String phoneNumber = "";
-                                                if (reservation.getAdherent().getMobile() != null)
-                                                    phoneNumber = reservation.getAdherent().getMobile();
-                                                else if (reservation.getAdherent().getPhone() != null)
-                                                    phoneNumber = reservation.getAdherent().getPhone();
-                                                text = text.replace("Tel :", "Tel : " + phoneNumber);
-                                                bufferrun.setText(text, 0);
-                                            }
-                                            obj.set(bufferrun.getCTR());
-                                        }
-                                    }
-                                    document.write(new FileOutputStream("src/main/resources/newDoc.docx"));
-                                    document.close();
-
-                                    com.spire.doc.Document newDocument = new com.spire.doc.Document();
-                                    newDocument.loadFromFile("src/main/resources/newDoc.docx");
-
-                                    ToPdfParameterList ppl = new ToPdfParameterList();
-                                    ppl.isEmbeddedAllFonts(true);
-                                    ppl.setDisableLink(true);
-                                    newDocument.setJPEGQuality(100);
-                                    newDocument.saveToFile("src/main/resources/stalledDoc.pdf", FileFormat.PDF);
-                                    newDocument.close();
-                                } catch (Exception ex) {
-                                    JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas pu se créer", "Erreur",
-                                            JOptionPane.ERROR_MESSAGE);
-                                    d.dispose();
-                                    interrupt();
-                                }
-                                d.dispose();
-                                interrupt();
-                            }
-                        };
-                        t.start();
-                        d.setVisible(true);
-                        // Print the document
-                        PdfDocument pdf = new PdfDocument();
-                        pdf.loadFromFile("src/main/resources/stalledDoc.pdf");
-
-                        PrinterJob printerJob = PrinterJob.getPrinterJob();
-
-                        PageFormat format = printerJob.defaultPage();
-                        Paper paper = format.getPaper();
-                        paper.setImageableArea(0,0, format.getWidth(), format.getHeight());
-                        format.setPaper(paper);
-
-                        printerJob.setPrintable(pdf, format);
-                        if (printerJob.printDialog()){
-                            try {
-                                printerJob.print();
-                            } catch (PrinterException ex) {
-                                ex.printStackTrace();
-                            }
                         }
-                        pdf.close();
+                    });
+
+                    buttonsPanel.add(modify);
+                    buttonsPanel.add(delete);
+                    buttonsPanel.add(print);
+                    buttonsPanel.add(cancel);
+                    frame.add(buttonsPanel, BorderLayout.SOUTH);
+
+                    frame.setVisible(true);
+                    mainPane.add(frame);
+                    try {
+                        frame.setSelected(true);
+                    } catch (PropertyVetoException ex) {
+                        ex.printStackTrace();
                     }
-                });
-
-                JButton cancel = new JButton(new ImageIcon("src/main/resources/cancel.png"));
-                cancel.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, frame);
-                        for (JInternalFrame fr : desktopPane.getAllFrames()) {
-                            if (frame == fr)
-                                desktopPane.remove(fr);
-                        }
-                        SwingUtilities.updateComponentTreeUI(desktopPane);
-                    }
-                });
-
-                buttonsPanel.add(delete);
-                buttonsPanel.add(print);
-                buttonsPanel.add(cancel);
-                frame.add(buttonsPanel, BorderLayout.SOUTH);
-
-                frame.setVisible(true);
-                mainPane.add(frame);
-                try {
-                    frame.setSelected(true);
-                } catch (PropertyVetoException ex) {
-                    ex.printStackTrace();
                 }
             }
         });
