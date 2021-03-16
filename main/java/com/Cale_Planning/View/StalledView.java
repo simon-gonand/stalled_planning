@@ -1127,7 +1127,7 @@ public class StalledView extends JInternalFrame {
                                     }
                             }
                             try {
-                                Main.windowManagment.add(new ReservationView(mainPane, thisFrame, reservation));
+                                Main.windowManagment.add(new ReservationView(mainPane, thisFrame, calendar, reservation));
                             } catch (PropertyVetoException propertyVetoException) {
                                 JOptionPane.showMessageDialog(thisFrame, "Erreur du chargement de la page de modification de la réservation",
                                         "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -1312,6 +1312,7 @@ public class StalledView extends JInternalFrame {
                                     desktopPane.remove(fr);
                             }
                             SwingUtilities.updateComponentTreeUI(desktopPane);
+                            subReservationFrames.remove(reservation, frame);
                         }
                     });
 

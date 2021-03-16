@@ -21,6 +21,17 @@ public class Reservation extends Appointment {
         this.adherent = adherent;
     }
 
+    public Reservation (Reservation reservation){
+        super();
+
+        this.id = reservation.getID();
+        this.amount = reservation.getAmount();
+        this.deposit = reservation.getDeposit();
+        this.isUpToDate = reservation.isUpToDate();
+        this.boat = reservation.getBoat();
+        this.adherent = reservation.getAdherent();
+    }
+
     public float getAmount() {
         return amount;
     }
@@ -49,5 +60,17 @@ public class Reservation extends Appointment {
 
     public Adherent getAdherent() {
         return adherent;
+    }
+
+    public void setID(int id) {
+        this.id = id;
+    }
+
+    public void setAmount(float amount) {
+        this.amount = amount;
+    }
+
+    public void setDeposit(float deposit) {
+        this.deposit = deposit;
     }
 }

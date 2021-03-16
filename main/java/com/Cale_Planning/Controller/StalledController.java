@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 public class StalledController {
-    public static void createAppointment (Calendar calendar, DateTime startDate, DateTime endDate, int cale, Adherent adherent,
+    public static Reservation createAppointment (Calendar calendar, DateTime startDate, DateTime endDate, int cale, Adherent adherent,
                                           Color color, int id, float amount, float deposit, Boat boat, boolean isUpToDate) {
         Reservation appointment = new Reservation(id, amount, deposit, isUpToDate, boat, adherent);
         appointment.setHeaderText(adherent.getSurname() + " " + adherent.getName());
@@ -32,6 +32,8 @@ public class StalledController {
 
         calendar.getSchedule().getItems().add(appointment);
         calendar.repaint();
+
+        return appointment;
     }
 
     public static void createAppointment (Calendar calendar, Reservation reservation){
@@ -78,7 +80,7 @@ public class StalledController {
         }
     }
 
-    private static String colorToName (Color color){
+    public static String colorToName (Color color){
         if (color.getBlue() == 254 || color.getBlue() == 127 || color.getBlue() == 174)
             color = new Color(color.getRed(), color.getGreen(), color.getBlue() + 1, color.getAlpha());
         if (color.getGreen() == 254 || color.getGreen() == 127 || color.getGreen() == 174)
