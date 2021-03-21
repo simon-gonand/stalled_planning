@@ -27,8 +27,12 @@ public class StalledController {
         style.setLineColor(color);
         style.setFillColor(color);
         style.setBrush(new GradientBrush(Colors.White, color, 90));
-        if (!isUpToDate)
+        if (!isUpToDate) {
             style.setHeaderTextColor(Color.RED);
+            style.setHeaderFont(new Font(Font.DIALOG, Font.ITALIC, 15));
+        }
+        else
+            style.setHeaderFont(new Font(Font.DIALOG, Font.PLAIN, 13));
 
         calendar.getSchedule().getItems().add(appointment);
         calendar.repaint();
@@ -38,10 +42,14 @@ public class StalledController {
 
     public static void createAppointment (Calendar calendar, Reservation reservation){
         Style style = reservation.getStyle();
-        if (!reservation.isUpToDate())
+        if (!reservation.isUpToDate()) {
             style.setHeaderTextColor(Color.RED);
-        else
+            style.setHeaderFont(new Font(Font.DIALOG, Font.ITALIC | Font.BOLD, 15));
+        }
+        else {
             style.setHeaderTextColor(Color.black);
+            style.setHeaderFont(new Font(Font.DIALOG, Font.PLAIN, 13));
+        }
         calendar.getSchedule().getItems().add(reservation);
         calendar.repaint();
     }
