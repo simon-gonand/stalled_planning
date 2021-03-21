@@ -1169,6 +1169,7 @@ public class StalledView extends JInternalFrame {
 
                     JCheckBox UpToDateCheck = new JCheckBox("Cotisation à jour");
                     UpToDateCheck.setSelected(reservation.isUpToDate());
+                    UpToDateCheck.setFont(new Font(UpToDateCheck.getFont().getFontName(), Font.PLAIN, 15));
                     UpToDateCheck.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
