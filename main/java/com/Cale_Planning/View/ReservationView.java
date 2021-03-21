@@ -22,13 +22,14 @@ import java.util.*;
 
 public class ReservationView extends JInternalFrame {
     private JDesktopPane mainPane;
+    private StalledView stalledView;
     private com.mindfusion.scheduling.Calendar calendar;
     private Reservation reservation;
     private Map<String, JDatePickerImpl> datePickers;
     private JFormattedTextField amountText;
     private static JButton selectedColor;
 
-    public ReservationView (JDesktopPane mainPane, JInternalFrame stalledView, com.mindfusion.scheduling.Calendar calendar, Reservation reservation) throws PropertyVetoException {
+    public ReservationView (JDesktopPane mainPane, StalledView stalledView, com.mindfusion.scheduling.Calendar calendar, Reservation reservation) throws PropertyVetoException {
         super();
 
         setTitle("Planning Cale");
@@ -39,6 +40,7 @@ public class ReservationView extends JInternalFrame {
 
         this.calendar = calendar;
         this.reservation = reservation;
+        this.stalledView = stalledView;
         this.mainPane = mainPane;
         this.mainPane.add(this);
 
@@ -244,12 +246,21 @@ public class ReservationView extends JInternalFrame {
                         JOptionPane.INFORMATION_MESSAGE);
 
                 calendar.repaint();
+
                 Main.windowManagment.remove(thisFrame);
                 JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
                 for (JInternalFrame frame : desktopPane.getAllFrames()){
                     if (frame == thisFrame)
                         desktopPane.remove(frame);
                 }
+                SwingUtilities.updateComponentTreeUI(desktopPane);
+                JInternalFrame frame = stalledView.getSubReservationFrames().get(reservation);
+                desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, frame);
+                for (JInternalFrame fr : desktopPane.getAllFrames()) {
+                    if (frame == fr)
+                        desktopPane.remove(fr);
+                }
+                stalledView.getSubReservationFrames().remove(reservation, frame);
                 SwingUtilities.updateComponentTreeUI(desktopPane);
             }
         });
@@ -464,9 +475,9 @@ public class ReservationView extends JInternalFrame {
         JButton red = new JButton();
         JButton orange = new JButton();
         JButton yellow = new JButton();
-        JButton green = new JButton();
+        JButton green = new JButton("Chariot");
         JButton cyan = new JButton();
-        JButton blue = new JButton();
+        JButton blue = new JButton("Remorque");
         JButton pink = new JButton();
         JButton purple = new JButton();
         JButton gray = new JButton();
@@ -477,6 +488,7 @@ public class ReservationView extends JInternalFrame {
         green.setBackground(Color.green);
         cyan.setBackground(Color.cyan);
         blue.setBackground(Color.blue);
+        blue.setForeground(Color.white);
         pink.setBackground(Color.pink);
         purple.setBackground(Color.MAGENTA);
         gray.setBackground(Color.gray);
