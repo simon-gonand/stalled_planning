@@ -995,7 +995,6 @@ public class StalledView extends JInternalFrame {
         calendar.getResourceViewSettings().getStyle().setHeaderFont(new Font("Verdana", Font.BOLD, 13));
         calendar.getResourceViewSettings().getStyle().setHeaderTextAlignment(EnumSet.of(TextAlignment.MiddleCenter));
         calendar.getResourceViewSettings().setExpandableRows(false);
-        calendar.getResourceViewSettings().setHiddenDays(EnumSet.of(DayOfWeek.Wednesday, DayOfWeek.Saturday));
 
         calendar.getResourceViewSettings().getBottomTimelineSettings().setSize(30);
         calendar.getResourceViewSettings().getBottomTimelineSettings().getStyle().setHeaderFont(new Font("Verdana", Font.BOLD, 13));
