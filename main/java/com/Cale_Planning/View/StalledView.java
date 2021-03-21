@@ -29,9 +29,11 @@ import org.jdatepicker.impl.UtilDateModel;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;;
+import java.awt.font.TextAttribute;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterException;
@@ -819,9 +821,9 @@ public class StalledView extends JInternalFrame {
         JButton red = new JButton();
         JButton orange = new JButton();
         JButton yellow = new JButton();
-        JButton green = new JButton();
+        JButton green = new JButton("Chariot");
         JButton cyan = new JButton();
-        JButton blue = new JButton();
+        JButton blue = new JButton("Remorque");
         JButton pink = new JButton();
         JButton purple = new JButton();
         JButton gray = new JButton();
@@ -832,6 +834,7 @@ public class StalledView extends JInternalFrame {
         green.setBackground(Color.green);
         cyan.setBackground(Color.cyan);
         blue.setBackground(Color.blue);
+        blue.setForeground(Color.white);
         pink.setBackground(Color.pink);
         purple.setBackground(Color.MAGENTA);
         gray.setBackground(Color.gray);
@@ -1039,7 +1042,7 @@ public class StalledView extends JInternalFrame {
 
         calendar.endInit();
 
-        JInternalFrame thisFrame = this;
+        StalledView thisFrame = this;
         calendar.addCalendarListener(new CalendarAdapter()
         {
             @Override
@@ -1067,7 +1070,43 @@ public class StalledView extends JInternalFrame {
 
                     frame.setLayout(new BorderLayout());
                     JLabel title = new JLabel(reservation.getBoat().getName());
-                    title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40));
+                    title.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            if (!Main.windowManagment.isEmpty()) {
+                                for (JInternalFrame frame : Main.windowManagment)
+                                    if (frame.getClass().equals(BoatView.class)){
+                                        BoatView view = (BoatView) frame;
+                                        if (view.getBoat() != null &&
+                                                view.getBoat().getName().equals(
+                                                        reservation.getBoat().getName()) &&
+                                                view.getBoat().getOwner().getName().equals(
+                                                        reservation.getBoat().getOwner().getName()) &&
+                                                view.getBoat().getOwner().getSurname().equals(
+                                                        reservation.getBoat().getOwner().getSurname())) {
+                                            try {
+                                                frame.setSelected(true);
+                                            } catch (PropertyVetoException ex) {
+                                                ex.printStackTrace();
+                                            }
+                                            return;
+                                        }
+                                    }
+                            }
+                            try {
+                                BoatView view = new BoatView(reservation.getBoat(), mainPane);
+                                Main.windowManagment.add(view);
+                            } catch (PropertyVetoException ex) {
+                                ex.printStackTrace();
+                            }
+                            SwingUtilities.updateComponentTreeUI(thisFrame);
+                        }
+                    });
+
+                    title.setForeground(new Color(0,102,204));
+                    Map<TextAttribute, Integer> fontAttributes = new HashMap<TextAttribute, Integer>();
+                    fontAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+                    title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40).deriveFont(fontAttributes));
                     title.setHorizontalAlignment(JLabel.CENTER);
                     frame.add(title, BorderLayout.NORTH);
 
@@ -1369,5 +1408,9 @@ public class StalledView extends JInternalFrame {
             System.out.println("SQL Select exception n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
         }
+    }
+
+    public Map<Reservation, JInternalFrame> getSubReservationFrames() {
+        return subReservationFrames;
     }
 }
