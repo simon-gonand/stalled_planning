@@ -1069,6 +1069,7 @@ public class StalledView extends JInternalFrame {
                     frame.setBounds(screenSize.width / 3, screenSize.height / 4, 500, 325);
 
                     frame.setLayout(new BorderLayout());
+                    JPanel titleAndAdherent = new JPanel(new GridBagLayout());
                     JLabel title = new JLabel(reservation.getBoat().getName());
                     title.addMouseListener(new MouseAdapter() {
                         @Override
@@ -1108,7 +1109,48 @@ public class StalledView extends JInternalFrame {
                     fontAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
                     title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40).deriveFont(fontAttributes));
                     title.setHorizontalAlignment(JLabel.CENTER);
-                    frame.add(title, BorderLayout.NORTH);
+
+                    JButton adherent = new JButton(new ImageIcon("src/main/resources/user32.png"));
+                    adherent.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if (!Main.windowManagment.isEmpty()) {
+                                for (JInternalFrame frame : Main.windowManagment)
+                                    if (frame.getClass().equals(AdherentView.class)){
+                                        AdherentView view = (AdherentView) frame;
+                                        if (view.getAdherent() != null &&
+                                                view.getAdherent().getName().equals(
+                                                        reservation.getAdherent().getName()) &&
+                                                view.getAdherent().getSurname().equals(
+                                                        reservation.getAdherent().getSurname())) {
+                                            try {
+                                                frame.setSelected(true);
+                                            } catch (PropertyVetoException ex) {
+                                                ex.printStackTrace();
+                                            }
+                                            return;
+                                        }
+                                    }
+                            }
+                            try {
+                                AdherentView view = new AdherentView(reservation.getAdherent(), mainPane);
+                                Main.windowManagment.add(view);
+                            } catch (PropertyVetoException ex) {
+                                ex.printStackTrace();
+                            }
+                            SwingUtilities.updateComponentTreeUI(mainPane);
+                        }
+                    });
+
+                    GridBagConstraints constraints = new GridBagConstraints();
+                    constraints.gridx = 0;
+                    constraints.gridy = 0;
+                    constraints.fill = GridBagConstraints.VERTICAL;
+                    constraints.anchor = GridBagConstraints.LINE_START;
+                    titleAndAdherent.add(adherent, constraints);
+                    constraints.ipadx = frame.getWidth() / 8 + frame.getWidth() / 2 - constraints.ipadx;
+                    titleAndAdherent.add(title, constraints);
+                    frame.add(titleAndAdherent, BorderLayout.NORTH);
 
                     JPanel amountAndDeposit = new JPanel(new GridLayout(3, 2));
                     JLabel amountTitle = new JLabel("Montant");
