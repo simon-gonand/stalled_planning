@@ -1066,7 +1066,7 @@ public class StalledView extends JInternalFrame {
                     JInternalFrame frame = new JInternalFrame(e.getItem().getHeaderText());
                     subReservationFrames.put(reservation, frame);
                     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                    frame.setBounds(screenSize.width / 3, screenSize.height / 4, 500, 325);
+                    frame.setBounds(screenSize.width / 3, screenSize.height / 4, 550, 375);
 
                     frame.setLayout(new BorderLayout());
                     JPanel titleAndAdherent = new JPanel(new GridBagLayout());
@@ -1146,13 +1146,14 @@ public class StalledView extends JInternalFrame {
                     constraints.gridx = 0;
                     constraints.gridy = 0;
                     constraints.fill = GridBagConstraints.VERTICAL;
-                    constraints.anchor = GridBagConstraints.LINE_START;
+                    constraints.anchor = GridBagConstraints.FIRST_LINE_START;
+                    constraints.ipadx = 0;
                     titleAndAdherent.add(adherent, constraints);
-                    constraints.ipadx = frame.getWidth() / 8 + frame.getWidth() / 2 - constraints.ipadx;
+                    constraints.ipadx = frame.getWidth() / 8 + frame.getWidth() / 2;
                     titleAndAdherent.add(title, constraints);
                     frame.add(titleAndAdherent, BorderLayout.NORTH);
 
-                    JPanel amountAndDeposit = new JPanel(new GridLayout(3, 2));
+                    JPanel amountAndDeposit = new JPanel(new GridLayout(4, 2));
                     JLabel amountTitle = new JLabel("Montant");
                     amountTitle.setFont(new Font(amountTitle.getFont().getName(), Font.BOLD, 25));
                     amountTitle.setHorizontalAlignment(JLabel.CENTER);
@@ -1166,6 +1167,32 @@ public class StalledView extends JInternalFrame {
                     JLabel depositLabel = new JLabel(String.valueOf(reservation.getDeposit()));
                     depositLabel.setFont(new Font(depositLabel.getFont().getName(), Font.PLAIN, 20));
                     depositLabel.setHorizontalAlignment(JLabel.CENTER);
+
+                    JPanel adherentCommentPanel  = new JPanel(new BorderLayout());
+                    JPanel boatCommentPanel = new JPanel(new BorderLayout());
+
+                    JLabel adherentCommentTitle = new JLabel("Commentaire de " + reservation.getAdherent().getName() +
+                            " " + reservation.getAdherent().getSurname());
+                    adherentCommentTitle.setFont(new Font(adherentCommentTitle.getFont().getName(), Font.BOLD, 15));
+                    adherentCommentTitle.setHorizontalAlignment(JLabel.CENTER);
+                    adherentCommentTitle.setVerticalAlignment(JLabel.CENTER);
+                    adherentCommentPanel.add(adherentCommentTitle, BorderLayout.NORTH);
+
+                    JLabel boatCommentTitle = new JLabel("Commentaire de " + reservation.getBoat().getName());
+                    boatCommentTitle.setFont(new Font(boatCommentTitle.getFont().getName(), Font.BOLD, 15));
+                    boatCommentTitle.setHorizontalAlignment(JLabel.CENTER);
+                    boatCommentTitle.setVerticalAlignment(JLabel.CENTER);
+                    boatCommentPanel.add(boatCommentTitle, BorderLayout.NORTH);
+
+                    JLabel adherentComment = new JLabel(reservation.getAdherent().getComment());
+                    adherentComment.setFont(new Font(adherentComment.getFont().getName(), Font.PLAIN, 15));
+                    adherentComment.setVerticalAlignment(JLabel.TOP);
+                    adherentCommentPanel.add(adherentComment, BorderLayout.CENTER);
+
+                    JLabel boatComment = new JLabel(reservation.getBoat().getComment());
+                    boatComment.setFont(new Font(boatComment.getFont().getName(), Font.PLAIN, 15));
+                    boatComment.setVerticalAlignment(JLabel.TOP);
+                    boatCommentPanel.add(boatComment, BorderLayout.CENTER);
 
                     JCheckBox UpToDateCheck = new JCheckBox("Cotisation à jour");
                     UpToDateCheck.setSelected(reservation.isUpToDate());
@@ -1184,6 +1211,8 @@ public class StalledView extends JInternalFrame {
                     amountAndDeposit.add(depositTitle);
                     amountAndDeposit.add(amountLabel);
                     amountAndDeposit.add(depositLabel);
+                    amountAndDeposit.add(adherentCommentPanel);
+                    amountAndDeposit.add(boatCommentPanel);
                     amountAndDeposit.add(UpToDateCheck);
 
                     frame.add(amountAndDeposit, BorderLayout.CENTER);
