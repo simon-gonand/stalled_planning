@@ -171,14 +171,9 @@ public class ReservationView extends JInternalFrame {
                     return;
                 }
                 DateTime startDate = new DateTime(modelStartDate.getYear(), modelStartDate.getMonth() + 1, modelStartDate.getDay(),
-                        12, 00, 00);
-                if (startDate.compareTo(DateTime.today()) == -1){
-                    JOptionPane.showMessageDialog(thisFrame, "Vous ne pouvez pas saisir une date antérieure à la date d'aujourd'hui",
-                            "Erreur", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+                        14, 00, 00);
                 DateTime endDate = new DateTime(modelEndDate.getYear(), modelEndDate.getMonth() + 1, modelEndDate.getDay(),
-                        12, 00, 00);
+                        10, 00, 00);
                 if (endDate.compareTo(startDate) == 0){
                     JOptionPane.showMessageDialog(thisFrame, "La date de fin de réservation est la même que la date de début", "Erreur",
                             JOptionPane.ERROR_MESSAGE);
