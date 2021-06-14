@@ -564,14 +564,14 @@ public class StalledView extends JInternalFrame {
                    return;
                }
                DateTime startDate = new DateTime(modelStartDate.getYear(), modelStartDate.getMonth() + 1, modelStartDate.getDay(),
-                       12, 00, 00);
+                       14, 00, 00);
                if (startDate.compareTo(DateTime.today()) == -1){
                    JOptionPane.showMessageDialog(thisFrame, "Vous ne pouvez pas saisir une date antérieure à la date d'aujourd'hui",
                            "Erreur", JOptionPane.ERROR_MESSAGE);
                    return;
                }
                DateTime endDate = new DateTime(modelEndDate.getYear(), modelEndDate.getMonth() + 1, modelEndDate.getDay(),
-                       12, 00, 00);
+                       10, 00, 00);
                if (endDate.compareTo(startDate) == 0){
                    JOptionPane.showMessageDialog(thisFrame, "La date de fin de réservation est la même que la date de début", "Erreur",
                            JOptionPane.ERROR_MESSAGE);
@@ -1148,7 +1148,10 @@ public class StalledView extends JInternalFrame {
                     constraints.anchor = GridBagConstraints.FIRST_LINE_START;
                     constraints.ipadx = 0;
                     titleAndAdherent.add(adherent, constraints);
-                    constraints.ipadx = frame.getWidth() / 8 + frame.getWidth() / 2;
+                    ++constraints.gridx;
+                    constraints.gridwidth = 2;
+                    constraints.weightx = 0.8;
+                    constraints.ipadx = frame.getWidth() / 2 - (frame.getWidth() / 10);
                     titleAndAdherent.add(title, constraints);
                     frame.add(titleAndAdherent, BorderLayout.NORTH);
 
@@ -1460,14 +1463,14 @@ public class StalledView extends JInternalFrame {
             ResultSet attributes = database.SQLSelect("SELECT * FROM Reservation");
             while (attributes.next()){
                 DateTime startDate = new DateTime(attributes.getDate("DateDebut"));
-                DateTime startTime = new DateTime(startDate.getYear(), startDate.getMonth(), startDate.getDay(), 12, 00, 00);
+                DateTime startTime = new DateTime(startDate.getYear(), startDate.getMonth(), startDate.getDay(), 14, 00, 00);
                 DateTime endDate = new DateTime(attributes.getDate("DateFin"));
-                DateTime endTime = new DateTime(endDate.getYear(), endDate.getMonth(), endDate.getDay(), 12, 00, 00);
+                DateTime endTime = new DateTime(endDate.getYear(), endDate.getMonth(), endDate.getDay(), 10, 00, 00);
                 StalledController.createAppointment(calendar, startTime,
                         endTime,
                         attributes.getInt("Cale"),
                         new Adherent(attributes.getInt("Adherent")),
-                        Colors.fromName(attributes.getString("Couleur")),
+                        Colors.fromName(attributes.getString("Couleur")).brighter().brighter(),
                         attributes.getInt("ID"),
                         attributes.getInt("Montant"),
                         attributes.getInt("Caution"),
