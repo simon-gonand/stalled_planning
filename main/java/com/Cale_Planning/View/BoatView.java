@@ -1,6 +1,7 @@
 package com.Cale_Planning.View;
 
 import com.Cale_Planning.Controller.AdherentController;
+import com.Cale_Planning.Controller.BoatController;
 import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
@@ -359,6 +360,14 @@ public class BoatView extends JInternalFrame {
                 if (owner.getSelectedItem() == null){
                     JOptionPane.showMessageDialog(thisFrame, "Le bateau n'a pas d'adhérent", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
                     return;
+                }
+                for (Boat comparedBoat : BoatController.getAllBoatArray()){
+                    if (boat == null || !comparedBoat.getRegistration().toLowerCase().equals(boat.getRegistration().toLowerCase())){
+                        if (comparedBoat.getRegistration().toLowerCase().equals(registration.getText().toLowerCase())){
+                            JOptionPane.showMessageDialog(thisFrame, "Ce bateau existe déjà", "Doublon", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
                 }
                 if (boat != null) {
                     boat.setName(name.getText());

@@ -134,6 +134,7 @@ public class Adherent {
         int id = AdherentController.addAdherent(this);
         if (id != 0)
             this.id = id;
+        this.boats = new DefaultListModel<Boat>();
     }
 
     @Override

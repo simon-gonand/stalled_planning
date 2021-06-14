@@ -1,5 +1,6 @@
 package com.Cale_Planning.View;
 
+import com.Cale_Planning.Controller.AdherentController;
 import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
@@ -505,6 +506,21 @@ public class AdherentView extends JInternalFrame {
                 if (genders.getSelection() == null) {
                     JOptionPane.showMessageDialog(thisFrame, "L'adhérent n'a pas de genre", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
                     return;
+                }
+                if (subscription.getText().equals("")){
+                    JOptionPane.showMessageDialog(thisFrame, "L'adhérent n'a pas de date d'inscription", "Fiche incomplète", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                for (Adherent comparedAdherent : AdherentController.getAllAdherentArray()){
+                    if (adherent == null ||
+                            (!comparedAdherent.getName().toLowerCase().equals(adherent.getName().toLowerCase())
+                            && !comparedAdherent.getSurname().toLowerCase().equals(adherent.getSurname().toLowerCase()))) {
+                        if (comparedAdherent.getName().toLowerCase().equals(name.getText().toLowerCase())
+                                && comparedAdherent.getSurname().toLowerCase().equals(surname.getText().toLowerCase())) {
+                            JOptionPane.showMessageDialog(thisFrame, "Cet adhérent existe déjà", "Doublon", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
                 }
                 if (adherent != null) {
                     adherent.setName(name.getText());
