@@ -26,6 +26,8 @@ import org.jdatepicker.DateModel;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
+import org.jpedal.examples.viewer.Commands;
+import org.jpedal.examples.viewer.Viewer;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 
 import javax.swing.*;
@@ -1392,26 +1394,43 @@ public class StalledView extends JInternalFrame {
                             };
                             t.start();
                             d.setVisible(true);
-                            // Print the document
-                            PdfDocument pdf = new PdfDocument();
-                            pdf.loadFromFile("src/main/resources/stalledDoc.pdf");
 
-                            PrinterJob printerJob = PrinterJob.getPrinterJob();
+                            //Display preview of the document
+                            System.setProperty("org.jpedal.userControlledLAF", "javax.swing.plaf.metal.MetalLookAndFeel");
+                            JFrame previewFrame = new JFrame();
+                            previewFrame.getContentPane().setLayout(new BorderLayout());
+                            final JPanel previewPanel = new JPanel();
+                            Viewer viewer = new Viewer(previewPanel, null);
+                            viewer.setupViewer();
 
-                            PageFormat format = printerJob.defaultPage();
-                            Paper paper = format.getPaper();
-                            paper.setImageableArea(0,0, format.getWidth(), format.getHeight());
-                            format.setPaper(paper);
+                            viewer.executeCommand(Commands.OPENFILE, new Object[]{System.getProperty("user.dir") + "\\src\\main\\resources\\stalledDoc.pdf"});
+                            viewer.executeCommand(Commands.CONTINUOUS, new Object[]{null});
 
-                            printerJob.setPrintable(pdf, format);
-                            if (printerJob.printDialog()){
-                                try {
-                                    printerJob.print();
-                                } catch (PrinterException ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                            pdf.close();
+                            previewFrame.add(previewPanel, BorderLayout.CENTER);
+                            previewFrame.setTitle("Viewer in External Frame");
+                            previewFrame.setVisible(true);
+                            previewFrame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Set fullscreen window
+
+//                            // Print the document
+//                            PdfDocument pdf = new PdfDocument();
+//                            pdf.loadFromFile("src/main/resources/stalledDoc.pdf");
+//
+//                            PrinterJob printerJob = PrinterJob.getPrinterJob();
+//
+//                            PageFormat format = printerJob.defaultPage();
+//                            Paper paper = format.getPaper();
+//                            paper.setImageableArea(0,0, format.getWidth(), format.getHeight());
+//                            format.setPaper(paper);
+//
+//                            printerJob.setPrintable(pdf, format);
+//                            if (printerJob.printDialog()){
+//                                try {
+//                                    printerJob.print();
+//                                } catch (PrinterException ex) {
+//                                    ex.printStackTrace();
+//                                }
+//                            }
+//                            pdf.close();
                         }
                     });
 
