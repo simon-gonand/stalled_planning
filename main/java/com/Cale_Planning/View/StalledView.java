@@ -9,7 +9,6 @@ import com.Cale_Planning.Models.Boat;
 import com.Cale_Planning.Models.Reservation;
 
 import com.mindfusion.common.DateTime;
-import com.mindfusion.common.DayOfWeek;
 import com.mindfusion.common.Duration;
 import com.mindfusion.drawing.Colors;
 import com.mindfusion.drawing.TextAlignment;
@@ -31,7 +30,6 @@ import org.jpedal.examples.viewer.Viewer;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 
 import javax.swing.*;
-import javax.swing.text.AttributeSet;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;;
