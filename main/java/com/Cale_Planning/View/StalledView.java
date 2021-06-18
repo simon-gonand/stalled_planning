@@ -1483,11 +1483,14 @@ public class StalledView extends JInternalFrame {
                 DateTime startTime = new DateTime(startDate.getYear(), startDate.getMonth(), startDate.getDay(), 14, 00, 00);
                 DateTime endDate = new DateTime(attributes.getDate("DateFin"));
                 DateTime endTime = new DateTime(endDate.getYear(), endDate.getMonth(), endDate.getDay(), 10, 00, 00);
+                Color color = Colors.fromName(attributes.getString("Couleur"));
+                if (color != null)
+                    color = color.brighter().brighter();
                 StalledController.createAppointment(calendar, startTime,
                         endTime,
                         attributes.getInt("Cale"),
                         new Adherent(attributes.getInt("Adherent")),
-                        Colors.fromName(attributes.getString("Couleur")).brighter().brighter(),
+                        color,
                         attributes.getInt("ID"),
                         attributes.getInt("Montant"),
                         attributes.getInt("Caution"),
