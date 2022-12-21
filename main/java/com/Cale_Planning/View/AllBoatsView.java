@@ -136,7 +136,7 @@ public class AllBoatsView extends JInternalFrame {
         buttonsPanel.setBackground(Color.white);
 
         final JInternalFrame thisFrame = this;
-        JButton close = new JButton(new ImageIcon("src/main/resources/cancel.png"));
+        JButton close = new JButton(new ImageIcon("main/resources/cancel.png"));
         close.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -150,7 +150,7 @@ public class AllBoatsView extends JInternalFrame {
             }
         });
 
-        JButton addBoat = new JButton(new ImageIcon("src/main/resources/add.png"));
+        JButton addBoat = new JButton(new ImageIcon("main/resources/add.png"));
         addBoat.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -178,7 +178,7 @@ public class AllBoatsView extends JInternalFrame {
             }
         });
 
-        JButton deleteBoat = new JButton(new ImageIcon("src/main/resources/delete.png"));
+        JButton deleteBoat = new JButton(new ImageIcon("main/resources/delete.png"));
         deleteBoat.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

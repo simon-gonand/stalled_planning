@@ -176,7 +176,7 @@ public class StalledView extends JInternalFrame {
                             SwingUtilities.updateComponentTreeUI(thisFrame);
                         }
                     });
-                    JButton printButton = new JButton(new ImageIcon("src/main/resources/printer.png"));
+                    JButton printButton = new JButton(new ImageIcon("main/resources/printer.png"));
                     printButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
@@ -198,7 +198,7 @@ public class StalledView extends JInternalFrame {
                                 public void run() {
                                     // Set dates and adherent information into the supported document
                                     try {
-                                        XWPFDocument document = new XWPFDocument(new FileInputStream("src/main/resources/stalledDoc.docx"));
+                                        XWPFDocument document = new XWPFDocument(new FileInputStream("main/resources/stalledDoc.docx"));
                                         for (XWPFParagraph p : document.getParagraphs()) {
                                             for (int i = 0; i < p.getRuns().size(); ++i) {
                                                 XWPFRun run = p.getRuns().get(i);
@@ -259,7 +259,7 @@ public class StalledView extends JInternalFrame {
                                                 ctrsintxtbx.add(obj);
                                             }
                                             for (XmlObject obj : ctrsintxtbx) {
-                                                CTR ctr = CTR.Factory.parse(obj.xmlText());
+                                                CTR ctr = (CTR) CTR.Factory.parse(obj.xmlText());
                                                 XWPFRun bufferrun = new XWPFRun(ctr, p);
                                                 String text = bufferrun.getText(0);
                                                 if (text != null && text.contains("Prénom")) {
@@ -286,17 +286,17 @@ public class StalledView extends JInternalFrame {
                                                 obj.set(bufferrun.getCTR());
                                             }
                                         }
-                                        document.write(new FileOutputStream("src/main/resources/newDoc.docx"));
+                                        document.write(new FileOutputStream("main/resources/newDoc.docx"));
                                         document.close();
 
                                         com.spire.doc.Document newDocument = new com.spire.doc.Document();
-                                        newDocument.loadFromFile("src/main/resources/newDoc.docx");
+                                        newDocument.loadFromFile("main/resources/newDoc.docx");
 
                                         ToPdfParameterList ppl = new ToPdfParameterList();
                                         ppl.isEmbeddedAllFonts(true);
                                         ppl.setDisableLink(true);
                                         newDocument.setJPEGQuality(100);
-                                        newDocument.saveToFile("src/main/resources/stalledDoc.pdf", FileFormat.PDF);
+                                        newDocument.saveToFile("main/resources/stalledDoc.pdf", FileFormat.PDF);
                                         newDocument.close();
                                     } catch (Exception ex) {
                                         JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas pu se créer", "Erreur",
@@ -312,7 +312,7 @@ public class StalledView extends JInternalFrame {
                             d.setVisible(true);
                             // Print the document
                             PdfDocument pdf = new PdfDocument();
-                            pdf.loadFromFile("src/main/resources/stalledDoc.pdf");
+                            pdf.loadFromFile("main/resources/stalledDoc.pdf");
 
                             PrinterJob printerJob = PrinterJob.getPrinterJob();
 
@@ -894,7 +894,7 @@ public class StalledView extends JInternalFrame {
 
         JPanel closePanel = new JPanel(null);
         final JInternalFrame thisFrame = this;
-        JButton close = new JButton(new ImageIcon("src/main/resources/cancel.png"));
+        JButton close = new JButton(new ImageIcon("main/resources/cancel.png"));
         close.setBounds(thisFrame.getWidth() / 2 - 35,0, 30,30);
         close.setOpaque(true);
         close.addActionListener(new ActionListener() {
@@ -915,8 +915,8 @@ public class StalledView extends JInternalFrame {
 
         JButton previousYear = new JButton();
         JButton nextYear = new JButton();
-        previousYear.setIcon(new ImageIcon("src/main/resources/leftArrow.png"));
-        nextYear.setIcon(new ImageIcon("src/main/resources/rightArrow.png"));
+        previousYear.setIcon(new ImageIcon("main/resources/leftArrow.png"));
+        nextYear.setIcon(new ImageIcon("main/resources/rightArrow.png"));
         previousYear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -938,8 +938,8 @@ public class StalledView extends JInternalFrame {
 
         JButton previousMonth = new JButton();
         JButton nextMonth = new JButton();
-        previousMonth.setIcon(new ImageIcon("src/main/resources/leftArrow.png"));
-        nextMonth.setIcon(new ImageIcon("src/main/resources/rightArrow.png"));
+        previousMonth.setIcon(new ImageIcon("main/resources/leftArrow.png"));
+        nextMonth.setIcon(new ImageIcon("main/resources/rightArrow.png"));
         previousMonth.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1109,7 +1109,7 @@ public class StalledView extends JInternalFrame {
                     title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40).deriveFont(fontAttributes));
                     title.setHorizontalAlignment(JLabel.CENTER);
 
-                    JButton adherent = new JButton(new ImageIcon("src/main/resources/user32.png"));
+                    JButton adherent = new JButton(new ImageIcon("main/resources/user32.png"));
                     adherent.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
@@ -1221,7 +1221,7 @@ public class StalledView extends JInternalFrame {
 
                     JPanel buttonsPanel = new JPanel(new GridLayout(1,4, 50, 0));
 
-                    JButton modify = new JButton(new ImageIcon("src/main/resources/pencil.png"));
+                    JButton modify = new JButton(new ImageIcon("main/resources/pencil.png"));
                     modify.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
@@ -1248,7 +1248,7 @@ public class StalledView extends JInternalFrame {
                         }
                     });
 
-                    JButton delete = new JButton(new ImageIcon("src/main/resources/delete.png"));
+                    JButton delete = new JButton(new ImageIcon("main/resources/delete.png"));
                     delete.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
@@ -1268,7 +1268,7 @@ public class StalledView extends JInternalFrame {
                         }
                     });
 
-                    JButton print = new JButton(new ImageIcon("src/main/resources/printer.png"));
+                    JButton print = new JButton(new ImageIcon("main/resources/printer.png"));
                     print.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
@@ -1290,7 +1290,7 @@ public class StalledView extends JInternalFrame {
                                 public void run() {
                                     // Set dates and adherent information into the supported document
                                     try {
-                                        XWPFDocument document = new XWPFDocument(new FileInputStream("src/main/resources/stalledDoc.docx"));
+                                        XWPFDocument document = new XWPFDocument(new FileInputStream("main/resources/stalledDoc.docx"));
                                         for (XWPFParagraph p : document.getParagraphs()) {
                                             for (int i = 0; i < p.getRuns().size(); ++i) {
                                                 XWPFRun run = p.getRuns().get(i);
@@ -1341,7 +1341,7 @@ public class StalledView extends JInternalFrame {
                                                 ctrsintxtbx.add(obj);
                                             }
                                             for (XmlObject obj : ctrsintxtbx) {
-                                                CTR ctr = CTR.Factory.parse(obj.xmlText());
+                                                CTR ctr = (CTR) CTR.Factory.parse(obj.xmlText());
                                                 XWPFRun bufferrun = new XWPFRun(ctr, p);
                                                 String text = bufferrun.getText(0);
                                                 if (text != null && text.contains("Prénom")) {
@@ -1368,17 +1368,17 @@ public class StalledView extends JInternalFrame {
                                                 obj.set(bufferrun.getCTR());
                                             }
                                         }
-                                        document.write(new FileOutputStream("src/main/resources/newDoc.docx"));
+                                        document.write(new FileOutputStream("main/resources/newDoc.docx"));
                                         document.close();
 
                                         com.spire.doc.Document newDocument = new com.spire.doc.Document();
-                                        newDocument.loadFromFile("src/main/resources/newDoc.docx");
+                                        newDocument.loadFromFile("main/resources/newDoc.docx");
 
                                         ToPdfParameterList ppl = new ToPdfParameterList();
                                         ppl.isEmbeddedAllFonts(true);
                                         ppl.setDisableLink(true);
                                         newDocument.setJPEGQuality(100);
-                                        newDocument.saveToFile("src/main/resources/stalledDoc.pdf", FileFormat.PDF);
+                                        newDocument.saveToFile("main/resources/stalledDoc.pdf", FileFormat.PDF);
                                         newDocument.close();
                                     } catch (Exception ex) {
                                         JOptionPane.showMessageDialog(thisFrame, "Le fichier n'a pas pu se créer", "Erreur",
@@ -1401,7 +1401,7 @@ public class StalledView extends JInternalFrame {
                             Viewer viewer = new Viewer(previewPanel, null);
                             viewer.setupViewer();
 
-                            viewer.executeCommand(Commands.OPENFILE, new Object[]{System.getProperty("user.dir") + "\\src\\main\\resources\\stalledDoc.pdf"});
+                            viewer.executeCommand(Commands.OPENFILE, new Object[]{System.getProperty("user.dir") + "\\main\\resources\\stalledDoc.pdf"});
                             viewer.executeCommand(Commands.CONTINUOUS, new Object[]{null});
 
                             previewFrame.add(previewPanel, BorderLayout.CENTER);
@@ -1411,7 +1411,7 @@ public class StalledView extends JInternalFrame {
 
 //                            // Print the document
 //                            PdfDocument pdf = new PdfDocument();
-//                            pdf.loadFromFile("src/main/resources/stalledDoc.pdf");
+//                            pdf.loadFromFile("main/resources/stalledDoc.pdf");
 //
 //                            PrinterJob printerJob = PrinterJob.getPrinterJob();
 //
@@ -1432,7 +1432,7 @@ public class StalledView extends JInternalFrame {
                         }
                     });
 
-                    JButton cancel = new JButton(new ImageIcon("src/main/resources/cancel32.png"));
+                    JButton cancel = new JButton(new ImageIcon("main/resources/cancel32.png"));
                     cancel.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {

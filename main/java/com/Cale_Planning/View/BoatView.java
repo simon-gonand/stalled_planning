@@ -330,8 +330,8 @@ public class BoatView extends JInternalFrame {
     private void fillButtonPanel(JPanel panel){
         panel.setLayout(new GridBagLayout()); // Set a layout
 
-        JButton submit = new JButton(new ImageIcon("src/main/resources/tick.png"));
-        JButton cancel = new JButton(new ImageIcon("src/main/resources/cancel.png"));
+        JButton submit = new JButton(new ImageIcon("main/resources/tick.png"));
+        JButton cancel = new JButton(new ImageIcon("main/resources/cancel.png"));
 
         final JInternalFrame thisFrame = this;
         submit.addActionListener(new ActionListener() {

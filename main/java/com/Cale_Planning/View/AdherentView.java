@@ -270,8 +270,8 @@ public class AdherentView extends JInternalFrame {
         phoneLabel.setFont(fontBold);
         JLabel mobileLabel = new JLabel("Portable");
         mobileLabel.setFont(fontBold);
-        JButton deletePhone = new JButton(new ImageIcon("src/main/resources/telephoneDelete.png"));
-        JButton deleteMobile = new JButton(new ImageIcon("src/main/resources/telephoneDelete.png"));
+        JButton deletePhone = new JButton(new ImageIcon("main/resources/telephoneDelete.png"));
+        JButton deleteMobile = new JButton(new ImageIcon("main/resources/telephoneDelete.png"));
         JLabel emailLabel = new JLabel("Email");
         emailLabel.setFont(fontBold);
 
@@ -330,7 +330,7 @@ public class AdherentView extends JInternalFrame {
             }
         });
 
-        JButton emailButton = new JButton(new ImageIcon("src/main/resources/mail.png"));
+        JButton emailButton = new JButton(new ImageIcon("main/resources/mail.png"));
         emailButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -488,8 +488,8 @@ public class AdherentView extends JInternalFrame {
     private void fillButtonsPanel (JPanel panel){
         panel.setLayout(new GridBagLayout()); // Set a layout
 
-        JButton submit = new JButton(new ImageIcon("src/main/resources/tick.png"));
-        JButton cancel = new JButton(new ImageIcon("src/main/resources/cancel.png"));
+        JButton submit = new JButton(new ImageIcon("main/resources/tick.png"));
+        JButton cancel = new JButton(new ImageIcon("main/resources/cancel.png"));
 
         JInternalFrame thisFrame = this;
         submit.addActionListener(new ActionListener() {

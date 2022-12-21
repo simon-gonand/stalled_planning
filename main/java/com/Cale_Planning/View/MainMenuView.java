@@ -28,11 +28,11 @@ public class MainMenuView extends JInternalFrame {
 
     private void fillMainMenu(){
         Font font = new Font(Font.DIALOG, Font.BOLD, 20);
-        JButton adherentsViewButton = new JButton("Les adhérents", new ImageIcon("src/main/resources/user.png"));
+        JButton adherentsViewButton = new JButton("Les adhérents", new ImageIcon("main/resources/user.png"));
         adherentsViewButton.setFont(font);
-        JButton boatViewButton = new JButton ("Les bateaux", new ImageIcon("src/main/resources/boat.png"));
+        JButton boatViewButton = new JButton ("Les bateaux", new ImageIcon("main/resources/boat.png"));
         boatViewButton.setFont(font);
-        JButton stalledViewButton = new JButton ("Planning Cale", new ImageIcon("src/main/resources/calendar.png"));
+        JButton stalledViewButton = new JButton ("Planning Cale", new ImageIcon("main/resources/calendar.png"));
         stalledViewButton.setFont(font);
 
         JInternalFrame thisFrame = this;

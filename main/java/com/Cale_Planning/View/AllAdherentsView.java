@@ -149,7 +149,7 @@ public class AllAdherentsView extends JInternalFrame {
         buttonsPanel.setBackground(Color.white);
 
         final JInternalFrame thisFrame = this;
-        JButton close = new JButton(new ImageIcon("src/main/resources/cancel.png"));
+        JButton close = new JButton(new ImageIcon("main/resources/cancel.png"));
         close.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -163,7 +163,7 @@ public class AllAdherentsView extends JInternalFrame {
             }
         });
 
-        JButton addAdherent = new JButton(new ImageIcon("src/main/resources/add.png"));
+        JButton addAdherent = new JButton(new ImageIcon("main/resources/add.png"));
         addAdherent.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -191,7 +191,7 @@ public class AllAdherentsView extends JInternalFrame {
             }
         });
 
-        JButton deleteAdherent = new JButton(new ImageIcon("src/main/resources/delete.png"));
+        JButton deleteAdherent = new JButton(new ImageIcon("main/resources/delete.png"));
         deleteAdherent.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -233,7 +233,7 @@ public class AllAdherentsView extends JInternalFrame {
             }
         });
 
-        JButton importFile = new JButton(new ImageIcon("src/main/resources/upload-file.png"));
+        JButton importFile = new JButton(new ImageIcon("main/resources/upload-file.png"));
         importFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
