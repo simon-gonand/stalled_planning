@@ -15,7 +15,7 @@ public class BoatController {
     public static DefaultListModel<Boat> getAllBoat() {
         DefaultListModel<Boat> boatList = new DefaultListModel<Boat>();
         try {
-            ResultSet results = Main.getDatabase().SQLSelect("SELECT ID FROM Bateau");
+            ResultSet results = Main.getDatabase().SQLSelect("SELECT ID, Nom FROM Bateau ORDER BY Nom ASC");
             int i = 0;
             while (results.next()) {
                 boatList.add(i, new Boat(results.getInt("ID")));

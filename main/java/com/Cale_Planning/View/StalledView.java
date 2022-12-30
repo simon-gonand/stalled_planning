@@ -1305,7 +1305,7 @@ public class StalledView extends JInternalFrame {
                                                     run.setText(text);
                                                 }
 
-                                                if (text.contains("au") && text.length() <= 3){
+                                                if (text.contains("au") && text.length() <= 4){
                                                     XWPFRun nextRun = p.getRuns().get(i + 1);
                                                     if (nextRun.getText(0).equals(" ")) {
                                                         DateTime to = reservation.getEndTime();

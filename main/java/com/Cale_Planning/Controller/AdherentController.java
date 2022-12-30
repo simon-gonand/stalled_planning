@@ -12,7 +12,7 @@ public class AdherentController {
     public static DefaultListModel<Adherent> getAllAdherent(){
         DefaultListModel<Adherent> adherentList = new DefaultListModel<>();
         try{
-            ResultSet results = Main.getDatabase().SQLSelect("SELECT ID FROM Adherent");
+            ResultSet results = Main.getDatabase().SQLSelect("SELECT ID, Nom FROM Adherent ORDER BY Nom ASC");
             int i = 0;
             while (results.next()){
                 adherentList.add(i, new Adherent(results.getInt("ID")));
@@ -28,7 +28,7 @@ public class AdherentController {
     public static Adherent[] getAllAdherentArray(){
         List<Adherent> adherentList = new ArrayList<Adherent>();
         try{
-            ResultSet results = Main.getDatabase().SQLSelect("SELECT ID FROM Adherent");
+            ResultSet results = Main.getDatabase().SQLSelect("SELECT ID, Nom FROM Adherent ORDER BY Nom ASC");
             while (results.next()){
                 adherentList.add(new Adherent(results.getInt("ID")));
             }
