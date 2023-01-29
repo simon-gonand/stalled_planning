@@ -70,10 +70,7 @@ public class Adherent {
             this.idComptable = attributes.getInt("IDComptable");
 
             boats = new DefaultListModel<Boat>();
-            ResultSet boatsID = Main.getDatabase().SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
-            while (boatsID.next()){
-                boats.addElement(new Boat(boatsID.getInt("ID"), this));
-            }
+
         } catch (SQLException e){
             System.out.println("SQL Select exception n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -100,11 +97,8 @@ public class Adherent {
             this.comment = attributes.getString("Com");
             this.idComptable = attributes.getInt("IDComptable");
 
-            boats = new DefaultListModel<Boat>();
-            ResultSet boatsID = Main.getDatabase().SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + this.id);
-            while (boatsID.next()){
-                boats.addElement(boat);
-            }
+            boats = getBoats();
+            boats.addElement(boat);
         } catch (SQLException e){
             System.out.println("SQL Select exception n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
@@ -268,7 +262,7 @@ public class Adherent {
     }
 
     public DefaultListModel<Boat> getBoats() {
-        return boats;
+        return AdherentController.GetBoats(this);
     }
 
     public void addBoat (Boat boat){

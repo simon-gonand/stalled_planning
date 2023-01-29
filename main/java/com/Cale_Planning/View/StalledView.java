@@ -17,7 +17,9 @@ import com.mindfusion.scheduling.model.*;
 import com.spire.doc.FileFormat;
 import com.spire.doc.ToPdfParameterList;
 import com.spire.pdf.PdfDocument;
+import org.apache.pdfbox.printing.PDFPageable;
 import org.apache.poi.xwpf.usermodel.*;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
@@ -25,10 +27,14 @@ import org.jdatepicker.DateModel;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
+import org.jpedal.PdfDecoder;
 import org.jpedal.examples.viewer.Commands;
 import org.jpedal.examples.viewer.Viewer;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.PageRanges;
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
@@ -48,7 +54,7 @@ import java.util.*;
 import java.util.Calendar;
 import java.util.List;
 
-public class StalledView extends JInternalFrame {
+public class StalledView extends JInternalFrame implements IMainFrame {
     private static JButton selectedColor;
     private Adherent selectedAdherent;
     private Boat selectedBoat;
@@ -63,7 +69,8 @@ public class StalledView extends JInternalFrame {
 
     private Map<Reservation, JInternalFrame> subReservationFrames = new HashMap();
 
-    private JList adherentJList;
+    private JList<Boat> boatJList;
+    private JList<Adherent> adherentJList;
     private DefaultListModel defaultAdherentList;
 
     public StalledView (JDesktopPane mainPane) throws PropertyVetoException {
@@ -122,7 +129,7 @@ public class StalledView extends JInternalFrame {
         adherentJList.setFont(new Font(adherentJList.getFont().getName(), Font.BOLD, 15));
         JScrollPane adherentScrollPane = new JScrollPane(adherentJList);
         adherentScrollPane.setBackground(Color.white);
-        JList<Boat> boatJList = new JList<>();
+        boatJList = new JList<Boat>();
         boatJList.setFont(new Font(adherentJList.getFont().getName(), Font.BOLD, 15));
         JScrollPane boatScrollPane = new JScrollPane(boatJList);
         boatScrollPane.setBackground(Color.white);
@@ -540,7 +547,7 @@ public class StalledView extends JInternalFrame {
         deposit.setBackground(Color.white);
         JLabel depositLabel = new JLabel("Caution");
         JFormattedTextField depositText = new JFormattedTextField(mask);
-        depositText.setValue(150.00);
+        depositText.setValue(50.00);
 
         amount.add(amountLabel);
         amount.add(amountText);
@@ -1306,7 +1313,14 @@ public class StalledView extends JInternalFrame {
                                                 }
 
                                                 if (text.contains("au") && text.length() <= 4){
-                                                    XWPFRun nextRun = p.getRuns().get(i + 1);
+                                                    XWPFRun nextRun = null;
+                                                    if (p.getRuns().size() <= i + 1){
+                                                        nextRun = p.createRun();
+                                                        nextRun.setText(" ", 0);
+                                                    }
+                                                    else {
+                                                        nextRun = p.getRuns().get(i + 1);
+                                                    }
                                                     if (nextRun.getText(0).equals(" ")) {
                                                         DateTime to = reservation.getEndTime();
                                                         String sTo = to.getDay() + "/" + to.getMonth() + "/" + to.getYear();
@@ -1398,16 +1412,30 @@ public class StalledView extends JInternalFrame {
                             JFrame previewFrame = new JFrame();
                             previewFrame.getContentPane().setLayout(new BorderLayout());
                             final JPanel previewPanel = new JPanel();
-                            Viewer viewer = new Viewer(previewPanel, null);
+                            try {
+                                PDDocument document = PDDocument.load(new File("main/resources/stalledDoc.pdf"));
+                                PrinterJob job = PrinterJob.getPrinterJob();
+                                job.setPageable(new PDFPageable(document));
+
+                                if(job.printDialog()){
+                                    job.print();
+                                }
+                                document.close();
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            } catch (PrinterException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            /*Viewer viewer = new Viewer(previewPanel, null);
                             viewer.setupViewer();
 
                             viewer.executeCommand(Commands.OPENFILE, new Object[]{System.getProperty("user.dir") + "\\main\\resources\\stalledDoc.pdf"});
-                            viewer.executeCommand(Commands.CONTINUOUS, new Object[]{null});
+                            viewer.executeCommand(Commands.CONTINUOUS, new Object[]{null});*/
 
-                            previewFrame.add(previewPanel, BorderLayout.CENTER);
+                            /*previewFrame.add(previewPanel, BorderLayout.CENTER);
                             previewFrame.setTitle("Viewer in External Frame");
                             previewFrame.setVisible(true);
-                            previewFrame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Set fullscreen window
+                            previewFrame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Set fullscreen window*/
 
 //                            // Print the document
 //                            PdfDocument pdf = new PdfDocument();
@@ -1506,5 +1534,15 @@ public class StalledView extends JInternalFrame {
 
     public Map<Reservation, JInternalFrame> getSubReservationFrames() {
         return subReservationFrames;
+    }
+
+    @Override
+    public void RefreshFrame() {
+        defaultAdherentList = AdherentController.getAllAdherent();
+        adherentJList.setModel(defaultAdherentList);
+        if (selectedAdherent != null){
+            boatJList.setModel(selectedAdherent.getBoats());
+        }
+        SwingUtilities.updateComponentTreeUI(this);
     }
 }

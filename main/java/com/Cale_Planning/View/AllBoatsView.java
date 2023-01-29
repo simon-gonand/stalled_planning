@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-public class AllBoatsView extends JInternalFrame {
+public class AllBoatsView extends JInternalFrame implements IMainFrame {
     private JList<Boat> boatJList;
     private DefaultListModel defaultBoatList;
     private JDesktopPane mainPane;
@@ -203,10 +203,7 @@ public class AllBoatsView extends JInternalFrame {
                         System.out.println(ex.getMessage());
                     }
                     BoatController.deleteBoat(boat);
-                    DefaultListModel defaultListModel = (DefaultListModel) boatJList.getModel();
-                    defaultListModel.removeElement(boat);
-                    boatJList.setModel(defaultListModel);
-                    SwingUtilities.updateComponentTreeUI(thisFrame);
+                    Main.RefreshAllFrames();
                 } else
                     return;
             }
@@ -227,5 +224,12 @@ public class AllBoatsView extends JInternalFrame {
         ++constraints.gridx;
         constraints.anchor = GridBagConstraints.LINE_END;
         buttonsPanel.add(close, constraints);
+    }
+
+    @Override
+    public void RefreshFrame() {
+        defaultBoatList = BoatController.getAllBoat();
+        boatJList.setModel(defaultBoatList);
+        SwingUtilities.updateComponentTreeUI(this);
     }
 }

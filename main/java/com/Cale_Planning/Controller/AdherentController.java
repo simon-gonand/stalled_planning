@@ -2,6 +2,7 @@ package com.Cale_Planning.Controller;
 
 import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
+import com.Cale_Planning.Models.Boat;
 
 import javax.swing.*;
 import java.sql.ResultSet;
@@ -207,6 +208,21 @@ public class AdherentController {
         } catch (SQLException e){
             System.out.println("IDComptable Update error n° " + e.getErrorCode() + " What goes wrong ?");
             System.out.println(e.getMessage());
+        }
+    }
+
+    public static DefaultListModel<Boat> GetBoats(Adherent adherent){
+        try {
+            DefaultListModel boats = new DefaultListModel<Boat>();
+            ResultSet boatsID = Main.getDatabase().SQLSelect("SELECT ID FROM Bateau WHERE Proprietaire = " + adherent.getId());
+            while (boatsID.next()){
+                boats.addElement(new Boat(boatsID.getInt("ID"), adherent));
+            }
+            return boats;
+        } catch(SQLException e){
+            System.out.println("Get boat error error n° " + e.getErrorCode() + " What goes wrong ?");
+            System.out.println(e.getMessage());
+            return null;
         }
     }
 }

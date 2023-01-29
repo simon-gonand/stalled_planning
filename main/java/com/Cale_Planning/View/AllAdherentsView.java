@@ -26,7 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-public class AllAdherentsView extends JInternalFrame {
+public class AllAdherentsView extends JInternalFrame implements IMainFrame {
     private JDesktopPane mainPane;
     private JList<Adherent> adherentJList;
     private DefaultListModel defaultAdherentList;
@@ -224,10 +224,7 @@ public class AllAdherentsView extends JInternalFrame {
                     }
 
                     AdherentController.deleteAdherent(adherent);
-                    DefaultListModel defaultListModel = (DefaultListModel) adherentJList.getModel();
-                    defaultListModel.removeElement(adherent);
-                    adherentJList.setModel(defaultListModel);
-                    SwingUtilities.updateComponentTreeUI(thisFrame);
+                    Main.RefreshAllFrames();
                 } else
                     return;
             }
@@ -295,6 +292,7 @@ public class AllAdherentsView extends JInternalFrame {
                 };
                 t.start();
                 d.setVisible(true);
+                Main.RefreshAllFrames();
             }
         });
 
@@ -302,5 +300,13 @@ public class AllAdherentsView extends JInternalFrame {
         buttonsPanel.add(deleteAdherent);
         buttonsPanel.add(importFile);
         buttonsPanel.add(close);
+    }
+
+    @Override
+    public void RefreshFrame() {
+        defaultAdherentList = AdherentController.getAllAdherent();
+        adherentJList.setModel(defaultAdherentList);
+        SwingUtilities.updateComponentTreeUI(this);
+        //fillAdherentsView();
     }
 }

@@ -1,6 +1,7 @@
 package com.Cale_Planning.View;
 
 import com.Cale_Planning.Controller.AdherentController;
+import com.Cale_Planning.Controller.BoatController;
 import com.Cale_Planning.Main;
 import com.Cale_Planning.Models.Adherent;
 import com.Cale_Planning.Models.Boat;
@@ -27,7 +28,7 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.*;
 
-public class AdherentView extends JInternalFrame {
+public class AdherentView extends JInternalFrame implements IMainFrame {
     private Adherent adherent;
     private JList adherentList;
     private JTextField name, surname, subscription, additional, street, postalCode, city, email;
@@ -536,6 +537,7 @@ public class AdherentView extends JInternalFrame {
                     adherent.setPhone(phone.getText());
                     adherent.setEmail(email.getText());
                     adherent.setComment(comment.getText());
+
                     JOptionPane.showMessageDialog(thisFrame, "Les informations de l'adhérent " + name.getText() + " " + surname.getText() +
                             " ont bien été modifié", "Adhérent modifié", JOptionPane.INFORMATION_MESSAGE);
                 }
@@ -545,17 +547,11 @@ public class AdherentView extends JInternalFrame {
                             comment.getText(), (Date) birth.getModel().getValue(), Adherent.GenderType.parse(genders.getSelection().getActionCommand()),0);
                     JOptionPane.showMessageDialog(thisFrame, "L'adhérent " + name.getText() + " " + surname.getText() +
                             " a bien été ajouté", "Adhérent ajouté", JOptionPane.INFORMATION_MESSAGE);
-                    DefaultListModel defaultListModel = (DefaultListModel) adherentList.getModel();
-                    defaultListModel.add(defaultListModel.size(), adherent);
-                    adherentList.setModel(defaultListModel);
                     JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
                     Main.windowManagment.remove(thisFrame);
-                    for (JInternalFrame frame : desktopPane.getAllFrames()){
-                        if (frame == thisFrame)
-                            desktopPane.remove(frame);
-                    }
-                    SwingUtilities.updateComponentTreeUI(desktopPane);
+                    desktopPane.remove(thisFrame);
                 }
+                Main.RefreshAllFrames();
             }
         });
 
@@ -592,5 +588,10 @@ public class AdherentView extends JInternalFrame {
 
     public Adherent getAdherent() {
         return adherent;
+    }
+
+    @Override
+    public void RefreshFrame() {
+        updateBoatList(adherent.getBoats());
     }
 }

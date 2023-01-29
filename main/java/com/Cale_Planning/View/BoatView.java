@@ -14,7 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 
-public class BoatView extends JInternalFrame {
+public class BoatView extends JInternalFrame implements IMainFrame {
     private Boat boat;
     private JList<Boat> boatJList;
     private JTextField name, registration, length, width, draught, weight;
@@ -385,16 +385,6 @@ public class BoatView extends JInternalFrame {
                         boat.setOwner((Adherent) owner.getSelectedItem());
                         oldOwner.removeBoat(boat);
                         ((Adherent) owner.getSelectedItem()).addBoat(boat);
-                        JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
-                        for (JInternalFrame frame : desktopPane.getAllFrames()) {
-                            if (frame instanceof AdherentView) {
-                                AdherentView adherentView = (AdherentView) frame;
-                                if (adherentView.getAdherent().getId() == ((Adherent) owner.getSelectedItem()).getId())
-                                    adherentView.updateBoatList(((Adherent) owner.getSelectedItem()).getBoats());
-                                else if (adherentView.getAdherent().getId() == oldOwner.getId())
-                                    adherentView.updateBoatList(oldOwner.getBoats());
-                            }
-                        }
                     }
                     JOptionPane.showMessageDialog(thisFrame, "Les informations du bateau " + name.getText() +
                             " ont bien été modifié", "Bateau modifié", JOptionPane.INFORMATION_MESSAGE);
@@ -406,17 +396,11 @@ public class BoatView extends JInternalFrame {
                             comments.getText());
                     JOptionPane.showMessageDialog(thisFrame, "Le bateau " + name.getText() +
                             " a bien été ajouté", "Bateau ajouté", JOptionPane.INFORMATION_MESSAGE);
-                    DefaultListModel defaultListModel = (DefaultListModel) boatJList.getModel();
-                    defaultListModel.add(defaultListModel.size(), boat);
-                    boatJList.setModel(defaultListModel);
                     Main.windowManagment.remove(thisFrame);
                     JDesktopPane desktopPane = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, thisFrame);
-                    for (JInternalFrame frame : desktopPane.getAllFrames()){
-                        if (frame == thisFrame)
-                            desktopPane.remove(frame);
-                    }
-                    SwingUtilities.updateComponentTreeUI(desktopPane);
+                    desktopPane.remove(thisFrame);
                 }
+                Main.RefreshAllFrames();
             }
         });
 
@@ -448,5 +432,15 @@ public class BoatView extends JInternalFrame {
 
     public Boat getBoat() {
         return boat;
+    }
+
+    @Override
+    public void RefreshFrame() {
+        owner.removeAllItems();
+        for (Adherent adherent: AdherentController.getAllAdherentArray()) {
+            owner.addItem(adherent);
+            if(adherent.getId() == boat.getOwner().getId())
+                owner.setSelectedItem(adherent);
+        }
     }
 }
